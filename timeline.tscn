@@ -1,0 +1,76 @@
+[gd_scene load_steps=3 format=3 uid="uid://bkbtnkgk8e0f0"]
+
+[ext_resource type="Texture2D" uid="uid://clfm3bhq5mjsl" path="res://Graphics/timeline/head.png" id="1_4uk8c"]
+[ext_resource type="Texture2D" uid="uid://cyngjh4lblgs2" path="res://Graphics/timeline/timeline_grid.png" id="1_qkhag"]
+
+[node name="timeline" type="Control"]
+clip_children = 2
+layout_mode = 3
+anchors_preset = 0
+
+[node name="background" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 752.0
+offset_bottom = 216.0
+color = Color(0.109804, 0.109804, 0.109804, 1)
+
+[node name="ColorRect" type="TextureRect" parent="background"]
+layout_mode = 0
+offset_right = 752.0
+offset_bottom = 24.0
+mouse_filter = 0
+texture = ExtResource("1_qkhag")
+stretch_mode = 1
+
+[node name="ColorRect2" type="ColorRect" parent="background"]
+layout_mode = 0
+offset_top = 40.0
+offset_right = 752.0
+offset_bottom = 56.0
+mouse_filter = 2
+color = Color(0.0784314, 0.0784314, 0.0784314, 1)
+
+[node name="ColorRect3" type="ColorRect" parent="background"]
+layout_mode = 0
+offset_top = 72.0
+offset_right = 752.0
+offset_bottom = 88.0
+mouse_filter = 2
+color = Color(0.0784314, 0.0784314, 0.0784314, 1)
+
+[node name="ColorRect4" type="ColorRect" parent="background"]
+layout_mode = 0
+offset_top = 104.0
+offset_right = 752.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(0.0784314, 0.0784314, 0.0784314, 1)
+
+[node name="ColorRect5" type="ColorRect" parent="background"]
+layout_mode = 0
+offset_top = 136.0
+offset_right = 752.0
+offset_bottom = 152.0
+mouse_filter = 2
+color = Color(0.0784314, 0.0784314, 0.0784314, 1)
+
+[node name="ColorRect6" type="ColorRect" parent="background"]
+layout_mode = 0
+offset_top = 168.0
+offset_right = 752.0
+offset_bottom = 184.0
+mouse_filter = 2
+color = Color(0.0784314, 0.0784314, 0.0784314, 1)
+
+[node name="ColorRect7" type="ColorRect" parent="background"]
+layout_mode = 0
+offset_top = 200.0
+offset_right = 752.0
+offset_bottom = 216.0
+mouse_filter = 2
+color = Color(0.0784314, 0.0784314, 0.0784314, 1)
+
+[node name="Head" type="Sprite2D" parent="."]
+texture = ExtResource("1_4uk8c")
+centered = false
+offset = Vector2(2, 5)

@@ -1,0 +1,539 @@
+[gd_scene load_steps=9 format=3 uid="uid://c1857ue5o0id2"]
+
+[ext_resource type="PackedScene" uid="uid://bkbtnkgk8e0f0" path="res://timeline.tscn" id="1_bxl4t"]
+[ext_resource type="Script" path="res://scripts/panel_bottom.gd" id="1_wm86m"]
+[ext_resource type="Texture2D" uid="uid://bawhnlxk76n3s" path="res://Graphics/timeline/play.png" id="2_8cenp"]
+[ext_resource type="Texture2D" uid="uid://4rc3rtsmslyv" path="res://Graphics/timeline/stop.png" id="3_qpt40"]
+[ext_resource type="Texture2D" uid="uid://bvivn4hraobey" path="res://Graphics/timeline/loop.png" id="4_fxfvo"]
+[ext_resource type="Texture2D" uid="uid://ybr7k3y3meyr" path="res://Graphics/timeline/autoplay.png" id="6_6qqix"]
+[ext_resource type="Texture2D" uid="uid://cxr8srpndrly" path="res://Graphics/move_btn.png" id="7_vu2xa"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_mo1u5"]
+font_size = 10
+font_color = Color(0.509804, 0.509804, 0.509804, 1)
+
+[node name="PanelBottom" type="Panel"]
+offset_top = 464.0
+offset_right = 1280.0
+offset_bottom = 720.0
+script = ExtResource("1_wm86m")
+metadata/_edit_use_anchors_ = true
+
+[node name="timeline" parent="." instance=ExtResource("1_bxl4t")]
+clip_contents = true
+custom_minimum_size = Vector2(60, 216)
+offset_left = 264.0
+offset_top = 32.0
+offset_right = 1016.0
+offset_bottom = 248.0
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath(".")
+focus_neighbor_right = NodePath(".")
+focus_neighbor_bottom = NodePath(".")
+focus_mode = 1
+
+[node name="labels" type="Node2D" parent="timeline"]
+
+[node name="line" type="Node2D" parent="timeline"]
+
+[node name="keyframes" type="Node2D" parent="timeline"]
+
+[node name="focus" type="Line2D" parent="timeline"]
+points = PackedVector2Array(1, 216, 1, 1, 600, 1, 600, 216)
+width = 1.0
+default_color = Color(0.403922, 0.580392, 0.996078, 1)
+
+[node name="ReferenceRect" type="ReferenceRect" parent="timeline"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+border_color = Color(0.454902, 0.611765, 0.980392, 1)
+editor_only = false
+
+[node name="playPause" type="Button" parent="."]
+layout_mode = 0
+offset_left = 264.0
+offset_top = 4.0
+offset_right = 287.0
+offset_bottom = 27.0
+tooltip_text = "Play the animation."
+icon = ExtResource("2_8cenp")
+
+[node name="stop" type="Button" parent="."]
+layout_mode = 0
+offset_left = 296.0
+offset_top = 4.0
+offset_right = 319.0
+offset_bottom = 27.0
+tooltip_text = "Stop the current animation and reset the scene."
+icon = ExtResource("3_qpt40")
+
+[node name="loop" type="Button" parent="."]
+layout_mode = 0
+offset_left = 328.0
+offset_top = 4.0
+offset_right = 351.0
+offset_bottom = 27.0
+tooltip_text = "Toggle looping."
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+
+[node name="autoplay" type="Button" parent="."]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 4.0
+offset_right = 383.0
+offset_bottom = 27.0
+tooltip_text = "Toggle autoplay.
+It will play all of the animations in the project in order."
+toggle_mode = true
+icon = ExtResource("6_6qqix")
+
+[node name="frameTime" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 936.0
+offset_top = 8.0
+offset_right = 1069.0
+offset_bottom = 39.0
+scale = Vector2(0.6, 0.6)
+max_value = 999999.0
+allow_greater = true
+allow_lesser = true
+prefix = "frame"
+
+[node name="speed" type="HSlider" parent="."]
+layout_mode = 0
+offset_left = 800.0
+offset_top = 16.0
+offset_right = 904.0
+offset_bottom = 32.0
+max_value = 2.0
+step = 0.1
+value = 1.0
+ticks_on_borders = true
+
+[node name="playbackSpeedLabel" type="Label" parent="speed"]
+layout_mode = 0
+offset_left = -8.0
+offset_top = -15.0
+offset_right = 112.0
+offset_bottom = 2.0
+text = "Playback Speed:     1x"
+label_settings = SubResource("LabelSettings_mo1u5")
+horizontal_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 24.0
+offset_right = 128.0
+offset_bottom = 49.0
+theme_override_font_sizes/font_size = 12
+placeholder_text = "Animation name"
+
+[node name="Label" type="Label" parent="."]
+modulate = Color(0.521569, 0.521569, 0.521569, 1)
+layout_mode = 0
+offset_left = 9.0
+offset_top = 4.0
+offset_right = 248.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 11
+text = "Animation Manager"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="."]
+modulate = Color(0.521569, 0.521569, 0.521569, 1)
+layout_mode = 0
+offset_left = 141.0
+offset_top = 28.0
+offset_right = 181.0
+offset_bottom = 47.0
+theme_override_font_sizes/font_size = 11
+text = "Length:"
+
+[node name="cosmeticShit" type="Node2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="cosmeticShit"]
+offset_left = 136.0
+offset_top = 56.0
+offset_right = 256.0
+offset_bottom = 72.0
+mouse_filter = 1
+color = Color(0.144063, 0.144063, 0.144063, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="cosmeticShit"]
+offset_left = 136.0
+offset_top = 88.0
+offset_right = 256.0
+offset_bottom = 104.0
+mouse_filter = 1
+color = Color(0.144063, 0.144063, 0.144063, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="ColorRect3" type="ColorRect" parent="cosmeticShit"]
+offset_left = 136.0
+offset_top = 120.0
+offset_right = 256.0
+offset_bottom = 136.0
+mouse_filter = 1
+color = Color(0.144063, 0.144063, 0.144063, 1)
+
+[node name="ColorRect4" type="ColorRect" parent="cosmeticShit"]
+offset_left = 136.0
+offset_top = 152.0
+offset_right = 256.0
+offset_bottom = 168.0
+mouse_filter = 1
+color = Color(0.144063, 0.144063, 0.144063, 1)
+
+[node name="ColorRect5" type="ColorRect" parent="cosmeticShit"]
+offset_left = 136.0
+offset_top = 184.0
+offset_right = 256.0
+offset_bottom = 200.0
+mouse_filter = 1
+color = Color(0.144063, 0.144063, 0.144063, 1)
+
+[node name="ColorRect6" type="ColorRect" parent="cosmeticShit"]
+offset_left = 136.0
+offset_top = 216.0
+offset_right = 256.0
+offset_bottom = 232.0
+mouse_filter = 1
+color = Color(0.144063, 0.144063, 0.144063, 1)
+
+[node name="Label" type="Label" parent="cosmeticShit"]
+offset_left = 144.0
+offset_top = 56.0
+offset_right = 233.0
+offset_bottom = 248.0
+mouse_filter = 1
+theme_override_font_sizes/font_size = 9
+text = "Visibility
+Position X
+Position Y
+Angle
+Scale X
+Scale Y
+Sprite
+Color
+Color (Top Left)
+Color (Bottom Left)
+Color (Top Right)
+Color (Bottom Right)"
+
+[node name="highlight" type="ColorRect" parent="cosmeticShit"]
+offset_left = 136.0
+offset_top = 72.0
+offset_right = 1016.0
+offset_bottom = 88.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.152941)
+
+[node name="lengthBox" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 184.0
+offset_top = 24.0
+offset_right = 274.0
+offset_bottom = 55.0
+scale = Vector2(0.8, 0.8)
+max_value = 100000.0
+
+[node name="loop_visib" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 56.0
+offset_right = 263.0
+offset_bottom = 79.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_posx" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 72.0
+offset_right = 263.0
+offset_bottom = 95.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_posy" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 88.0
+offset_right = 263.0
+offset_bottom = 111.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_angle" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 104.0
+offset_right = 263.0
+offset_bottom = 127.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_scalex" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 120.0
+offset_right = 263.0
+offset_bottom = 143.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_scaley" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 136.0
+offset_right = 263.0
+offset_bottom = 159.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_sprite" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 152.0
+offset_right = 263.0
+offset_bottom = 175.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_color" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 168.0
+offset_right = 263.0
+offset_bottom = 191.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_color_tl" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 184.0
+offset_right = 263.0
+offset_bottom = 207.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_color_bl" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 200.0
+offset_right = 263.0
+offset_bottom = 223.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_color_tr" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 216.0
+offset_right = 263.0
+offset_bottom = 239.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="loop_color_br" type="Button" parent="."]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 232.0
+offset_right = 263.0
+offset_bottom = 255.0
+scale = Vector2(0.7, 0.7)
+toggle_mode = true
+icon = ExtResource("4_fxfvo")
+icon_alignment = 1
+
+[node name="HScrollBar" type="HScrollBar" parent="."]
+layout_mode = 0
+offset_left = 264.0
+offset_top = 248.0
+offset_right = 1016.0
+offset_bottom = 256.0
+page = 100.0
+allow_lesser = true
+
+[node name="keyframeSettings" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1032.0
+offset_top = 8.0
+offset_right = 1272.0
+offset_bottom = 31.0
+theme_override_colors/font_color = Color(0.411765, 0.411765, 0.411765, 1)
+theme_override_font_sizes/font_size = 11
+text = "Keyframe Settings"
+horizontal_alignment = 1
+
+[node name="curvePanel" type="Panel" parent="keyframeSettings"]
+clip_contents = true
+layout_mode = 0
+offset_top = 64.0
+offset_right = 240.0
+offset_bottom = 240.0
+
+[node name="Panel2" type="Panel" parent="keyframeSettings/curvePanel"]
+layout_mode = 0
+offset_left = 195.0
+offset_right = 203.0
+offset_bottom = 168.0
+
+[node name="Panel" type="Panel" parent="keyframeSettings/curvePanel"]
+layout_mode = 0
+offset_left = 36.0
+offset_right = 44.0
+offset_bottom = 168.0
+
+[node name="curve" type="Panel" parent="keyframeSettings/curvePanel"]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 29.0
+offset_right = 192.0
+offset_bottom = 149.0
+
+[node name="Line2D" type="Line2D" parent="keyframeSettings/curvePanel/curve"]
+position = Vector2(8, 8)
+points = PackedVector2Array(24, 24, 72, 24, 72, 40, 24, 40, 24, 24)
+width = 2.0
+default_color = Color(0.447059, 0.611765, 0.996078, 1)
+
+[node name="ease_in_btn2" type="TextureButton" parent="keyframeSettings/curvePanel/curve"]
+modulate = Color(1, 1, 1, 0.403922)
+layout_mode = 0
+offset_left = -16.0
+offset_top = -1.0
+offset_bottom = 15.0
+texture_normal = ExtResource("7_vu2xa")
+
+[node name="ease_out_btn2" type="TextureButton" parent="keyframeSettings/curvePanel/curve"]
+modulate = Color(1, 1, 1, 0.482353)
+layout_mode = 0
+offset_left = 142.0
+offset_top = 108.0
+offset_right = 158.0
+offset_bottom = 124.0
+texture_normal = ExtResource("7_vu2xa")
+
+[node name="ease_in_btn" type="TextureButton" parent="keyframeSettings/curvePanel/curve"]
+layout_mode = 0
+offset_left = -8.0
+offset_top = 112.0
+offset_right = 8.0
+offset_bottom = 128.0
+texture_normal = ExtResource("7_vu2xa")
+
+[node name="ease_out_btn" type="TextureButton" parent="keyframeSettings/curvePanel/curve"]
+layout_mode = 0
+offset_left = 136.0
+offset_top = -8.0
+offset_right = 152.0
+offset_bottom = 8.0
+texture_normal = ExtResource("7_vu2xa")
+
+[node name="tweening_btn" type="Button" parent="keyframeSettings"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 32.0
+offset_right = 224.0
+offset_bottom = 56.0
+theme_override_font_sizes/font_size = 11
+text = "Linear"
+
+[node name="dropdown" type="Button" parent="keyframeSettings"]
+layout_mode = 0
+offset_left = 224.0
+offset_top = 32.0
+offset_right = 239.0
+offset_bottom = 56.0
+theme_override_font_sizes/font_size = 11
+text = "V"
+
+[node name="Label" type="Label" parent="keyframeSettings"]
+layout_mode = 0
+offset_top = 32.0
+offset_right = 72.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "Interpolation"
+vertical_alignment = 1
+
+[node name="MenuButton" type="MenuButton" parent="keyframeSettings"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 56.0
+offset_right = 120.0
+offset_bottom = 64.0
+
+[node name="AnimationList" type="ItemList" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 56.0
+offset_right = 128.0
+offset_bottom = 240.0
+theme_override_font_sizes/font_size = 11
+allow_reselect = true
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 264.0
+offset_top = 56.0
+offset_right = 1288.0
+offset_bottom = 280.0
+color = Color(0.14902, 0.14902, 0.14902, 0.647059)
+
+[connection signal="pressed" from="playPause" to="." method="_on_play_pause_pressed"]
+[connection signal="pressed" from="stop" to="." method="_on_stop_pressed"]
+[connection signal="text_submitted" from="LineEdit" to="." method="_on_line_edit_text_submitted"]
+[connection signal="value_changed" from="lengthBox" to="." method="_on_length_box_value_changed"]
+[connection signal="pressed" from="loop_visib" to="." method="_on_loop_visib_pressed"]
+[connection signal="pressed" from="loop_posx" to="." method="_on_loop_posx_pressed"]
+[connection signal="pressed" from="loop_posy" to="." method="_on_loop_posy_pressed"]
+[connection signal="pressed" from="loop_angle" to="." method="_on_loop_angle_pressed"]
+[connection signal="pressed" from="loop_scalex" to="." method="_on_loop_scalex_pressed"]
+[connection signal="pressed" from="loop_scaley" to="." method="_on_loop_scaley_pressed"]
+[connection signal="pressed" from="loop_sprite" to="." method="_on_loop_sprite_pressed"]
+[connection signal="pressed" from="loop_color" to="." method="_on_loop_color_pressed"]
+[connection signal="pressed" from="loop_color_tl" to="." method="_on_loop_color_tl_pressed"]
+[connection signal="pressed" from="loop_color_bl" to="." method="_on_loop_color_bl_pressed"]
+[connection signal="pressed" from="loop_color_tr" to="." method="_on_loop_color_tr_pressed"]
+[connection signal="pressed" from="loop_color_br" to="." method="_on_loop_color_br_pressed"]
+[connection signal="scrolling" from="HScrollBar" to="." method="_on_h_scroll_bar_scrolling"]
+[connection signal="value_changed" from="HScrollBar" to="." method="_on_h_scroll_bar_value_changed"]
+[connection signal="gui_input" from="keyframeSettings/curvePanel/curve/ease_in_btn2" to="." method="_on_ease_in_btn_gui_input"]
+[connection signal="pressed" from="keyframeSettings/curvePanel/curve/ease_in_btn2" to="." method="_on_ease_in_btn_pressed"]
+[connection signal="gui_input" from="keyframeSettings/curvePanel/curve/ease_out_btn2" to="." method="_on_ease_out_btn_gui_input"]
+[connection signal="gui_input" from="keyframeSettings/curvePanel/curve/ease_in_btn" to="." method="_on_ease_in_btn_gui_input"]
+[connection signal="pressed" from="keyframeSettings/curvePanel/curve/ease_in_btn" to="." method="_on_ease_in_btn_pressed"]
+[connection signal="gui_input" from="keyframeSettings/curvePanel/curve/ease_out_btn" to="." method="_on_ease_out_btn_gui_input"]
+[connection signal="pressed" from="keyframeSettings/tweening_btn" to="." method="_on_dropdown_pressed"]
+[connection signal="pressed" from="keyframeSettings/dropdown" to="." method="_on_dropdown_pressed"]
+[connection signal="item_clicked" from="AnimationList" to="." method="_on_animation_list_item_clicked"]

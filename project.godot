@@ -1,0 +1,48 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Puyo Edit - Puyo Puyo Animation Editor"
+run/main_scene="res://main_scene.tscn"
+config/features=PackedStringArray("4.1")
+boot_splash/image="res://Graphics/puyologo.png"
+boot_splash/fullsize=false
+boot_splash/use_filter=false
+config/icon="res://Graphics/icon.png"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/width=1280
+window/size/height=720
+
+[dotnet]
+
+project/assembly_name="Puyo Puyo Animation Editor"
+
+[editor]
+
+movie_writer/mjpeg_quality=1.0
+movie_writer/movie_file="C:/Users/armm2/Videos/output.avi"
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[physics]
+
+common/enable_pause_aware_picking=true
+
+[rendering]
+
+environment/default_clear_color=Color(0.0745098, 0.0745098, 0.0745098, 1)
+environment/default_environment="res://default_env.tres"

@@ -1,0 +1,58 @@
+{
+	"Wii 16:9" : {
+		"screen_size" : [811,456],
+		"aspect" : "16/9", 
+		"field" : [89,62,194,340],
+		"endianness" :  ">",
+		"magic" : "NGIF"
+	},
+	"Wii 4:3" : {
+		"screen_size" : [640,448],
+		"aspect" : "640/448", 
+		"field" : [28, 64 ,194, 340],
+		"endianness" :  ">",
+		"magic" : "NGIF"
+	},
+	"PS2" : {
+		"screen_size" : [640,448],
+		"aspect" : "640/448", 
+		"field" : [28, 64 ,194, 340],
+		"endianness" :  "<",
+		"magic" : "NSIF"
+	},
+	"PSP" : {
+		"screen_size" : [480,272],
+		"aspect" : "30/17", 
+		"field" : [44,32,124,222],
+		"endianness" :  "<",
+		"magic" : "NUIF"
+	},
+	"3DS top" : {
+		"screen_size" : [400,240],
+		"aspect" : "512/308", 
+		"field" : [50,25,100,180],
+		"endianness" :  "<",
+		"magic" : "DSIF"
+	},
+	"3DS bottom" : {
+		"screen_size" : [320,240],
+		"aspect" : "4/3", 
+		"field" : false,
+		"endianness" :  "<",
+		"magic" : "DSIF"
+	},
+	"DS" : {
+		"screen_size" : [256,192],
+		"aspect" : "4/3", 
+		"field" : [8,21,80,144],
+		"endianness" :  "<",
+		"magic" : "DSIF"
+	},
+	"Mobile" : {
+		"screen_size" : [720,1280],
+		"aspect" : "721/1279", 
+		"field" : false,
+		"endianness" :  "<",
+		"magic" : "DSIF"
+	}
+}

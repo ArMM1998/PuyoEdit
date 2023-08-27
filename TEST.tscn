@@ -1,0 +1,753 @@
+[gd_scene load_steps=22 format=3 uid="uid://bl7jt7aji56fw"]
+
+[ext_resource type="Script" path="res://Classes/puyoElement.gd" id="1_w5qav"]
+[ext_resource type="Shader" path="res://Shaders/tint.gdshader" id="2_jnc2m"]
+[ext_resource type="Texture2D" uid="uid://cno32pfy1t1lb" path="res://icon.png" id="3_p5yim"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fwss3"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.0464487, 0.658631, 0.100866, 1)
+shader_parameter/topright = Color(0.0464487, 0.658631, 0.100866, 1)
+shader_parameter/bottomleft = Color(0.0464487, 0.658631, 0.100866, 1)
+shader_parameter/bottomright = Color(0.0464487, 0.658631, 0.100866, 1)
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hul61"]
+atlas = ExtResource("3_p5yim")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aaq2f"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.454568, 0.21213, 0.280337, 1)
+shader_parameter/topright = Color(0.454568, 0.21213, 0.280337, 1)
+shader_parameter/bottomleft = Color(0.454568, 0.21213, 0.280337, 1)
+shader_parameter/bottomright = Color(0.454568, 0.21213, 0.280337, 1)
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aa11s"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.897756, 0.31561, 0.298135, 1)
+shader_parameter/topright = Color(0.897756, 0.31561, 0.298135, 1)
+shader_parameter/bottomleft = Color(0.897756, 0.31561, 0.298135, 1)
+shader_parameter/bottomright = Color(0.897756, 0.31561, 0.298135, 1)
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s7olt"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.666947, 0.548623, 0.626362, 1)
+shader_parameter/topright = Color(0.666947, 0.548623, 0.626362, 1)
+shader_parameter/bottomleft = Color(0.666947, 0.548623, 0.626362, 1)
+shader_parameter/bottomright = Color(0.666947, 0.548623, 0.626362, 1)
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_e1tr4"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.627319, 0.864036, 0.242727, 1)
+shader_parameter/topright = Color(0.627319, 0.864036, 0.242727, 1)
+shader_parameter/bottomleft = Color(0.627319, 0.864036, 0.242727, 1)
+shader_parameter/bottomright = Color(0.627319, 0.864036, 0.242727, 1)
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j5eoa"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.736101, 0.862965, 0.946686, 1)
+shader_parameter/topright = Color(0.736101, 0.862965, 0.946686, 1)
+shader_parameter/bottomleft = Color(0.736101, 0.862965, 0.946686, 1)
+shader_parameter/bottomright = Color(0.736101, 0.862965, 0.946686, 1)
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5pei3"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.900601, 0.897818, 0.291248, 1)
+shader_parameter/topright = Color(0.900601, 0.897818, 0.291248, 1)
+shader_parameter/bottomleft = Color(0.900601, 0.897818, 0.291248, 1)
+shader_parameter/bottomright = Color(0.900601, 0.897818, 0.291248, 1)
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qgi20"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.820931, 0.921745, 0.225313, 1)
+shader_parameter/topright = Color(0.820931, 0.921745, 0.225313, 1)
+shader_parameter/bottomleft = Color(0.820931, 0.921745, 0.225313, 1)
+shader_parameter/bottomright = Color(0.820931, 0.921745, 0.225313, 1)
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ec4ln"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.316909, 0.583788, 0.118885, 1)
+shader_parameter/topright = Color(0.316909, 0.583788, 0.118885, 1)
+shader_parameter/bottomleft = Color(0.316909, 0.583788, 0.118885, 1)
+shader_parameter/bottomright = Color(0.316909, 0.583788, 0.118885, 1)
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_511km"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.52596, 0.6435, 0.0234262, 1)
+shader_parameter/topright = Color(0.52596, 0.6435, 0.0234262, 1)
+shader_parameter/bottomleft = Color(0.52596, 0.6435, 0.0234262, 1)
+shader_parameter/bottomright = Color(0.52596, 0.6435, 0.0234262, 1)
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_121k4"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.441984, 0.894791, 0.0368827, 1)
+shader_parameter/topright = Color(0.441984, 0.894791, 0.0368827, 1)
+shader_parameter/bottomleft = Color(0.441984, 0.894791, 0.0368827, 1)
+shader_parameter/bottomright = Color(0.441984, 0.894791, 0.0368827, 1)
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1p2r5"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.0409082, 0.145932, 0.651556, 1)
+shader_parameter/topright = Color(0.0409082, 0.145932, 0.651556, 1)
+shader_parameter/bottomleft = Color(0.0409082, 0.145932, 0.651556, 1)
+shader_parameter/bottomright = Color(0.0409082, 0.145932, 0.651556, 1)
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_byr1a"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.371977, 0.500647, 0.18688, 1)
+shader_parameter/topright = Color(0.371977, 0.500647, 0.18688, 1)
+shader_parameter/bottomleft = Color(0.371977, 0.500647, 0.18688, 1)
+shader_parameter/bottomright = Color(0.371977, 0.500647, 0.18688, 1)
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bixd7"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.179421, 0.85661, 0.958239, 1)
+shader_parameter/topright = Color(0.179421, 0.85661, 0.958239, 1)
+shader_parameter/bottomleft = Color(0.179421, 0.85661, 0.958239, 1)
+shader_parameter/bottomright = Color(0.179421, 0.85661, 0.958239, 1)
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2yngp"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.0671905, 0.805061, 0.861305, 1)
+shader_parameter/topright = Color(0.0671905, 0.805061, 0.861305, 1)
+shader_parameter/bottomleft = Color(0.0671905, 0.805061, 0.861305, 1)
+shader_parameter/bottomright = Color(0.0671905, 0.805061, 0.861305, 1)
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b6aa0"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.246113, 0.625922, 0.0364771, 1)
+shader_parameter/topright = Color(0.246113, 0.625922, 0.0364771, 1)
+shader_parameter/bottomleft = Color(0.246113, 0.625922, 0.0364771, 1)
+shader_parameter/bottomright = Color(0.246113, 0.625922, 0.0364771, 1)
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_45mjq"]
+shader = ExtResource("2_jnc2m")
+shader_parameter/topleft = Color(0.639915, 0.995738, 0.288632, 1)
+shader_parameter/topright = Color(0.639915, 0.995738, 0.288632, 1)
+shader_parameter/bottomleft = Color(0.639915, 0.995738, 0.288632, 1)
+shader_parameter/bottomright = Color(0.639915, 0.995738, 0.288632, 1)
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/flipx = false
+shader_parameter/flipy = false
+shader_parameter/range_min = Vector2(0, 0)
+shader_parameter/range_max = Vector2(1, 1)
+
+[node name="Null_hangeki_01_00" type="Node2D"]
+z_as_relative = false
+position = Vector2(231, 141)
+script = ExtResource("1_w5qav")
+
+[node name="315" type="Marker2D" parent="."]
+position = Vector2(0.5, -12)
+
+[node name="316" type="Marker2D" parent="."]
+position = Vector2(-12, 0.5)
+
+[node name="317" type="Marker2D" parent="."]
+position = Vector2(0.5, 13)
+
+[node name="318" type="Marker2D" parent="."]
+position = Vector2(13, 0.5)
+
+[node name="319" type="Marker2D" parent="."]
+position = Vector2(13, 13)
+
+[node name="320" type="Marker2D" parent="."]
+position = Vector2(13, -12)
+
+[node name="321" type="Marker2D" parent="."]
+position = Vector2(-12, -12)
+
+[node name="322" type="Marker2D" parent="."]
+position = Vector2(-12, 13)
+
+[node name="324" type="Node2D" parent="."]
+
+[node name="323" type="Sprite2D" parent="324"]
+material = SubResource("ShaderMaterial_fwss3")
+position = Vector2(-15, -13)
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="Null_ef_flower01_01" type="Node2D" parent="."]
+z_index = 1
+z_as_relative = false
+position = Vector2(-124, -3)
+scale = Vector2(0.8, 0.8)
+script = ExtResource("1_w5qav")
+
+[node name="325" type="Marker2D" parent="Null_ef_flower01_01"]
+
+[node name="326" type="Marker2D" parent="Null_ef_flower01_01"]
+
+[node name="327" type="Marker2D" parent="Null_ef_flower01_01"]
+
+[node name="328" type="Marker2D" parent="Null_ef_flower01_01"]
+
+[node name="329" type="Marker2D" parent="Null_ef_flower01_01"]
+
+[node name="330" type="Marker2D" parent="Null_ef_flower01_01"]
+
+[node name="331" type="Marker2D" parent="Null_ef_flower01_01"]
+
+[node name="332" type="Marker2D" parent="Null_ef_flower01_01"]
+
+[node name="334" type="Node2D" parent="Null_ef_flower01_01"]
+visible = false
+
+[node name="333" type="Sprite2D" parent="Null_ef_flower01_01/334"]
+material = SubResource("ShaderMaterial_aaq2f")
+position = Vector2(-12, -12)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="flower01_02" type="Node2D" parent="Null_ef_flower01_01"]
+z_index = 2
+z_as_relative = false
+script = ExtResource("1_w5qav")
+
+[node name="335" type="Marker2D" parent="Null_ef_flower01_01/flower01_02"]
+
+[node name="336" type="Marker2D" parent="Null_ef_flower01_01/flower01_02"]
+
+[node name="337" type="Marker2D" parent="Null_ef_flower01_01/flower01_02"]
+
+[node name="338" type="Marker2D" parent="Null_ef_flower01_01/flower01_02"]
+
+[node name="339" type="Marker2D" parent="Null_ef_flower01_01/flower01_02"]
+
+[node name="340" type="Marker2D" parent="Null_ef_flower01_01/flower01_02"]
+
+[node name="341" type="Marker2D" parent="Null_ef_flower01_01/flower01_02"]
+
+[node name="342" type="Marker2D" parent="Null_ef_flower01_01/flower01_02"]
+
+[node name="344" type="Node2D" parent="Null_ef_flower01_01/flower01_02"]
+
+[node name="343" type="Sprite2D" parent="Null_ef_flower01_01/flower01_02/344"]
+material = SubResource("ShaderMaterial_aa11s")
+position = Vector2(0, -56)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="flower02_03" type="Node2D" parent="Null_ef_flower01_01"]
+z_index = 3
+z_as_relative = false
+scale = Vector2(-1, 1)
+script = ExtResource("1_w5qav")
+
+[node name="345" type="Marker2D" parent="Null_ef_flower01_01/flower02_03"]
+
+[node name="346" type="Marker2D" parent="Null_ef_flower01_01/flower02_03"]
+
+[node name="347" type="Marker2D" parent="Null_ef_flower01_01/flower02_03"]
+
+[node name="348" type="Marker2D" parent="Null_ef_flower01_01/flower02_03"]
+
+[node name="349" type="Marker2D" parent="Null_ef_flower01_01/flower02_03"]
+
+[node name="350" type="Marker2D" parent="Null_ef_flower01_01/flower02_03"]
+
+[node name="351" type="Marker2D" parent="Null_ef_flower01_01/flower02_03"]
+
+[node name="352" type="Marker2D" parent="Null_ef_flower01_01/flower02_03"]
+
+[node name="354" type="Node2D" parent="Null_ef_flower01_01/flower02_03"]
+
+[node name="353" type="Sprite2D" parent="Null_ef_flower01_01/flower02_03/354"]
+material = SubResource("ShaderMaterial_s7olt")
+position = Vector2(0, -56)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="flower03_04" type="Node2D" parent="Null_ef_flower01_01"]
+z_index = 4
+z_as_relative = false
+scale = Vector2(-1, -1)
+script = ExtResource("1_w5qav")
+
+[node name="355" type="Marker2D" parent="Null_ef_flower01_01/flower03_04"]
+
+[node name="356" type="Marker2D" parent="Null_ef_flower01_01/flower03_04"]
+
+[node name="357" type="Marker2D" parent="Null_ef_flower01_01/flower03_04"]
+
+[node name="358" type="Marker2D" parent="Null_ef_flower01_01/flower03_04"]
+
+[node name="359" type="Marker2D" parent="Null_ef_flower01_01/flower03_04"]
+
+[node name="360" type="Marker2D" parent="Null_ef_flower01_01/flower03_04"]
+
+[node name="361" type="Marker2D" parent="Null_ef_flower01_01/flower03_04"]
+
+[node name="362" type="Marker2D" parent="Null_ef_flower01_01/flower03_04"]
+
+[node name="364" type="Node2D" parent="Null_ef_flower01_01/flower03_04"]
+
+[node name="363" type="Sprite2D" parent="Null_ef_flower01_01/flower03_04/364"]
+material = SubResource("ShaderMaterial_e1tr4")
+position = Vector2(0, -56)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="flower04_05" type="Node2D" parent="Null_ef_flower01_01"]
+z_index = 5
+z_as_relative = false
+scale = Vector2(1, -1)
+script = ExtResource("1_w5qav")
+
+[node name="365" type="Marker2D" parent="Null_ef_flower01_01/flower04_05"]
+
+[node name="366" type="Marker2D" parent="Null_ef_flower01_01/flower04_05"]
+
+[node name="367" type="Marker2D" parent="Null_ef_flower01_01/flower04_05"]
+
+[node name="368" type="Marker2D" parent="Null_ef_flower01_01/flower04_05"]
+
+[node name="369" type="Marker2D" parent="Null_ef_flower01_01/flower04_05"]
+
+[node name="370" type="Marker2D" parent="Null_ef_flower01_01/flower04_05"]
+
+[node name="371" type="Marker2D" parent="Null_ef_flower01_01/flower04_05"]
+
+[node name="372" type="Marker2D" parent="Null_ef_flower01_01/flower04_05"]
+
+[node name="374" type="Node2D" parent="Null_ef_flower01_01/flower04_05"]
+
+[node name="373" type="Sprite2D" parent="Null_ef_flower01_01/flower04_05/374"]
+material = SubResource("ShaderMaterial_j5eoa")
+position = Vector2(0, -56)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="Null_hangeki_ch_06" type="Node2D" parent="."]
+z_index = 6
+z_as_relative = false
+position = Vector2(-124, 264)
+scale = Vector2(1.5, 1.5)
+script = ExtResource("1_w5qav")
+
+[node name="375" type="Marker2D" parent="Null_hangeki_ch_06"]
+
+[node name="376" type="Marker2D" parent="Null_hangeki_ch_06"]
+
+[node name="377" type="Marker2D" parent="Null_hangeki_ch_06"]
+
+[node name="378" type="Marker2D" parent="Null_hangeki_ch_06"]
+
+[node name="379" type="Marker2D" parent="Null_hangeki_ch_06"]
+
+[node name="380" type="Marker2D" parent="Null_hangeki_ch_06"]
+
+[node name="381" type="Marker2D" parent="Null_hangeki_ch_06"]
+
+[node name="382" type="Marker2D" parent="Null_hangeki_ch_06"]
+
+[node name="384" type="Node2D" parent="Null_hangeki_ch_06"]
+visible = false
+
+[node name="383" type="Sprite2D" parent="Null_hangeki_ch_06/384"]
+material = SubResource("ShaderMaterial_5pei3")
+position = Vector2(-12, -12)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="ami_07" type="Node2D" parent="Null_hangeki_ch_06"]
+z_index = 7
+z_as_relative = false
+script = ExtResource("1_w5qav")
+
+[node name="385" type="Marker2D" parent="Null_hangeki_ch_06/ami_07"]
+
+[node name="386" type="Marker2D" parent="Null_hangeki_ch_06/ami_07"]
+
+[node name="387" type="Marker2D" parent="Null_hangeki_ch_06/ami_07"]
+
+[node name="388" type="Marker2D" parent="Null_hangeki_ch_06/ami_07"]
+
+[node name="389" type="Marker2D" parent="Null_hangeki_ch_06/ami_07"]
+
+[node name="390" type="Marker2D" parent="Null_hangeki_ch_06/ami_07"]
+
+[node name="391" type="Marker2D" parent="Null_hangeki_ch_06/ami_07"]
+
+[node name="392" type="Marker2D" parent="Null_hangeki_ch_06/ami_07"]
+
+[node name="394" type="Node2D" parent="Null_hangeki_ch_06/ami_07"]
+
+[node name="393" type="Sprite2D" parent="Null_hangeki_ch_06/ami_07/394"]
+material = SubResource("ShaderMaterial_qgi20")
+position = Vector2(-42, -85)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="Null_hangeki_ef_08" type="Node2D" parent="."]
+z_index = 8
+z_as_relative = false
+position = Vector2(-124, -3)
+scale = Vector2(1.2, 1.2)
+script = ExtResource("1_w5qav")
+
+[node name="395" type="Marker2D" parent="Null_hangeki_ef_08"]
+
+[node name="396" type="Marker2D" parent="Null_hangeki_ef_08"]
+
+[node name="397" type="Marker2D" parent="Null_hangeki_ef_08"]
+
+[node name="398" type="Marker2D" parent="Null_hangeki_ef_08"]
+
+[node name="399" type="Marker2D" parent="Null_hangeki_ef_08"]
+
+[node name="400" type="Marker2D" parent="Null_hangeki_ef_08"]
+
+[node name="401" type="Marker2D" parent="Null_hangeki_ef_08"]
+
+[node name="402" type="Marker2D" parent="Null_hangeki_ef_08"]
+
+[node name="404" type="Node2D" parent="Null_hangeki_ef_08"]
+visible = false
+
+[node name="403" type="Sprite2D" parent="Null_hangeki_ef_08/404"]
+material = SubResource("ShaderMaterial_ec4ln")
+position = Vector2(-12, -12)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="Null_circle01_09" type="Node2D" parent="Null_hangeki_ef_08"]
+z_index = 9
+z_as_relative = false
+scale = Vector2(0.3, 0.3)
+script = ExtResource("1_w5qav")
+
+[node name="405" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+
+[node name="406" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+
+[node name="407" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+
+[node name="408" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+
+[node name="409" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+
+[node name="410" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+
+[node name="411" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+
+[node name="412" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+
+[node name="414" type="Node2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+visible = false
+
+[node name="413" type="Sprite2D" parent="Null_hangeki_ef_08/Null_circle01_09/414"]
+material = SubResource("ShaderMaterial_511km")
+position = Vector2(-12, -12)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="circle01_010" type="Node2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+z_index = 10
+z_as_relative = false
+script = ExtResource("1_w5qav")
+
+[node name="415" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010"]
+
+[node name="416" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010"]
+
+[node name="417" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010"]
+
+[node name="418" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010"]
+
+[node name="419" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010"]
+
+[node name="420" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010"]
+
+[node name="421" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010"]
+
+[node name="422" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010"]
+
+[node name="424" type="Node2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010"]
+
+[node name="423" type="Sprite2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle01_010/424"]
+material = SubResource("ShaderMaterial_121k4")
+position = Vector2(-100, -100)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="circle02_011" type="Node2D" parent="Null_hangeki_ef_08/Null_circle01_09"]
+z_index = 11
+z_as_relative = false
+scale = Vector2(-1, -1)
+script = ExtResource("1_w5qav")
+
+[node name="425" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011"]
+
+[node name="426" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011"]
+
+[node name="427" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011"]
+
+[node name="428" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011"]
+
+[node name="429" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011"]
+
+[node name="430" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011"]
+
+[node name="431" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011"]
+
+[node name="432" type="Marker2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011"]
+
+[node name="434" type="Node2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011"]
+
+[node name="433" type="Sprite2D" parent="Null_hangeki_ef_08/Null_circle01_09/circle02_011/434"]
+material = SubResource("ShaderMaterial_1p2r5")
+position = Vector2(-100, -100)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="Null_ef_flower02_012" type="Node2D" parent="."]
+z_index = 12
+z_as_relative = false
+position = Vector2(-124, -3)
+rotation = 1.01864
+scale = Vector2(0.8, 0.8)
+script = ExtResource("1_w5qav")
+
+[node name="435" type="Marker2D" parent="Null_ef_flower02_012"]
+
+[node name="436" type="Marker2D" parent="Null_ef_flower02_012"]
+
+[node name="437" type="Marker2D" parent="Null_ef_flower02_012"]
+
+[node name="438" type="Marker2D" parent="Null_ef_flower02_012"]
+
+[node name="439" type="Marker2D" parent="Null_ef_flower02_012"]
+
+[node name="440" type="Marker2D" parent="Null_ef_flower02_012"]
+
+[node name="441" type="Marker2D" parent="Null_ef_flower02_012"]
+
+[node name="442" type="Marker2D" parent="Null_ef_flower02_012"]
+
+[node name="444" type="Node2D" parent="Null_ef_flower02_012"]
+visible = false
+
+[node name="443" type="Sprite2D" parent="Null_ef_flower02_012/444"]
+material = SubResource("ShaderMaterial_byr1a")
+position = Vector2(-12, -12)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="flower01_013" type="Node2D" parent="Null_ef_flower02_012"]
+z_index = 13
+z_as_relative = false
+script = ExtResource("1_w5qav")
+
+[node name="445" type="Marker2D" parent="Null_ef_flower02_012/flower01_013"]
+
+[node name="446" type="Marker2D" parent="Null_ef_flower02_012/flower01_013"]
+
+[node name="447" type="Marker2D" parent="Null_ef_flower02_012/flower01_013"]
+
+[node name="448" type="Marker2D" parent="Null_ef_flower02_012/flower01_013"]
+
+[node name="449" type="Marker2D" parent="Null_ef_flower02_012/flower01_013"]
+
+[node name="450" type="Marker2D" parent="Null_ef_flower02_012/flower01_013"]
+
+[node name="451" type="Marker2D" parent="Null_ef_flower02_012/flower01_013"]
+
+[node name="452" type="Marker2D" parent="Null_ef_flower02_012/flower01_013"]
+
+[node name="454" type="Node2D" parent="Null_ef_flower02_012/flower01_013"]
+
+[node name="453" type="Sprite2D" parent="Null_ef_flower02_012/flower01_013/454"]
+material = SubResource("ShaderMaterial_bixd7")
+position = Vector2(0, -56)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="flower02_014" type="Node2D" parent="Null_ef_flower02_012"]
+z_index = 14
+z_as_relative = false
+scale = Vector2(-1, 1)
+script = ExtResource("1_w5qav")
+
+[node name="455" type="Marker2D" parent="Null_ef_flower02_012/flower02_014"]
+
+[node name="456" type="Marker2D" parent="Null_ef_flower02_012/flower02_014"]
+
+[node name="457" type="Marker2D" parent="Null_ef_flower02_012/flower02_014"]
+
+[node name="458" type="Marker2D" parent="Null_ef_flower02_012/flower02_014"]
+
+[node name="459" type="Marker2D" parent="Null_ef_flower02_012/flower02_014"]
+
+[node name="460" type="Marker2D" parent="Null_ef_flower02_012/flower02_014"]
+
+[node name="461" type="Marker2D" parent="Null_ef_flower02_012/flower02_014"]
+
+[node name="462" type="Marker2D" parent="Null_ef_flower02_012/flower02_014"]
+
+[node name="464" type="Node2D" parent="Null_ef_flower02_012/flower02_014"]
+
+[node name="463" type="Sprite2D" parent="Null_ef_flower02_012/flower02_014/464"]
+material = SubResource("ShaderMaterial_2yngp")
+position = Vector2(0, -56)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="flower03_015" type="Node2D" parent="Null_ef_flower02_012"]
+z_index = 15
+z_as_relative = false
+scale = Vector2(-1, -1)
+script = ExtResource("1_w5qav")
+
+[node name="465" type="Marker2D" parent="Null_ef_flower02_012/flower03_015"]
+
+[node name="466" type="Marker2D" parent="Null_ef_flower02_012/flower03_015"]
+
+[node name="467" type="Marker2D" parent="Null_ef_flower02_012/flower03_015"]
+
+[node name="468" type="Marker2D" parent="Null_ef_flower02_012/flower03_015"]
+
+[node name="469" type="Marker2D" parent="Null_ef_flower02_012/flower03_015"]
+
+[node name="470" type="Marker2D" parent="Null_ef_flower02_012/flower03_015"]
+
+[node name="471" type="Marker2D" parent="Null_ef_flower02_012/flower03_015"]
+
+[node name="472" type="Marker2D" parent="Null_ef_flower02_012/flower03_015"]
+
+[node name="474" type="Node2D" parent="Null_ef_flower02_012/flower03_015"]
+
+[node name="473" type="Sprite2D" parent="Null_ef_flower02_012/flower03_015/474"]
+material = SubResource("ShaderMaterial_b6aa0")
+position = Vector2(0, -56)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false
+
+[node name="flower04_016" type="Node2D" parent="Null_ef_flower02_012"]
+z_index = 16
+z_as_relative = false
+scale = Vector2(1, -1)
+script = ExtResource("1_w5qav")
+
+[node name="475" type="Marker2D" parent="Null_ef_flower02_012/flower04_016"]
+
+[node name="476" type="Marker2D" parent="Null_ef_flower02_012/flower04_016"]
+
+[node name="477" type="Marker2D" parent="Null_ef_flower02_012/flower04_016"]
+
+[node name="478" type="Marker2D" parent="Null_ef_flower02_012/flower04_016"]
+
+[node name="479" type="Marker2D" parent="Null_ef_flower02_012/flower04_016"]
+
+[node name="480" type="Marker2D" parent="Null_ef_flower02_012/flower04_016"]
+
+[node name="481" type="Marker2D" parent="Null_ef_flower02_012/flower04_016"]
+
+[node name="482" type="Marker2D" parent="Null_ef_flower02_012/flower04_016"]
+
+[node name="484" type="Node2D" parent="Null_ef_flower02_012/flower04_016"]
+
+[node name="483" type="Sprite2D" parent="Null_ef_flower02_012/flower04_016/484"]
+material = SubResource("ShaderMaterial_45mjq")
+position = Vector2(0, -56)
+scale = Vector2(1e-05, 1e-05)
+texture = SubResource("AtlasTexture_hul61")
+centered = false

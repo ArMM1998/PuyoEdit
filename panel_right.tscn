@@ -1,0 +1,387 @@
+[gd_scene load_steps=3 format=3 uid="uid://dye5mbqgwmkhy"]
+
+[ext_resource type="Texture2D" uid="uid://4ms3remsblny" path="res://Graphics/match_size.png" id="1_6t54b"]
+[ext_resource type="Texture2D" uid="uid://dr5wieon5otcs" path="res://Graphics/center_pivot.png" id="2_2t7yw"]
+
+[node name="Control" type="Control"]
+custom_minimum_size = Vector2(256, 633)
+layout_mode = 3
+anchors_preset = 0
+
+[node name="render" type="CheckBox" parent="."]
+layout_mode = 2
+offset_left = 151.0
+offset_top = 32.0
+offset_right = 175.0
+offset_bottom = 56.0
+
+[node name="additive" type="CheckBox" parent="."]
+layout_mode = 2
+offset_left = 151.0
+offset_top = 65.0
+offset_right = 175.0
+offset_bottom = 89.0
+
+[node name="elementName" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 244.0
+offset_bottom = 29.0
+theme_override_font_sizes/font_size = 12
+placeholder_text = "Name"
+
+[node name="width" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 97.0
+offset_right = 183.063
+offset_bottom = 128.0
+scale = Vector2(0.8, 0.8)
+min_value = 1.0
+max_value = 8000.0
+step = 0.1
+value = 1.0
+allow_greater = true
+alignment = 1
+
+[node name="height" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 172.0
+offset_top = 97.0
+offset_right = 255.063
+offset_bottom = 128.0
+scale = Vector2(0.8, 0.8)
+min_value = 1.0
+max_value = 8000.0
+step = 0.1
+value = 1.0
+allow_greater = true
+alignment = 1
+
+[node name="pivotX" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 130.0
+offset_right = 183.063
+offset_bottom = 161.0
+scale = Vector2(0.8, 0.8)
+min_value = -2000.0
+max_value = 2000.0
+step = 0.1
+allow_greater = true
+allow_lesser = true
+alignment = 1
+
+[node name="pivotY" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 172.0
+offset_top = 130.0
+offset_right = 255.063
+offset_bottom = 161.0
+scale = Vector2(0.8, 0.8)
+min_value = -2000.0
+max_value = 2000.0
+step = 0.1
+allow_greater = true
+allow_lesser = true
+alignment = 1
+
+[node name="Label2" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 97.0
+offset_right = 75.0
+offset_bottom = 122.0
+tooltip_text = "Change the element's size in pixels (relative to the screen size)"
+theme_override_font_sizes/font_size = 15
+text = "Size"
+
+[node name="Label3" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 129.0
+offset_right = 75.0
+offset_bottom = 154.0
+tooltip_text = "Change the pivot point of the element
+(Right click an element and drag it to change it from the viewport)"
+theme_override_font_sizes/font_size = 15
+text = "Pivot"
+
+[node name="Label4" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 32.0
+offset_right = 75.0
+offset_bottom = 57.0
+tooltip_text = "Toggle the visibility of this element, without affecting it's children"
+theme_override_font_sizes/font_size = 15
+text = "Render"
+
+[node name="visib" type="CheckBox" parent="."]
+layout_mode = 2
+offset_left = 151.0
+offset_top = 360.0
+offset_right = 175.0
+offset_bottom = 384.0
+
+[node name="Label7" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 360.0
+offset_right = 75.0
+offset_bottom = 385.0
+tooltip_text = "Toggle the visibility of the element and it's children"
+theme_override_font_sizes/font_size = 15
+text = "Visibility"
+
+[node name="Label5" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 64.0
+offset_right = 118.0
+offset_bottom = 89.0
+tooltip_text = "Turn on additive blend"
+theme_override_font_sizes/font_size = 15
+text = "Additive Blend"
+
+[node name="Label6" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 162.0
+offset_right = 189.0
+offset_bottom = 187.0
+theme_override_font_sizes/font_size = 15
+text = "Flip Sprite        X :          Y : 
+"
+
+[node name="matchSize" type="Button" parent="."]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 97.0
+offset_right = 92.0
+offset_bottom = 121.0
+tooltip_text = "Match the element size to the sprite size"
+icon = ExtResource("1_6t54b")
+
+[node name="centerPivot" type="Button" parent="."]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 130.0
+offset_right = 92.0
+offset_bottom = 154.0
+tooltip_text = "Center the pivot point"
+icon = ExtResource("2_2t7yw")
+
+[node name="posx" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 392.0
+offset_right = 183.063
+offset_bottom = 423.0
+scale = Vector2(0.8, 0.8)
+min_value = -10000.0
+max_value = 10000.0
+step = 0.01
+allow_greater = true
+allow_lesser = true
+alignment = 1
+
+[node name="posy" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 172.0
+offset_top = 392.0
+offset_right = 255.063
+offset_bottom = 423.0
+scale = Vector2(0.8, 0.8)
+min_value = -10000.0
+max_value = 10000.0
+step = 0.01
+allow_greater = true
+allow_lesser = true
+alignment = 1
+
+[node name="scalex" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 425.0
+offset_right = 183.063
+offset_bottom = 456.0
+scale = Vector2(0.8, 0.8)
+min_value = -10000.0
+max_value = 10000.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+alignment = 1
+
+[node name="scaley" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 172.0
+offset_top = 425.0
+offset_right = 255.063
+offset_bottom = 456.0
+scale = Vector2(0.8, 0.8)
+min_value = -10000.0
+max_value = 10000.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+alignment = 1
+
+[node name="Label8" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 392.0
+offset_right = 75.0
+offset_bottom = 417.0
+theme_override_font_sizes/font_size = 15
+text = "Position"
+
+[node name="Label9" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 424.0
+offset_right = 75.0
+offset_bottom = 449.0
+theme_override_font_sizes/font_size = 15
+text = "Scale"
+
+[node name="angle" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 457.0
+offset_right = 270.0
+offset_bottom = 488.0
+scale = Vector2(0.8, 0.8)
+min_value = -360.0
+max_value = 360.0
+step = 0.01
+allow_greater = true
+allow_lesser = true
+alignment = 1
+suffix = "º"
+
+[node name="Label10" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 456.0
+offset_right = 75.0
+offset_bottom = 481.0
+theme_override_font_sizes/font_size = 15
+text = "Angle"
+
+[node name="Label11" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 496.0
+offset_right = 75.0
+offset_bottom = 521.0
+theme_override_font_sizes/font_size = 15
+text = "Color"
+
+[node name="flipx" type="CheckBox" parent="."]
+layout_mode = 2
+offset_left = 140.0
+offset_top = 162.0
+offset_right = 164.0
+offset_bottom = 186.0
+
+[node name="flipy" type="CheckBox" parent="."]
+layout_mode = 2
+offset_left = 196.0
+offset_top = 162.0
+offset_right = 220.0
+offset_bottom = 186.0
+
+[node name="spritelist" type="ItemList" parent="."]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 0
+offset_left = 12.0
+offset_top = 194.0
+offset_right = 236.0
+offset_bottom = 338.0
+max_columns = 6
+icon_mode = 0
+fixed_icon_size = Vector2i(30, 30)
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 346.0
+offset_right = 244.0
+offset_bottom = 350.0
+
+[node name="color" type="ColorPickerButton" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 496.0
+offset_right = 236.0
+offset_bottom = 520.0
+color = Color(1, 1, 1, 1)
+
+[node name="Label12" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 568.0
+offset_right = 75.0
+offset_bottom = 593.0
+theme_override_font_sizes/font_size = 15
+text = "UV Color"
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(140, 612, 196, 612, 196, 556, 140, 556, 140, 612)
+width = 2.0
+default_color = Color(0.34902, 0.34902, 0.34902, 1)
+
+[node name="color_tl" type="ColorPickerButton" parent="."]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 536.0
+offset_right = 160.0
+offset_bottom = 576.0
+color = Color(1, 1, 1, 1)
+
+[node name="color_tr" type="ColorPickerButton" parent="."]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 536.0
+offset_right = 216.0
+offset_bottom = 576.0
+color = Color(1, 1, 1, 1)
+
+[node name="color_bl" type="ColorPickerButton" parent="."]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 592.0
+offset_right = 160.0
+offset_bottom = 632.0
+color = Color(1, 1, 1, 1)
+
+[node name="color_br" type="ColorPickerButton" parent="."]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 592.0
+offset_right = 216.0
+offset_bottom = 632.0
+color = Color(1, 1, 1, 1)
+
+[node name="PopupMenu" type="PopupMenu" parent="."]
+always_on_top = true
+content_scale_size = Vector2i(1, 1)
+content_scale_aspect = 4
+allow_search = false
+
+[node name="popupmenuMatchSize" type="PopupMenu" parent="."]
+always_on_top = true
+content_scale_size = Vector2i(1, 1)
+content_scale_aspect = 4
+allow_search = false
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 270.0
+offset_bottom = 658.0
+color = Color(0.176471, 0.176471, 0.176471, 0.521569)
