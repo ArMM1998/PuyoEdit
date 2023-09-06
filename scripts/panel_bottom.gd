@@ -1191,8 +1191,9 @@ func _on_loop_color_br_pressed():
 
 
 func updateEasingPreview():
-	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-	for track in element.animation_list[owner.animation_idx]:
-		if track["Motion"] == trackName[selected_track]:
-			if selected_keyframe +1 < track["Keyframes"].size():
-				updateKeyframeSettings(track["Keyframes"][selected_keyframe], track["Keyframes"][selected_keyframe+1])
+	if selected_track != -1 and selected_keyframe != -1:
+		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		for track in element.animation_list[owner.animation_idx]:
+			if track["Motion"] == trackName[selected_track]:
+				if selected_keyframe +1 < track["Keyframes"].size():
+					updateKeyframeSettings(track["Keyframes"][selected_keyframe], track["Keyframes"][selected_keyframe+1])
