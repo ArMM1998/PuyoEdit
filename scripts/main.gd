@@ -619,9 +619,17 @@ func updateTargetPlatform(platform_name):
 					if motion["Motion"] == "posx":
 						for keyframe in motion["Keyframes"]:
 							keyframe["data"] = (keyframe["data"]*oldScreen_size[0])/newScreen_size[0]
+							if keyframe["ease_in"] != 0:
+								keyframe["ease_in"] = (keyframe["ease_in"]*oldScreen_size[0])/newScreen_size[0]
+							if keyframe["ease_out"] != 0:
+								keyframe["ease_out"] = (keyframe["ease_out"]*oldScreen_size[0])/newScreen_size[0]
 					if motion["Motion"] == "posy":
 						for keyframe in motion["Keyframes"]:
 							keyframe["data"] = (keyframe["data"]*oldScreen_size[1])/newScreen_size[1]
+							if keyframe["ease_in"] != 0:
+								keyframe["ease_in"] = (keyframe["ease_in"]*oldScreen_size[1])/newScreen_size[1]
+							if keyframe["ease_out"] != 0:
+								keyframe["ease_out"] = (keyframe["ease_out"]*oldScreen_size[1])/newScreen_size[1]
 	
 	
 	project_settings["platform"] = platform_name
