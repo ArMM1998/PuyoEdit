@@ -1618,7 +1618,9 @@ func duplicate_element(elem = false, parent = false):
 		
 		LayerList[selected_layer].insert(element.id+1, duplicatedElement)
 		updateElementIDs()
+		selected_element = duplicatedElement.id
 		$Layer2_Panels/PanelLeft/ElementTree.updateList()
+		element_list.updateSelected()
 
 func backupSave():
 	var save_backup = false
