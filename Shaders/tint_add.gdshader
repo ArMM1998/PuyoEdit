@@ -29,7 +29,6 @@ void fragment() {
 	vec4 bottom = mix(bottomleft, bottomright, gradient_uv.x);
 	vec4 gradient = mix(top, bottom, gradient_uv.y);
 	vec4 mixed = gradient * color;
-	float alpha = gradient.a * color.a;
-	vec4 final_color = vec4(texture_color.rgb, texture_color.a * alpha);
+	vec4 final_color = vec4(texture_color.rgb, texture_color.a);
 	COLOR = final_color * mixed;
 }

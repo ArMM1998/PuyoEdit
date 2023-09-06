@@ -112,97 +112,100 @@ func _on_gui_input(event):
 	var cursor_pos_text = (get_global_mouse_position() - $posScreenRect.global_position)/zoomLevel
 	cursor_pos_text = Vector2(snapped(cursor_pos_text[0], 0.1), snapped(cursor_pos_text[1], 0.1))
 	$cursorPosLabel.text = str(cursor_pos_text)
-	
-	if self.has_focus():
-		owner.panel_right.update()
-	
-	if event is InputEventMouseButton and event.pressed and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
-		grab_focus()
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE and event.pressed:
-		holdingMoveKey = event.pressed
-		initialPos = get_global_mouse_position()
-	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed and not owner.playing:
-		var rect = Rect2($ElementStuff/MoveButton.get_global_transform()[2][0]-8, $ElementStuff/MoveButton.get_global_transform()[2][1]-8,
-						16 , 16)
-		if rect.has_point(get_global_mouse_position()):
-			draggingPivot = true
-			initialMousePos = get_global_mouse_position()
-			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-			owner.add_undo(element.setPivot, element.getPivot, element.pivot_point, "value", element)
-			initialElementPos = element.pivot_point
-			#get_viewport().warp_mouse(element.sprite_rect.global_position)
-
-	if event is InputEventMouseMotion:
-		var canvas_pos = $Center/Canvas.global_position
-		$Center.global_position = get_global_mouse_position()
-		$Center.position = Vector2(int($Center.position[0]), int($Center.position[1]))
-		$Center/Canvas.global_position = canvas_pos
+	if event is InputEventKey and event.keycode == KEY_F11 and event.pressed:
+		owner.toggle_fullscreen()
+	if not owner.fullscreen:
+		#print(owner.fullscreen)
+		if self.has_focus():
+			owner.panel_right.update()
 		
-	if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed) or (event is InputEventKey and event.keycode == KEY_KP_ADD and event.pressed):
-		if zoomIntervals.find(zoomLevel) == len(zoomIntervals)-1:
-			pass
-		else:
-			zoomLevel = zoomIntervals[(zoomIntervals.find(zoomLevel))+1]
+		if event is InputEventMouseButton and event.pressed and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
+			grab_focus()
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE and event.pressed:
+			holdingMoveKey = event.pressed
+			initialPos = get_global_mouse_position()
+		
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed and not owner.playing:
+			var rect = Rect2($ElementStuff/MoveButton.get_global_transform()[2][0]-8, $ElementStuff/MoveButton.get_global_transform()[2][1]-8,
+							16 , 16)
+			if rect.has_point(get_global_mouse_position()):
+				draggingPivot = true
+				initialMousePos = get_global_mouse_position()
+				var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+				owner.add_undo(element.setPivot, element.getPivot, element.pivot_point, "value", element)
+				initialElementPos = element.pivot_point
+				#get_viewport().warp_mouse(element.sprite_rect.global_position)
+
+		if event is InputEventMouseMotion:
+			var canvas_pos = $Center/Canvas.global_position
+			$Center.global_position = get_global_mouse_position()
+			$Center.position = Vector2(int($Center.position[0]), int($Center.position[1]))
+			$Center/Canvas.global_position = canvas_pos
+		
+		if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed) or (event is InputEventKey and event.keycode == KEY_KP_ADD and event.pressed):
+			if zoomIntervals.find(zoomLevel) == len(zoomIntervals)-1:
+				pass
+			else:
+				zoomLevel = zoomIntervals[(zoomIntervals.find(zoomLevel))+1]
+				updateScale()
+		if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed) or (event is InputEventKey and event.keycode == KEY_KP_SUBTRACT and event.pressed):
+			if zoomIntervals.find(zoomLevel) == 0:
+				pass
+			else:
+				zoomLevel = zoomIntervals[(zoomIntervals.find(zoomLevel))-1]
+				updateScale()
+		
+		
+		if event is InputEventKey and event.keycode == KEY_P and event.pressed and self.has_focus() and owner.selected_element != -1 and not owner.playing:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			var screen_center = $posScreenRect.global_position + (Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/2)*zoomLevel
+			if element.global_position != screen_center:
+				owner.add_undo(element.setPosition, element.getPosition, element.position, "value", element)
+				element.global_position = ($posScreenRect.global_position + (Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/2)*zoomLevel)
+				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
+				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
+				element.setPosition(element.position)
+				
+				
+		if event is InputEventKey and event.keycode == KEY_KP_1 and self.has_focus() and event.pressed:
+			zoomLevel = 1
 			updateScale()
-	if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed) or (event is InputEventKey and event.keycode == KEY_KP_SUBTRACT and event.pressed):
-		if zoomIntervals.find(zoomLevel) == 0:
-			pass
-		else:
-			zoomLevel = zoomIntervals[(zoomIntervals.find(zoomLevel))-1]
+		
+		if event is InputEventKey and event.keycode == KEY_KP_2 and self.has_focus() and event.pressed:
+			zoomLevel = 2
 			updateScale()
-	
-	
-	if event is InputEventKey and event.keycode == KEY_P and event.pressed and self.has_focus() and owner.selected_element != -1 and not owner.playing:
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-		var screen_center = $posScreenRect.global_position + (Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/2)*zoomLevel
-		if element.global_position != screen_center:
-			owner.add_undo(element.setPosition, element.getPosition, element.position, "value", element)
-			element.global_position = ($posScreenRect.global_position + (Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/2)*zoomLevel)
-			checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
-			checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
-			element.setPosition(element.position)
-			
-			
-	if event is InputEventKey and event.keycode == KEY_KP_1 and self.has_focus() and event.pressed:
-		zoomLevel = 1
-		updateScale()
-	
-	if event is InputEventKey and event.keycode == KEY_KP_2 and self.has_focus() and event.pressed:
-		zoomLevel = 2
-		updateScale()
-	
-	if event is InputEventKey and event.keycode == KEY_KP_3 and self.has_focus() and event.pressed:
-		zoomLevel = 3
-		updateScale()
-	
-	if event is InputEventKey and event.keycode == KEY_KP_4 and self.has_focus() and event.pressed:
-		zoomLevel = 4
-		updateScale()
-	
-	if event is InputEventKey and event.keycode == KEY_F and self.has_focus() and event.pressed:
-		owner.toggleField()
-	
-	if event is InputEventKey and event.keycode == KEY_S and self.has_focus() and event.pressed and not holdingControl:
-		owner.toggleScreen()
-	
-	if event is InputEventKey and event.keycode == KEY_A and self.has_focus() and event.pressed:
-		owner.toggleAxis()
-	
-	if event is InputEventKey and event.keycode == KEY_ALT and self.has_focus():
-		holdingAlt = event.pressed
-	
-	if event is InputEventKey and (event.keycode == KEY_PAGEUP or event.keycode == 4194323) and self.has_focus() and event.pressed and not owner.playing:
-		if holdingControl:
-			owner.move_element_front()
-		else:
-			owner.move_element_up()
-	if event is InputEventKey and (event.keycode == KEY_PAGEDOWN or event.keycode == 4194324) and self.has_focus() and event.pressed and not owner.playing:
-		if holdingControl:
-			owner.move_element_back()
-		else:
-			owner.move_element_down()
-	updateObjectPositions()
+		
+		if event is InputEventKey and event.keycode == KEY_KP_3 and self.has_focus() and event.pressed:
+			zoomLevel = 3
+			updateScale()
+		
+		if event is InputEventKey and event.keycode == KEY_KP_4 and self.has_focus() and event.pressed:
+			zoomLevel = 4
+			updateScale()
+		
+		if event is InputEventKey and event.keycode == KEY_F and self.has_focus() and event.pressed:
+			owner.toggleField()
+		
+		if event is InputEventKey and event.keycode == KEY_S and self.has_focus() and event.pressed and not holdingControl:
+			owner.toggleScreen()
+		
+		if event is InputEventKey and event.keycode == KEY_A and self.has_focus() and event.pressed:
+			owner.toggleAxis()
+		
+		if event is InputEventKey and event.keycode == KEY_ALT and self.has_focus():
+			holdingAlt = event.pressed
+		
+		if event is InputEventKey and (event.keycode == KEY_PAGEUP or event.keycode == 4194323) and self.has_focus() and event.pressed and not owner.playing:
+			if holdingControl:
+				owner.move_element_front()
+			else:
+				owner.move_element_up()
+		if event is InputEventKey and (event.keycode == KEY_PAGEDOWN or event.keycode == 4194324) and self.has_focus() and event.pressed and not owner.playing:
+			if holdingControl:
+				owner.move_element_back()
+			else:
+				owner.move_element_down()
+		updateObjectPositions()
 
 func customFloor(value: float) -> int:
 	var intValue = int(value)
@@ -217,18 +220,13 @@ func customFmodf(a: float, b: float) -> float:
 	return remainder
 
 func _input(event):
-	if event is InputEventKey and event.keycode == KEY_SPACE and self.has_focus():
-		holdingMoveKey = event.pressed
-		initialPos = get_global_mouse_position()
 	
 	if event is InputEventKey and event.keycode == KEY_CTRL:
 		holdingControl = event.pressed
-	
+		
 	if event is InputEventKey and event.keycode == KEY_SHIFT:
 		holdingShift = event.pressed
 	
-	if event is InputEventKey and event.keycode == KEY_D and holdingControl and event.pressed:
-		owner.duplicate_element()
 	if event is InputEventKey and event.keycode == KEY_ENTER and holdingControl and event.pressed:
 		owner.playing = not owner.playing
 		if owner.playing:
@@ -237,162 +235,173 @@ func _input(event):
 			$status_message.displayMessage("Pause")
 	
 	if event is InputEventKey and event.keycode == KEY_L and holdingControl and event.pressed:
-		owner.loop.button_pressed = not owner.loop.button_pressed
-		if owner.loop.button_pressed:
-			$status_message.displayMessage("Looping Enabled")
-		else:
-			$status_message.displayMessage("Looping Disabled")
-	
-	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
-		draggingElement = false
-		draggingScaleY = false
-		draggingScaleX = false
-		draggingAngle = false
-		$ElementStuff/posMoveAlongX.visible = false
-		$ElementStuff/posMoveAlongY.visible = false
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE and not event.pressed:
-		holdingMoveKey = false
-	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:
-		draggingPivot = false
-		
-	if event is InputEventMouseMotion and holdingMoveKey:
-		$Center/Canvas.global_position += get_global_mouse_position() - initialPos
-		initialPos = get_global_mouse_position()
-		updateObjectPositions()
-		
-	if event is InputEventMouseMotion and draggingElement:
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-		if holdingShift:
-			if abs(initialMousePos.x - get_global_mouse_position().x) > abs(initialMousePos.y - get_global_mouse_position().y):
-				element.global_position = Vector2((get_global_mouse_position() - (initialMousePos - initialElementPos)).x, initialElementPos.y)
-				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
-				element.setPositionX(element.position.x)
-				$ElementStuff/posMoveAlongX.visible = true
-				$ElementStuff/posMoveAlongY.visible = true
-				
-				$ElementStuff/posMoveAlongY.modulate = Color(1,1,1,0.5)
-				$ElementStuff/posMoveAlongX.modulate = Color(1,1,1,1)
-				$ElementStuff/posMoveAlongY.global_position = initialElementPos
-				$ElementStuff/posMoveAlongX.global_position = element.global_position
-				
+			owner.loop.button_pressed = not owner.loop.button_pressed
+			if owner.loop.button_pressed:
+				$status_message.displayMessage("Looping Enabled")
 			else:
-				element.global_position = Vector2(initialElementPos.x, (get_global_mouse_position() - (initialMousePos - initialElementPos)).y)
-				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
-				element.setPositionY(element.position.y)
-				$ElementStuff/posMoveAlongX.visible = true
-				$ElementStuff/posMoveAlongY.visible = true
-				
-				$ElementStuff/posMoveAlongX.modulate = Color(1,1,1,0.5)
-				$ElementStuff/posMoveAlongY.modulate = Color(1,1,1,1)
-				$ElementStuff/posMoveAlongY.global_position = element.global_position
-				$ElementStuff/posMoveAlongX.global_position = initialElementPos
-				
-		else:
+				$status_message.displayMessage("Looping Disabled")
+	if not owner.fullscreen:
+		
+		if event is InputEventKey and event.keycode == KEY_SPACE and self.has_focus():
+			holdingMoveKey = event.pressed
+			initialPos = get_global_mouse_position()
+		
+		
+		if event is InputEventKey and event.keycode == KEY_D and holdingControl and event.pressed:
+			owner.duplicate_element()
+		
+		
+		
+		if event is InputEventMouseButton and not event.pressed:
+			draggingElement = false
+			draggingScaleY = false
+			draggingScaleX = false
+			draggingAngle = false
+			changing = false
 			$ElementStuff/posMoveAlongX.visible = false
 			$ElementStuff/posMoveAlongY.visible = false
-			element.global_position = get_global_mouse_position() - (initialMousePos - initialElementPos)
-			checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
-			checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
-			element.setPosition(element.position)
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE and not event.pressed:
+			holdingMoveKey = false
 		
-		
-		if locktogrid:
-			element.position = Vector2(round(snappedf(element.position[0], owner.project_settings["screen_size"][0]/60)), round(snappedf(element.position[1], owner.project_settings["screen_size"][0]/60)))
-			element.setPosition(element.position)
-			checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
-			checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:
+			draggingPivot = false
 			
-		if holdingAlt:
-			element.position = Vector2(round(element.position[0]), round(element.position[1]))
+		if event is InputEventMouseMotion and holdingMoveKey:
+			$Center/Canvas.global_position += get_global_mouse_position() - initialPos
+			initialPos = get_global_mouse_position()
+			updateObjectPositions()
 			
-			checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
-			checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
-			element.setPosition(element.position)
+		if event is InputEventMouseMotion and draggingElement:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			if holdingShift:
+				if abs(initialMousePos.x - get_global_mouse_position().x) > abs(initialMousePos.y - get_global_mouse_position().y):
+					element.global_position = Vector2((get_global_mouse_position() - (initialMousePos - initialElementPos)).x, initialElementPos.y)
+					checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
+					element.setPositionX(element.position.x)
+					$ElementStuff/posMoveAlongX.visible = true
+					$ElementStuff/posMoveAlongY.visible = true
+					
+					$ElementStuff/posMoveAlongY.modulate = Color(1,1,1,0.5)
+					$ElementStuff/posMoveAlongX.modulate = Color(1,1,1,1)
+					$ElementStuff/posMoveAlongY.global_position = initialElementPos
+					$ElementStuff/posMoveAlongX.global_position = element.global_position
+					
+				else:
+					element.global_position = Vector2(initialElementPos.x, (get_global_mouse_position() - (initialMousePos - initialElementPos)).y)
+					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
+					element.setPositionY(element.position.y)
+					$ElementStuff/posMoveAlongX.visible = true
+					$ElementStuff/posMoveAlongY.visible = true
+					
+					$ElementStuff/posMoveAlongX.modulate = Color(1,1,1,0.5)
+					$ElementStuff/posMoveAlongY.modulate = Color(1,1,1,1)
+					$ElementStuff/posMoveAlongY.global_position = element.global_position
+					$ElementStuff/posMoveAlongX.global_position = initialElementPos
+					
+			else:
+				$ElementStuff/posMoveAlongX.visible = false
+				$ElementStuff/posMoveAlongY.visible = false
+				element.global_position = get_global_mouse_position() - (initialMousePos - initialElementPos)
+				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
+				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
+				element.setPosition(element.position)
 			
-		$status_message.displayMessage("Updated " + element.element_name + " position to: " + str(element.position))
-	
-	if event is InputEventMouseMotion and draggingPivot:
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-		element.setPivot(-element.to_local(get_global_mouse_position()) + initialElementPos)
-		if holdingAlt:
-			element.setPivot(Vector2(round(element.pivot_point[0]), round(element.pivot_point[1])))
-		$status_message.displayMessage("Updated " + element.element_name + " pivot point to: " + str(element.pivot_point))
-		
-	if event is InputEventMouseMotion and draggingScaleY:
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-		var globalMousePos = get_global_mouse_position() - initialMousePos + element.global_position
-		var localMousePos = element.to_local(globalMousePos)
-		var distance = localMousePos.y
-		distance = distance*element.scaley
-		if inverY:
-			distance = -distance
-		var localScaleY = distance / (element.element_size.y/2)
-		localScaleY = -localScaleY + initialElementPos
-		if holdingAlt:
-			localScaleY = snapped(localScaleY, 0.25)
-		
-		checkKeyframeSaving(element, localScaleY, "scaley")
 			
-		element.setScaley(localScaleY)
+			if locktogrid:
+				element.position = Vector2(round(snappedf(element.position[0], owner.project_settings["screen_size"][0]/60)), round(snappedf(element.position[1], owner.project_settings["screen_size"][0]/60)))
+				element.setPosition(element.position)
+				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
+				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
+				
+			if holdingAlt:
+				element.position = Vector2(round(element.position[0]), round(element.position[1]))
+				
+				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
+				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
+				element.setPosition(element.position)
+				
+			$status_message.displayMessage("Updated " + element.element_name + " position to: " + str(element.position))
 		
-		if element.scaley == 0 or element.scaley == -0:
-			element.setScaley(0.00001)
+		if event is InputEventMouseMotion and draggingPivot:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			element.setPivot(-element.to_local(get_global_mouse_position()) + initialElementPos)
+			if holdingAlt:
+				element.setPivot(Vector2(round(element.pivot_point[0]), round(element.pivot_point[1])))
+			$status_message.displayMessage("Updated " + element.element_name + " pivot point to: " + str(element.pivot_point))
+			
+		if event is InputEventMouseMotion and draggingScaleY:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			var globalMousePos = get_global_mouse_position() - initialMousePos + element.global_position
+			var localMousePos = element.to_local(globalMousePos)
+			var distance = localMousePos.y
+			distance = distance*element.scaley
+			if inverY:
+				distance = -distance
+			var localScaleY = distance / (element.element_size.y/2)
+			localScaleY = -localScaleY + initialElementPos
+			if holdingAlt:
+				localScaleY = snapped(localScaleY, 0.25)
+			
+			checkKeyframeSaving(element, localScaleY, "scaley")
+				
+			element.setScaley(localScaleY)
+			
+			if element.scaley == 0 or element.scaley == -0:
+				element.setScaley(0.00001)
+			
+			$status_message.displayMessage("Updated " + element.element_name + " scale to : " + str(Vector2(element.scalex, element.scaley)))
+			element.saveDefaults = true
+		if event is InputEventMouseMotion and draggingScaleX:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			var globalMousePos = get_global_mouse_position() - initialMousePos + element.global_position
+			var localMousePos = element.to_local(globalMousePos)
+			var distance = localMousePos.x
+			distance = distance*element.scalex
+			if inverX:
+				distance = -distance
+			var localScaleX = distance / (element.element_size.x)
+			localScaleX = -localScaleX + initialElementPos
+			if holdingAlt:
+				localScaleX = snapped(localScaleX, 0.25)
+			
+			checkKeyframeSaving(element, localScaleX, "scalex")
+			
+			element.setScalex(localScaleX)
+			
+			if element.scalex == 0  or element.scalex == -0:
+				element.setScalex(0.00001)
+			$status_message.displayMessage("Updated " + element.element_name + " scale to : " + str(Vector2(element.scalex, element.scaley)))
 		
-		$status_message.displayMessage("Updated " + element.element_name + " scale to : " + str(Vector2(element.scalex, element.scaley)))
-		element.saveDefaults = true
-	if event is InputEventMouseMotion and draggingScaleX:
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-		var globalMousePos = get_global_mouse_position() - initialMousePos + element.global_position
-		var localMousePos = element.to_local(globalMousePos)
-		var distance = localMousePos.x
-		distance = distance*element.scalex
-		if inverX:
-			distance = -distance
-		var localScaleX = distance / (element.element_size.x)
-		localScaleX = -localScaleX + initialElementPos
-		if holdingAlt:
-			localScaleX = snapped(localScaleX, 0.25)
+		if event is InputEventMouseMotion and draggingAngle:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			var offset = get_global_mouse_position() - element.global_position
+			var angle = customFmodf(((atan2(offset.y, offset.x)* 180 / PI) + 360), 360)
+			angle = initialElementPos + (angle - initialMouseAngle)
+			if angle > 180:
+				angle = angle-360
+				initialMouseAngle += -180
+				initialElementPos += -180
+			if angle < -180:
+				angle = angle+360
+				initialMouseAngle += +180
+				initialElementPos += +180
+			if holdingShift:
+				angle = snapped(angle, 22.5)
+			else:
+				angle = snapped(angle, 0.01)
+			
+			checkKeyframeSaving(element, -angle, "angle")
+			
+			element.setAngle(angle)
+			$status_message.displayMessage("Updated " + element.element_name + " angle to : " + str(element.angle) + "º")
 		
-		checkKeyframeSaving(element, localScaleX, "scalex")
+		if event is InputEventKey and event.keycode == KEY_F1 and event.pressed:
+			owner.layer_2_panels.togglePanels()
+			self.grab_focus()
 		
-		element.setScalex(localScaleX)
-		
-		if element.scalex == 0  or element.scalex == -0:
-			element.setScalex(0.00001)
-		$status_message.displayMessage("Updated " + element.element_name + " scale to : " + str(Vector2(element.scalex, element.scaley)))
-	
-	if event is InputEventMouseMotion and draggingAngle:
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-		var offset = get_global_mouse_position() - element.global_position
-		var angle = customFmodf(((atan2(offset.y, offset.x)* 180 / PI) + 360), 360)
-		angle = initialElementPos + (angle - initialMouseAngle)
-		if angle > 180:
-			angle = angle-360
-			initialMouseAngle += -180
-			initialElementPos += -180
-		if angle < -180:
-			angle = angle+360
-			initialMouseAngle += +180
-			initialElementPos += +180
-		if holdingShift:
-			angle = snapped(angle, 22.5)
-		else:
-			angle = snapped(angle, 0.01)
-		
-		checkKeyframeSaving(element, -angle, "angle")
-		
-		element.setAngle(angle)
-		$status_message.displayMessage("Updated " + element.element_name + " angle to : " + str(element.angle) + "º")
-	
-	if event is InputEventKey and event.keycode == KEY_F1 and event.pressed:
-		owner.layer_2_panels.togglePanels()
-		self.grab_focus()
-	
-	if event is InputEventKey and event.keycode == KEY_DELETE and (self.has_focus() or owner.element_list.has_focus()) and event.pressed and owner.selected_element > -1:
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-		owner.delElement(element, true)
+		if event is InputEventKey and event.keycode == KEY_DELETE and (self.has_focus() or owner.element_list.has_focus()) and event.pressed and owner.selected_element > -1:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			owner.delElement(element, true)
 
 
 func updateScale():
@@ -457,8 +466,8 @@ func fillZoom():
 	zoomLevel = snap_to_closest_zoom(zoomLevel)
 	
 	
-	print(self.size)
-	print(owner.project_settings["screen_size"])
+	#print(self.size)
+	#print(owner.project_settings["screen_size"])
 	
 	$Center.position = self.size/2
 	$Center/Canvas.position = Vector2(0,0) - Vector2(owner.project_settings["screen_size"][0]/2, owner.project_settings["screen_size"][1]/2)
@@ -543,7 +552,7 @@ func _on_scale_right_gui_input(event):
 		self.grab_focus()
 
 func _on_checkbg_gui_input(event):
-	if not (owner.panel_right.color.button_pressed or owner.panel_right.color_tl.button_pressed or owner.panel_right.color_tr.button_pressed or owner.panel_right.color_bl.button_pressed or owner.panel_right.color_br.button_pressed):
+	if not (owner.panel_right.color.button_pressed or owner.panel_right.color_tl.button_pressed or owner.panel_right.color_tr.button_pressed or owner.panel_right.color_bl.button_pressed or owner.panel_right.color_br.button_pressed or owner.fullscreen):
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed and owner.selected_element != -1:
 			var alreadySelectedElement = owner.LayerList[owner.selected_layer][owner.selected_element]
 				
@@ -646,7 +655,7 @@ func is_point_inside_polygon(points: Array) -> bool:
 func cross_product(v1: Vector2, v2: Vector2) -> float:
 	return v1.x * v2.y - v1.y * v2.x
 
-
+var changing = false
 func checkKeyframeSaving(element, value, track_name):
 	if owner.panel_bottom.selected_keyframe != -1 or owner.panel_bottom.multiple_select != []:
 		if owner.animation_idx < element.animation_list.size():
@@ -654,6 +663,13 @@ func checkKeyframeSaving(element, value, track_name):
 				if track["Motion"] == track_name:
 					for keyframe in track["Keyframes"]:
 						if int(keyframe["timestamp"]) == int(round(owner.time)):
+							if not changing:
+								var oldAnim = element.animation_list.duplicate(true)
+								owner.undoHistory[-1][3] = "keyframe"
+								owner.undoHistory[-1].append(oldAnim)
+								owner.undoHistory[-1].append(owner.time)
+								#print(oldAnim)
+							changing = true
 							keyframe["data"] = value
 							element.saveDefaults = false
 							if track["Keyframes"].find(keyframe)+1 < track["Keyframes"].size():
@@ -672,3 +688,5 @@ func _on_lock_to_grid_toggled(button_pressed):
 
 func _on_maximize_view_pressed():
 	fillZoom()
+
+

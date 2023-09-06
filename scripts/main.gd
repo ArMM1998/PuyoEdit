@@ -22,7 +22,7 @@ const maxUndo = 256
 var centerHead = false
 var backupTimer = 0
 var backupTimeLimit = 120
-
+var fullscreen = false
 signal texture_dir_task_finished
 
 
@@ -132,73 +132,86 @@ func _ready():
 		user_settings["boot_up_times"] += 1
 	
 
+func animate():
+	for layer in LayerList:
+		for element in layer:
+			element.animate(time, animation_idx, project_settings["screen_size"])
+
 func windowResize():
 	
-	$Layer2_Panels.panelResize(get_viewport_rect().size)
-	var viewport_width = 0
-	var viewport_height = 0
-	var viewport_position = Vector2(0,0)
-	if $Layer2_Panels/toggle_panelLeft.button_pressed:
-		viewport_position = Vector2(8,40)
-		viewport_width = get_viewport_rect().size[0] - 16
-	else:
-		viewport_position = Vector2(264,40)
-		viewport_width = get_viewport_rect().size[0] - 272
-	
-	if not $Layer2_Panels/toggle_panelRight.button_pressed:
-		viewport_width -= 256
-	
-	if $Layer2_Panels/toggle_panelBottom.button_pressed:
-		viewport_height = get_viewport_rect().size[1] - 48
-	else:
-		viewport_height = get_viewport_rect().size[1] - 304
-	
-	$Layer1_Canvas/CanvasViewport.size = Vector2(viewport_width, viewport_height)
-	$Layer1_Canvas/CanvasViewport/status_message.position = Vector2(8,viewport_height - 18)
-	$Layer1_Canvas/CanvasViewport.position = viewport_position
-	$Layer2_Panels/PanelTop/platformLabel.position = Vector2(get_viewport_rect().size[0] - $Layer2_Panels/PanelTop/platformLabel.get_rect().size[0] - 8, 8)
-	$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(1, Vector2(canvas_viewport.size[0], 1))
-	$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(2, Vector2(canvas_viewport.size[0], canvas_viewport.size[1]))
-	$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(3, Vector2(1, canvas_viewport.size[1]))
-	$Layer1_Canvas/CanvasViewport/cursorPosLabel.position = canvas_viewport.size - Vector2(190, 20)
-	
-	$Layer2_SpriteEditor_Panels/PanelLeft.size = Vector2(256,get_viewport_rect().size[1])
-	$Layer2_SpriteEditor_Panels/PanelLeft/ItemList.size = Vector2(240,get_viewport_rect().size[1] - 80)
+	if not fullscreen:
+		$Layer2_Panels.panelResize(get_viewport_rect().size)
+		var viewport_width = 0
+		var viewport_height = 0
+		var viewport_position = Vector2(0,0)
+		if $Layer2_Panels/toggle_panelLeft.button_pressed:
+			viewport_position = Vector2(8,40)
+			viewport_width = get_viewport_rect().size[0] - 16
+		else:
+			viewport_position = Vector2(264,40)
+			viewport_width = get_viewport_rect().size[0] - 272
+		
+		if not $Layer2_Panels/toggle_panelRight.button_pressed:
+			viewport_width -= 256
+		
+		if $Layer2_Panels/toggle_panelBottom.button_pressed:
+			viewport_height = get_viewport_rect().size[1] - 48
+		else:
+			viewport_height = get_viewport_rect().size[1] - 304
+		
+		$Layer1_Canvas/CanvasViewport.size = Vector2(viewport_width, viewport_height)
+		$Layer1_Canvas/CanvasViewport/status_message.position = Vector2(8,viewport_height - 18)
+		$Layer1_Canvas/CanvasViewport.position = viewport_position
+		$Layer2_Panels/PanelTop/platformLabel.position = Vector2(get_viewport_rect().size[0] - $Layer2_Panels/PanelTop/platformLabel.get_rect().size[0] - 8, 8)
+		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(1, Vector2(canvas_viewport.size[0], 1))
+		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(2, Vector2(canvas_viewport.size[0], canvas_viewport.size[1]))
+		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(3, Vector2(1, canvas_viewport.size[1]))
+		$Layer1_Canvas/CanvasViewport/cursorPosLabel.position = canvas_viewport.size - Vector2(190, 20)
+		
+		$Layer2_SpriteEditor_Panels/PanelLeft.size = Vector2(256,get_viewport_rect().size[1])
+		$Layer2_SpriteEditor_Panels/PanelLeft/ItemList.size = Vector2(240,get_viewport_rect().size[1] - 80)
 
-	$Layer2_SpriteEditor_Canvas/Control.size = get_viewport_rect().size
-	
-	$Layer2_Panels/PanelRight/ScrollContainer.size = $Layer2_Panels/PanelRight.size - $Layer2_Panels/PanelRight/ScrollContainer.position - Vector2(0,16)
-	
-	$Layer2_SpriteEditor_Canvas/close.global_position = Vector2(get_viewport_rect().size[0]-40,0)
-	$Layer2_SpriteEditor_Canvas/SpinBox.global_position = get_viewport_rect().size - Vector2(100,40)
-	$Layer2_SpriteEditor_Panels/PanelLeft/texture_pathBTN.position = Vector2(225,$Layer2_SpriteEditor_Panels/PanelLeft.size.y - 40)
-	$Layer2_SpriteEditor_Panels/PanelLeft/texture_path.position = Vector2(8,$Layer2_SpriteEditor_Panels/PanelLeft.size.y - 32)
-	
-	$Layer1_Canvas/CanvasViewport/checkbg.size = get_viewport_rect().size + Vector2(256,256)
-	
-	$Layer2_Panels/PanelBottom/timeline/background.size = $Layer2_Panels/PanelBottom.size - $Layer2_Panels/PanelBottom/timeline/background.position - Vector2(528,40)
-	$Layer2_Panels/PanelBottom/timeline/background/ColorRect.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x + 160
-	$Layer2_Panels/PanelBottom/timeline/background/ColorRect2.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
-	$Layer2_Panels/PanelBottom/timeline/background/ColorRect3.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
-	$Layer2_Panels/PanelBottom/timeline/background/ColorRect4.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
-	$Layer2_Panels/PanelBottom/timeline/background/ColorRect5.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
-	$Layer2_Panels/PanelBottom/timeline/background/ColorRect6.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
-	$Layer2_Panels/PanelBottom/timeline/background/ColorRect7.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
-	
-	$Layer2_Panels/PanelBottom/timeline/focus.points[2] = Vector2($Layer2_Panels/PanelBottom/timeline/background/ColorRect7.size.x, 1)
-	$Layer2_Panels/PanelBottom/timeline/focus.points[3] = $Layer2_Panels/PanelBottom/timeline/background.size - Vector2(1,1)
-	
-	$Layer2_Panels/PanelBottom/timeline.size = $Layer2_Panels/PanelBottom/timeline/background.size
-	$Layer2_Panels/PanelBottom/cosmeticShit/highlight.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x + 128
-	
-	$Layer2_Panels/PanelBottom/frameTime.position = Vector2($Layer2_Panels/PanelBottom.size.x - 256-78, 6)
-	$Layer2_Panels/PanelBottom/speed.position = Vector2($Layer2_Panels/PanelBottom.size.x - 460, 16)
-	$Layer2_Panels/PanelBottom/HScrollBar.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
-	
-	$Layer2_Panels/PanelBottom/keyframeSettings.position = Vector2($Layer2_Panels/PanelBottom.size.x - 248,4)
-	$Layer1_Canvas/CanvasViewport/LockToGrid.position.x = canvas_viewport.size.x - 32
-	$Layer2_Panels/PanelBottom/ColorRect.size = $Layer2_Panels/PanelBottom.size
-	
+		$Layer2_SpriteEditor_Canvas/Control.size = get_viewport_rect().size
+		
+		$Layer2_Panels/PanelRight/ScrollContainer.size = $Layer2_Panels/PanelRight.size - $Layer2_Panels/PanelRight/ScrollContainer.position - Vector2(0,16)
+		
+		$Layer2_SpriteEditor_Canvas/close.global_position = Vector2(get_viewport_rect().size[0]-40,0)
+		$Layer2_SpriteEditor_Canvas/SpinBox.global_position = get_viewport_rect().size - Vector2(100,40)
+		$Layer2_SpriteEditor_Panels/PanelLeft/texture_pathBTN.position = Vector2(225,$Layer2_SpriteEditor_Panels/PanelLeft.size.y - 40)
+		$Layer2_SpriteEditor_Panels/PanelLeft/texture_path.position = Vector2(8,$Layer2_SpriteEditor_Panels/PanelLeft.size.y - 32)
+		
+		$Layer1_Canvas/CanvasViewport/checkbg.size = get_viewport_rect().size + Vector2(256,256)
+		
+		$Layer2_Panels/PanelBottom/timeline/background.size = $Layer2_Panels/PanelBottom.size - $Layer2_Panels/PanelBottom/timeline/background.position - Vector2(528,40)
+		$Layer2_Panels/PanelBottom/timeline/background/ColorRect.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x + 160
+		$Layer2_Panels/PanelBottom/timeline/background/ColorRect2.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
+		$Layer2_Panels/PanelBottom/timeline/background/ColorRect3.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
+		$Layer2_Panels/PanelBottom/timeline/background/ColorRect4.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
+		$Layer2_Panels/PanelBottom/timeline/background/ColorRect5.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
+		$Layer2_Panels/PanelBottom/timeline/background/ColorRect6.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
+		$Layer2_Panels/PanelBottom/timeline/background/ColorRect7.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
+		
+		$Layer2_Panels/PanelBottom/timeline/focus.points[2] = Vector2($Layer2_Panels/PanelBottom/timeline/background/ColorRect7.size.x, 1)
+		$Layer2_Panels/PanelBottom/timeline/focus.points[3] = $Layer2_Panels/PanelBottom/timeline/background.size - Vector2(1,1)
+		
+		$Layer2_Panels/PanelBottom/timeline.size = $Layer2_Panels/PanelBottom/timeline/background.size
+		$Layer2_Panels/PanelBottom/cosmeticShit/highlight.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x + 128
+		
+		$Layer2_Panels/PanelBottom/frameTime.position = Vector2($Layer2_Panels/PanelBottom.size.x - 256-78, 6)
+		$Layer2_Panels/PanelBottom/speed.position = Vector2($Layer2_Panels/PanelBottom.size.x - 460, 16)
+		$Layer2_Panels/PanelBottom/HScrollBar.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x
+		
+		$Layer2_Panels/PanelBottom/keyframeSettings.position = Vector2($Layer2_Panels/PanelBottom.size.x - 248,4)
+		$Layer1_Canvas/CanvasViewport/LockToGrid.position.x = canvas_viewport.size.x - 32
+		$Layer2_Panels/PanelBottom/ColorRect.size = $Layer2_Panels/PanelBottom.size
+	else:
+		$Layer1_Canvas/CanvasViewport.size = get_viewport_rect().size
+		$Layer1_Canvas/CanvasViewport.position = Vector2(0,0)
+		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(1, Vector2(-1, -1))
+		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(2, Vector2(-1, -1))
+		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(3, Vector2(-1, -1))
+		#$Layer1_Canvas/CanvasViewport/cursorPosLabel.position = canvas_viewport.size - Vector2(190, 20)
+		$Layer1_Canvas/CanvasViewport/checkbg.size = get_viewport_rect().size + Vector2(256,256)
 	
 func smoothCurve(kf_time, keyframe1, keyframe2):
 	var time_diff = float(keyframe2["timestamp"]) - float(keyframe1["timestamp"])
@@ -307,7 +320,7 @@ func _process(delta):
 			
 			elif not $Layer2_Panels/PanelBottom/loop.button_pressed:
 				playing = false
-				$Layer2_Panels/PanelBottom/HScrollBar.value = 0 
+				#$Layer2_Panels/PanelBottom/HScrollBar.value = 0 
 				
 		if $Layer2_Panels/PanelBottom/timeline/Head.global_position.x > $Layer2_Panels/PanelBottom.size.x - 384 or $Layer2_Panels/PanelBottom/timeline/Head.global_position.x < 256:
 			#print("off screen")
@@ -315,10 +328,11 @@ func _process(delta):
 		
 		for layer in LayerList:
 			for element in layer:
-				if not playing:
-					element.restoreDefaults()
-				else:
-					element.animate(time, animation_idx, project_settings["screen_size"])
+				element.animate(time, animation_idx, project_settings["screen_size"])
+#				if not playing:
+#					element.restoreDefaults()
+#				else:
+#
 				
 		
 		$Layer2_Panels/PanelRight.update()
@@ -386,8 +400,7 @@ func _input(event):
 	if event is InputEventKey and event.keycode == KEY_Z and holdingCtrl and event.pressed:
 		if len(undoHistory) > 0 and not $Layer1_Canvas/CanvasViewport.undoBlock:
 			var undo = undoHistory[len(undoHistory)-1]
-			status_message.displayMessage("Undo.")
-			
+			#status_message.displayMessage(undo[3] + str(undo[2]))
 			if undo[3] == "value": #undoing a value change
 				var params = undo[1].call()
 				undo[0].call(undo[2])
@@ -395,6 +408,21 @@ func _input(event):
 				selected_element = undo[4].id
 				selected_layer = undo[4].layer
 				element_list.updateSelected()
+			
+			if undo[3] == "keyframe":
+				var params = undo[1].call()
+				undo[0].call(undo[2])
+				add_redo(undo[0], undo[1], params, undo[3], undo[4])
+				redoHistory[-1].append(undo[4].animation_list.duplicate(true))
+				redoHistory[-1].append(undo[6])
+				selected_element = undo[4].id
+				selected_layer = undo[4].layer
+				element_list.updateSelected()
+				undo[4].animation_list = undo[5].duplicate(true)
+				time = undo[6]
+				animate()
+				$Layer2_Panels/PanelBottom.selected_element = []
+				$Layer2_Panels/PanelBottom.updateEasingPreview()
 			
 			if undo[3] == "deletion": #undoing element deletion
 				
@@ -452,7 +480,7 @@ func _input(event):
 	if event is InputEventKey and event.keycode == KEY_Y and holdingCtrl and event.pressed:
 		if len(redoHistory) > 0 and not $Layer1_Canvas/CanvasViewport.undoBlock:
 			var redo = redoHistory[len(redoHistory)-1]
-			status_message.displayMessage("Redo.")
+			#status_message.displayMessage(redo[3])
 			if redo[3] == "value":
 				var params = redo[1].call()
 				redo[0].call(redo[2])
@@ -460,6 +488,22 @@ func _input(event):
 				selected_element = redo[4].id
 				selected_layer = redo[4].layer
 				element_list.updateSelected()
+			
+			if redo[3] == "keyframe":
+				var params = redo[1].call()
+				redo[0].call(redo[2])
+				add_undo(redo[0], redo[1], params, redo[3], redo[4], false)
+				var oldAnim = redo[4].animation_list.duplicate(true)
+				undoHistory[-1].append(oldAnim)
+				undoHistory[-1].append(redo[6])
+				selected_element = redo[4].id
+				selected_layer = redo[4].layer
+				redo[4].animation_list = redo[5].duplicate(true)
+				time = redo[6]
+				element_list.updateSelected()
+				animate()
+				$Layer2_Panels/PanelBottom.selected_element = []
+				$Layer2_Panels/PanelBottom.updateEasingPreview()
 			
 			if redo[3] == "deletion":
 				delElement(redo[2], true, true)
@@ -510,8 +554,8 @@ func _input(event):
 			
 			redoHistory.pop_back()
 			checkGhosts(+1)
-			$Layer2_Panels/PanelLeft/ElementTree.updateSelected()
 			$Layer2_Panels/PanelLeft/ElementTree.updateList()
+			$Layer2_Panels/PanelLeft/ElementTree.updateSelected()
 
 func checkGhosts(hp):
 	var elementidx = 0
@@ -564,6 +608,22 @@ func add_undo(setter, getter, params, type, element, clear = true):
 
 func updateTargetPlatform(platform_name):
 	status_message.displayMessage("Platform set to: " + platform_name + ".")
+	
+	var newScreen_size = platformSettings[platform_name]["screen_size"]
+	var oldScreen_size = project_settings["screen_size"]
+	
+	for layer in LayerList:
+		for element in layer:
+			for animation in element.animation_list:
+				for motion in animation:
+					if motion["Motion"] == "posx":
+						for keyframe in motion["Keyframes"]:
+							keyframe["data"] = (keyframe["data"]*oldScreen_size[0])/newScreen_size[0]
+					if motion["Motion"] == "posy":
+						for keyframe in motion["Keyframes"]:
+							keyframe["data"] = (keyframe["data"]*oldScreen_size[1])/newScreen_size[1]
+	
+	
 	project_settings["platform"] = platform_name
 	project_settings["field"] = platformSettings[platform_name]["field"]
 	project_settings["screen_size"] = platformSettings[platform_name]["screen_size"]
@@ -955,8 +1015,10 @@ func formatAnimationData():
 															"blue":  element.defaultSettings["color_br"].b8,
 															"alpha": element.defaultSettings["color_br"].a8},
 												"audio_cue?" : 0,
-												"3d_depth" : 0,
+												"3d_depth" : element.depth,
 												"unk_motion" : 0}
+			if element.name_order != -2424:
+				JsonElement["Name Index"] = element.name_order
 			JsonBankList.append(JsonElement)
 		elementBanks.append(JsonBankList)
 	
@@ -1369,6 +1431,10 @@ func LoadData(data):
 			new_element.setColorTR(Color(element["Default Settings"]["rgba_tr"]["red"]/255, element["Default Settings"]["rgba_tr"]["green"]/255, element["Default Settings"]["rgba_tr"]["blue"]/255, element["Default Settings"]["rgba_tr"]["alpha"]/255))
 			new_element.setColorBL(Color(element["Default Settings"]["rgba_bl"]["red"]/255, element["Default Settings"]["rgba_bl"]["green"]/255, element["Default Settings"]["rgba_bl"]["blue"]/255, element["Default Settings"]["rgba_bl"]["alpha"]/255))
 			new_element.setColorBR(Color(element["Default Settings"]["rgba_br"]["red"]/255, element["Default Settings"]["rgba_br"]["green"]/255, element["Default Settings"]["rgba_br"]["blue"]/255, element["Default Settings"]["rgba_br"]["alpha"]/255))
+			new_element.set3dDepth(element["Default Settings"]["3d_depth"])
+			
+			if "Name Index" in element:
+				new_element.name_order = element["Name Index"]
 			new_element.setRender(bool(element["Render Flag"]))
 			new_element.setAddBlend(bool(element["Render Settings"]["dodge_blend"]))
 			new_element.update()
@@ -1389,6 +1455,8 @@ func LoadData(data):
 			puyoElement.setScale(Vector2(element["Default Settings"]["scalex"], element["Default Settings"]["scaley"]))
 			
 			puyoElement.setAngle(-element["Default Settings"]["angle"])
+			puyoElement.setVisible(not bool(element["Default Settings"]["hide"]))
+			
 			puyoElement.skew = 0
 			element_idx+= 1
 		layer_idx+= 1
@@ -1404,7 +1472,7 @@ func LoadData(data):
 			for element_anim in layer:
 				var element = LayerList[layer_idx][element_idx]
 				#print(layer_idx, " - ", element_idx)
-				print(element_anim)
+				#print(element_anim)
 				element.animation_list.append(element_anim["Animations"])
 				
 				element_idx += 1
@@ -1554,3 +1622,25 @@ func backupSave():
 		save_backup = true
 	if save_backup:
 		saveAt(OS.get_user_data_dir() + "/backup.json", true)
+
+func toggle_fullscreen():
+	fullscreen = not fullscreen
+	if fullscreen:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		$Layer1_Canvas/CanvasViewport/status_message.position = Vector2(-100,-100)
+		$Layer1_Canvas/CanvasViewport/maximize_view.position = Vector2(-100,-100)
+		$Layer1_Canvas/CanvasViewport/LockToGrid.position = Vector2(-100,-100)
+		$Layer1_Canvas/CanvasViewport/zoomLabel.position = Vector2(-100,-100)
+		$Layer1_Canvas/CanvasViewport/cursorPosLabel.position = Vector2(-100,-100)
+		$Layer2_Panels.visible = false
+		$Layer1_Canvas/CanvasViewport.fillZoom()
+		
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		$Layer1_Canvas/CanvasViewport/status_message.position = Vector2(-100,-100)
+		$Layer1_Canvas/CanvasViewport/maximize_view.position = Vector2(56, 8)
+		$Layer1_Canvas/CanvasViewport/LockToGrid.position = Vector2(-100,8)
+		$Layer1_Canvas/CanvasViewport/zoomLabel.position = Vector2(8,8)
+		$Layer2_Panels.visible = true
+		$Layer1_Canvas/CanvasViewport.fillZoom()
+	windowResize()

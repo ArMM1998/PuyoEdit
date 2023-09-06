@@ -52,6 +52,7 @@ func _ready():
 	
 	$ScrollContainer/Control/spritelist.item_clicked.connect(itemClicked)
 	
+	$ScrollContainer/Control/depth.value_changed.connect(updateDepth)
 	
 var selected = -1
 var changing = false
@@ -84,6 +85,7 @@ func update():
 	updating = true
 	if owner.selected_element != -1:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element] 
+		$ScrollContainer/Control/depth.value = element.depth
 		$ScrollContainer/Control/elementName.text = element.element_name
 		$ScrollContainer/Control/render.button_pressed = element.render
 		$ScrollContainer/Control/additive.button_pressed = element.add_blend
@@ -128,6 +130,11 @@ func update():
 func updateName(string):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		
+		if not changing:
+			owner.add_undo(element.setName, element.getName, element.getName(), "value", element)
+		changing = true
+		
 		element.setName(string.replace(" ", "_"))
 		$"../PanelLeft/ElementTree".updateList()
 		$"../PanelLeft/ElementTree".updateSelected()
@@ -136,57 +143,63 @@ func updateName(string):
 func updateRender(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		owner.add_undo(element.setRender, element.getRender, element.getRender(), "value", element)
 		element.setRender(value)
 
 func updateAddBlend(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		owner.add_undo(element.setAddBlend, element.getAddBlend, element.getAddBlend(), "value", element)
 		element.setAddBlend(value)
 
 func updateSize(_value):
 	if not updating:
-		if not changing:
-			print("add undo here")
-		
-		changing = true
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		if not changing:
+			owner.add_undo(element.setSize, element.getSize, element.getSize(), "value", element)
+		changing = true
+		
 		element.setSize(Vector2($ScrollContainer/Control/width.value, $ScrollContainer/Control/height.value))
 
 func updatePivot(_value):
 	if not updating:
+		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 		if not changing:
-			print("add undo here")
+			owner.add_undo(element.setPivot, element.getPivot, element.getPivot(), "value", element)
 		
 		changing = true
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		
 		element.setPivot(Vector2($ScrollContainer/Control/pivotX.value, $ScrollContainer/Control/pivotY.value))
 
 func updateFlipX(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		owner.add_undo(element.setFlipX, element.getFlipX, element.getFlipX(), "value", element) 
 		element.setFlipX(value)
 
 func updateFlipY(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		owner.add_undo(element.setFlipY, element.getFlipY, element.getFlipY(), "value", element)
 		element.setFlipY(value)
 
 func updateVisib(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-		
+		owner.add_undo(element.setVisible, element.getVisible, element.getVisible(), "value", element)
 		owner.canvas_viewport.checkKeyframeSaving(element, int(not value), "hide")
 		element.setVisible(value)
+		
 
 func updatePos(_value):
 	if not updating and not owner.timeline.has_focus():
 		releaseFocus(0)
+		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 		if not changing:
-			print("add undo here")
+			owner.add_undo(element.setPosition, element.getPosition, element.getPosition(), "value", element) 
 		
 		
 		changing = true
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 		
 		owner.canvas_viewport.checkKeyframeSaving(element, $ScrollContainer/Control/posx.value / owner.project_settings["screen_size"][0], "posx")
 		owner.canvas_viewport.checkKeyframeSaving(element, $ScrollContainer/Control/posy.value / owner.project_settings["screen_size"][1], "posy")
@@ -196,11 +209,11 @@ func updatePos(_value):
 func updateScale(_value):
 	if not updating and not owner.timeline.has_focus():
 		releaseFocus(0)
+		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 		if not changing:
-			print("add undo here")
+			owner.add_undo(element.setScale, element.getScale, element.getScale(), "value", element)
 		
 		changing = true
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 		
 		owner.canvas_viewport.checkKeyframeSaving(element, $ScrollContainer/Control/scalex.value, "scalex")
 		owner.canvas_viewport.checkKeyframeSaving(element, $ScrollContainer/Control/scaley.value, "scaley")
@@ -210,11 +223,11 @@ func updateScale(_value):
 func updateAngle(value):
 	if not updating and not owner.timeline.has_focus():
 		releaseFocus(0)
+		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 		if not changing:
-			print("add undo here")
+			owner.add_undo(element.setAngle, element.getAngle, element.getAngle(), "value", element)
 		
 		changing = true
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 		owner.canvas_viewport.checkKeyframeSaving(element, -value, "angle")
 		
 		element.setAngle(value)
@@ -223,6 +236,9 @@ func updateColor(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 		
+		if not changing:
+			owner.add_undo(element.setColor, element.getColor, element.getColor(), "value", element)
+		changing = true
 		var data  = {"red": value.r8,
 						"green": value.g8,
 						"blue": value.b8,
@@ -235,6 +251,12 @@ func updateColor(value):
 func updateColorTL(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		if not changing:
+			owner.add_undo(element.setColorTL, element.getColorTL, element.getColorTL(), "value", element)
+		
+		changing = true
+		
+		
 		var data  = {"red": value.r8,
 						"green": value.g8,
 						"blue": value.b8,
@@ -246,6 +268,9 @@ func updateColorTL(value):
 func updateColorBL(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		if not changing:
+			owner.add_undo(element.setColorBL, element.getColorBL, element.getColorBL(), "value", element)
+		changing = true
 		var data  = {"red": value.r8,
 						"green": value.g8,
 						"blue": value.b8,
@@ -257,6 +282,9 @@ func updateColorBL(value):
 func updateColorTR(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		if not changing:
+			owner.add_undo(element.setColorTR, element.getColorTR, element.getColorTR(), "value", element)
+		changing = true
 		var data = {"red": value.r8,
 						"green": value.g8,
 						"blue": value.b8,
@@ -268,6 +296,9 @@ func updateColorTR(value):
 func updateColorBR(value):
 	if not updating:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		if not changing:
+			owner.add_undo(element.setColorBR, element.getColorBR, element.getColorBR(), "value", element)
+		changing = true
 		var data  = {"red": value.r8,
 						"green": value.g8,
 						"blue": value.b8,
@@ -278,7 +309,7 @@ func updateColorBR(value):
 
 func matchSize():
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-	
+	owner.add_undo(element.setSize, element.getSize, element.getSize(), "value", element)
 	var w = 16
 	var h = 16
 	
@@ -295,19 +326,19 @@ func matchSize():
 
 func matchSizeScaled(index):
 	
-	var scale = 1
+	var size_scale = 1
 	
 	if index == 0:
-		scale = 4
+		size_scale = 4
 	elif index == 1:
-		scale = 2
+		size_scale = 2
 	elif index == 2:
-		scale = 0.5
+		size_scale = 0.5
 	elif index == 3:
-		scale = 0.25
+		size_scale = 0.25
 	
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-	
+	owner.add_undo(element.setSize, element.getSize, element.getSize(), "value", element)
 	var w = 16
 	var h = 16
 	
@@ -316,8 +347,8 @@ func matchSizeScaled(index):
 			w = 16
 			h = 16
 		else:
-			w = element.sprite_list[element.sprite_index].region.size.x * scale
-			h = element.sprite_list[element.sprite_index].region.size.y * scale
+			w = element.sprite_list[element.sprite_index].region.size.x * size_scale
+			h = element.sprite_list[element.sprite_index].region.size.y * size_scale
 	
 	element.setSize(Vector2(w,h))
 	update()
@@ -325,6 +356,7 @@ func matchSizeScaled(index):
 	
 func centerPivot():
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	owner.add_undo(element.setPivot, element.getPivot, element.getPivot(), "value", element)
 	var newpivot = element.element_size/2
 	newpivot.x = round(newpivot.x)
 	newpivot.y = round(newpivot.y)
@@ -335,6 +367,7 @@ var newSprite = false
 
 func itemClicked(index:int, _at_position : Vector2, mouse_btn):
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	owner.add_undo(element.setSpriteIndex, element.getSpriteIndex, element.getSpriteIndex(), "value", element)
 	if element.sprite_list.size() > index:
 		newSprite = false
 		if mouse_btn == 1:
@@ -417,3 +450,7 @@ func sizegui(event):
 	if event is InputEventMouseButton and event.button_index == 2 and event.pressed:
 		$ScrollContainer/Control/popupmenuMatchSize.position = get_global_mouse_position()
 		$ScrollContainer/Control/popupmenuMatchSize.popup()
+
+func updateDepth(value):
+	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	element.set3dDepth(value)

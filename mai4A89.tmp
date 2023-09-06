@@ -1,0 +1,385 @@
+[gd_scene load_steps=20 format=3 uid="uid://bnun2iv8b4jy2"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_k4y86"]
+[ext_resource type="Script" path="res://scripts/Panels.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://d02nd2drmop08" path="res://canvas_viewport.tscn" id="2_ykj0k"]
+[ext_resource type="Script" path="res://scripts/PanelTop.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://bmhuqy5d22rle" path="res://panel_left.tscn" id="3_p7hc2"]
+[ext_resource type="Script" path="res://scripts/PanelRight.gd" id="6_84xj8"]
+[ext_resource type="PackedScene" uid="uid://c1857ue5o0id2" path="res://panel_bottom.tscn" id="6_b6dm2"]
+[ext_resource type="PackedScene" uid="uid://dye5mbqgwmkhy" path="res://panel_right.tscn" id="6_mtiep"]
+[ext_resource type="Texture2D" uid="uid://du1w4dxyp2jxo" path="res://Graphics/panel_hide.png" id="6_qwi2g"]
+[ext_resource type="Texture2D" uid="uid://8g4p1n4v87au" path="res://Graphics/panel_show.png" id="7_f8e1x"]
+[ext_resource type="Texture2D" uid="uid://cwn5bw37gjble" path="res://Graphics/panel_hover.png" id="8_whaa2"]
+[ext_resource type="Texture2D" uid="uid://iqctjs0vvuy1" path="res://Graphics/viewportbg.png" id="9_5h6cm"]
+[ext_resource type="Script" path="res://scripts/spriteEditor.gd" id="9_mavd5"]
+[ext_resource type="Texture2D" uid="uid://dmfpd8kghrhqv" path="res://Graphics/add_sprite.png" id="9_x3jkg"]
+[ext_resource type="Texture2D" uid="uid://unjs5hwc34g0" path="res://Graphics/puyologo.png" id="9_x474k"]
+[ext_resource type="Texture2D" uid="uid://ndrpemc7eeag" path="res://Graphics/misc/kofi.png" id="10_iig2l"]
+[ext_resource type="Texture2D" uid="uid://c60opsv5gwi3c" path="res://Graphics/del.png" id="11_2redu"]
+[ext_resource type="Script" path="res://scripts/SpriteCropList.gd" id="11_oydw2"]
+[ext_resource type="Script" path="res://scripts/kofi_btn.gd" id="11_tcy6v"]
+
+[node name="main" type="Node2D"]
+script = ExtResource("1_k4y86")
+
+[node name="Layer1_Canvas" type="CanvasLayer" parent="."]
+
+[node name="CanvasViewport" parent="Layer1_Canvas" instance=ExtResource("2_ykj0k")]
+anchors_preset = -1
+anchor_right = 0.2125
+anchor_bottom = 0.2
+offset_left = 264.0
+offset_top = 40.0
+offset_right = 744.0
+offset_bottom = 312.0
+metadata/_edit_use_anchors_ = true
+
+[node name="Layer2_Panels" type="CanvasLayer" parent="."]
+script = ExtResource("2")
+
+[node name="PanelLeft" parent="Layer2_Panels" instance=ExtResource("3_p7hc2")]
+metadata/_edit_use_anchors_ = true
+
+[node name="PanelTop" type="Panel" parent="Layer2_Panels"]
+offset_right = 1280.0
+offset_bottom = 32.0
+script = ExtResource("3")
+metadata/_edit_use_anchors_ = true
+
+[node name="MenuButton_File" type="MenuButton" parent="Layer2_Panels/PanelTop"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.21875
+anchor_bottom = 0.125
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 43.0
+offset_bottom = 28.0
+focus_neighbor_left = NodePath("../MenuButton_Help")
+focus_neighbor_top = NodePath("../../../Layer1_Canvas/CanvasViewport")
+focus_neighbor_right = NodePath("../MenuButton_Project")
+focus_neighbor_bottom = NodePath("../../../Layer1_Canvas/CanvasViewport")
+theme_override_font_sizes/font_size = 12
+text = "File"
+metadata/_edit_use_anchors_ = true
+
+[node name="MenuButton_Project" type="MenuButton" parent="Layer2_Panels/PanelTop"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.21875
+anchor_right = 0.0046875
+anchor_bottom = 0.125
+offset_left = 48.0
+offset_top = 8.0
+offset_right = 105.0
+offset_bottom = 28.0
+focus_neighbor_left = NodePath("../MenuButton_File")
+focus_neighbor_top = NodePath("../../../Layer1_Canvas/CanvasViewport")
+focus_neighbor_right = NodePath("../MenuButton_Help")
+focus_neighbor_bottom = NodePath("../../../Layer1_Canvas/CanvasViewport")
+focus_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Project"
+metadata/_edit_use_anchors_ = true
+
+[node name="MenuButton_Help" type="MenuButton" parent="Layer2_Panels/PanelTop"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.21875
+anchor_right = 0.0015625
+anchor_bottom = 0.125
+offset_left = 112.0
+offset_top = 8.0
+offset_right = 154.0
+offset_bottom = 28.0
+focus_neighbor_left = NodePath("../MenuButton_Project")
+focus_neighbor_top = NodePath("../../../Layer1_Canvas/CanvasViewport")
+focus_neighbor_right = NodePath("../MenuButton_File")
+focus_neighbor_bottom = NodePath("../../../Layer1_Canvas/CanvasViewport")
+focus_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Help"
+metadata/_edit_use_anchors_ = true
+
+[node name="platformLabel" type="Label" parent="Layer2_Panels/PanelTop"]
+layout_mode = 0
+offset_left = 960.0
+offset_top = 8.0
+offset_right = 1271.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0.374139, 0.374139, 0.374139, 1)
+theme_override_font_sizes/font_size = 11
+text = "Target Platform: PSP"
+horizontal_alignment = 2
+
+[node name="PanelBottom" parent="Layer2_Panels" instance=ExtResource("6_b6dm2")]
+
+[node name="PanelRight" type="Panel" parent="Layer2_Panels"]
+offset_left = 1024.0
+offset_top = 40.0
+offset_right = 1280.0
+offset_bottom = 456.0
+script = ExtResource("6_84xj8")
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="Layer2_Panels/PanelRight"]
+modulate = Color(0.521569, 0.521569, 0.521569, 1)
+layout_mode = 2
+offset_left = 9.0
+offset_top = 4.0
+offset_right = 248.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 11
+text = "Element Inspector"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Layer2_Panels/PanelRight"]
+layout_mode = 0
+offset_top = 24.0
+offset_right = 256.0
+offset_bottom = 408.0
+
+[node name="Control" parent="Layer2_Panels/PanelRight/ScrollContainer" instance=ExtResource("6_mtiep")]
+layout_mode = 2
+
+[node name="toggle_panelLeft" type="TextureButton" parent="Layer2_Panels"]
+offset_left = 256.0
+offset_top = 48.0
+offset_right = 264.0
+offset_bottom = 83.0
+toggle_mode = true
+texture_normal = ExtResource("6_qwi2g")
+texture_pressed = ExtResource("7_f8e1x")
+texture_hover = ExtResource("8_whaa2")
+metadata/_edit_use_anchors_ = true
+
+[node name="toggle_panelRight" type="TextureButton" parent="Layer2_Panels"]
+offset_left = 1016.0
+offset_top = 48.0
+offset_right = 1024.0
+offset_bottom = 83.0
+toggle_mode = true
+texture_normal = ExtResource("6_qwi2g")
+texture_pressed = ExtResource("7_f8e1x")
+texture_hover = ExtResource("8_whaa2")
+flip_h = true
+metadata/_edit_use_anchors_ = true
+
+[node name="toggle_panelBottom" type="TextureButton" parent="Layer2_Panels"]
+offset_left = 8.0
+offset_top = 464.0
+offset_right = 16.0
+offset_bottom = 499.0
+rotation = -1.57079
+toggle_mode = true
+texture_normal = ExtResource("6_qwi2g")
+texture_pressed = ExtResource("7_f8e1x")
+texture_hover = ExtResource("8_whaa2")
+metadata/_edit_use_anchors_ = true
+
+[node name="Layer2_SpriteEditor_Canvas" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="Control" type="Control" parent="Layer2_SpriteEditor_Canvas"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = 264.0
+offset_right = 1280.0
+offset_bottom = 720.0
+focus_mode = 1
+script = ExtResource("9_mavd5")
+
+[node name="checkbg" type="TextureRect" parent="Layer2_SpriteEditor_Canvas/Control"]
+z_index = -4096
+z_as_relative = false
+layout_mode = 0
+offset_left = -48.0
+offset_top = -24.0
+offset_right = 4048.0
+offset_bottom = 4072.0
+texture = ExtResource("9_5h6cm")
+stretch_mode = 1
+
+[node name="Center" type="Node2D" parent="Layer2_SpriteEditor_Canvas/Control"]
+
+[node name="Canvas" type="Node2D" parent="Layer2_SpriteEditor_Canvas/Control/Center"]
+
+[node name="texture" type="Sprite2D" parent="Layer2_SpriteEditor_Canvas/Control/Center/Canvas"]
+centered = false
+
+[node name="other_crops" type="Node2D" parent="Layer2_SpriteEditor_Canvas/Control/Center/Canvas"]
+
+[node name="square" type="Line2D" parent="Layer2_SpriteEditor_Canvas/Control/Center/Canvas"]
+points = PackedVector2Array(0, 0, 0, 0)
+width = 1.0
+default_color = Color(0.368627, 0.823529, 1, 1)
+antialiased = true
+
+[node name="zoomLabel" type="Button" parent="Layer2_SpriteEditor_Canvas/Control"]
+z_index = 4096
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 50.0
+offset_bottom = 34.0
+theme_override_font_sizes/font_size = 11
+text = "100%"
+
+[node name="close" type="Button" parent="Layer2_SpriteEditor_Canvas"]
+offset_left = 1240.0
+offset_right = 1280.0
+offset_bottom = 40.0
+icon = ExtResource("11_2redu")
+icon_alignment = 1
+
+[node name="SpinBox" type="SpinBox" parent="Layer2_SpriteEditor_Canvas"]
+offset_left = 1184.0
+offset_top = 680.0
+offset_right = 1267.06
+offset_bottom = 711.0
+
+[node name="Label" type="Label" parent="Layer2_SpriteEditor_Canvas/SpinBox"]
+layout_mode = 0
+offset_left = -96.0
+offset_top = 4.0
+offset_right = -6.0
+offset_bottom = 30.0
+text = "Texture ID :"
+
+[node name="Layer2_SpriteEditor_Panels" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="PanelLeft" type="Panel" parent="Layer2_SpriteEditor_Panels"]
+offset_right = 256.0
+offset_bottom = 720.0
+
+[node name="ItemList" type="ItemList" parent="Layer2_SpriteEditor_Panels/PanelLeft"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 32.0
+offset_right = 249.0
+offset_bottom = 704.0
+item_count = 1
+max_columns = 6
+same_column_width = true
+fixed_column_width = 64
+fixed_icon_size = Vector2i(64, 64)
+item_0/text = ""
+item_0/icon = ExtResource("9_x3jkg")
+script = ExtResource("11_oydw2")
+
+[node name="Label" type="Label" parent="Layer2_SpriteEditor_Panels/PanelLeft"]
+modulate = Color(0.521569, 0.521569, 0.521569, 1)
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 247.0
+offset_bottom = 27.0
+theme_override_font_sizes/font_size = 11
+text = "Sprite List"
+horizontal_alignment = 1
+
+[node name="texture_pathBTN" type="Button" parent="Layer2_SpriteEditor_Panels/PanelLeft"]
+layout_mode = 0
+offset_left = 224.0
+offset_top = 680.0
+offset_right = 246.0
+offset_bottom = 711.0
+text = "..."
+
+[node name="texture_path" type="Label" parent="Layer2_SpriteEditor_Panels/PanelLeft"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 688.0
+offset_right = 216.0
+offset_bottom = 711.0
+theme_override_font_sizes/font_size = 11
+text = "No texture path set."
+clip_text = true
+
+[node name="Layer3_Popups" type="CanvasLayer" parent="."]
+
+[node name="FileDialog" type="FileDialog" parent="Layer3_Popups"]
+title = "Open a File"
+position = Vector2i(340, 100)
+size = Vector2i(600, 400)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+
+[node name="SaveDialog" type="FileDialog" parent="Layer3_Popups"]
+position = Vector2i(340, 100)
+size = Vector2i(600, 400)
+ok_button_text = "Save"
+access = 2
+
+[node name="dirDialog" type="FileDialog" parent="Layer3_Popups"]
+title = "Open a Directory"
+position = Vector2i(340, 100)
+size = Vector2i(600, 400)
+ok_button_text = "Select Current Folder"
+file_mode = 2
+access = 2
+
+[node name="AcceptDialog" type="AcceptDialog" parent="Layer3_Popups"]
+unique_name_in_owner = true
+position = Vector2i(450, 200)
+size = Vector2i(300, 80)
+dialog_autowrap = true
+
+[node name="About" type="AcceptDialog" parent="Layer3_Popups"]
+title = "About"
+position = Vector2i(380, 192)
+size = Vector2i(520, 335)
+exclusive = false
+unresizable = true
+min_size = Vector2i(144, 0)
+ok_button_text = "Close"
+dialog_text = "-Puyo Puyo Animation Editor-
+By: Armando (ArMM1998)
+
+Supported games:
+-Puyo Puyo! 15th Anniversary
+-Puyo Puyo 7
+-Puyo Puyo!! 20th Anniversary
+-Puyo Puyo!! Quest
+
+If you find this tool useful, please consider supporting me!"
+dialog_autowrap = true
+
+[node name="logo" type="Sprite2D" parent="Layer3_Popups/About"]
+position = Vector2(400, 120)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("9_x474k")
+
+[node name="Node2D" type="Node2D" parent="Layer3_Popups/About"]
+position = Vector2(470, 240)
+
+[node name="TextureButton" type="TextureButton" parent="Layer3_Popups/About/Node2D"]
+layout_direction = 1
+offset_right = 32.0
+offset_bottom = 32.0
+texture_normal = ExtResource("10_iig2l")
+script = ExtResource("11_tcy6v")
+
+[node name="directory_watcher" type="Node" parent="."]
+
+[connection signal="selected_element" from="Layer1_Canvas/CanvasViewport" to="." method="_on_canvas_viewport_selected_element"]
+[connection signal="toggled" from="Layer2_Panels/toggle_panelLeft" to="Layer2_Panels" method="panelLeftToggle"]
+[connection signal="toggled" from="Layer2_Panels/toggle_panelRight" to="Layer2_Panels" method="panelRightToggle"]
+[connection signal="toggled" from="Layer2_Panels/toggle_panelBottom" to="Layer2_Panels" method="panelBottomToggle"]
+[connection signal="pressed" from="Layer2_SpriteEditor_Canvas/Control/zoomLabel" to="Layer2_SpriteEditor_Canvas/Control" method="_on_zoom_label_pressed"]
+[connection signal="pressed" from="Layer2_SpriteEditor_Canvas/close" to="Layer2_SpriteEditor_Canvas/Control" method="_on_close_pressed"]
+[connection signal="value_changed" from="Layer2_SpriteEditor_Canvas/SpinBox" to="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" method="_on_spin_box_value_changed"]
+[connection signal="item_activated" from="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" to="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" method="_on_item_activated"]
+[connection signal="item_clicked" from="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" to="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" method="_on_item_clicked"]
+[connection signal="pressed" from="Layer2_SpriteEditor_Panels/PanelLeft/texture_pathBTN" to="." method="_on_texture_path_btn_pressed"]
+[connection signal="canceled" from="Layer3_Popups/SaveDialog" to="." method="_on_save_dialog_canceled"]
+[connection signal="file_selected" from="Layer3_Popups/SaveDialog" to="." method="_on_save_dialog_file_selected"]
+[connection signal="dir_selected" from="Layer3_Popups/dirDialog" to="." method="selectedTextureDir"]
+[connection signal="mouse_entered" from="Layer3_Popups/About/Node2D/TextureButton" to="Layer3_Popups/About/Node2D/TextureButton" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Layer3_Popups/About/Node2D/TextureButton" to="Layer3_Popups/About/Node2D/TextureButton" method="_on_mouse_exited"]
+[connection signal="pressed" from="Layer3_Popups/About/Node2D/TextureButton" to="Layer3_Popups/About/Node2D/TextureButton" method="_on_pressed"]
+[connection signal="visibility_changed" from="Layer3_Popups/About/Node2D/TextureButton" to="Layer3_Popups/About/Node2D/TextureButton" method="_on_visibility_changed"]

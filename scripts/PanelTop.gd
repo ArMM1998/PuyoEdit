@@ -1,6 +1,6 @@
 extends Panel
 
-var platforms = ["Wii 16:9", "Wii 4:9", "PS2", "PSP", "3DS top", "3DS bottom", "DS", "Mobile"]
+var platforms = ["Wii 16:9", "Wii 4:3", "PS2", "PSP", "3DS top", "3DS bottom", "DS", "Mobile"]
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$MenuButton_File.set_focus_mode(true)

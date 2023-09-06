@@ -4,9 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://dr5wieon5otcs" path="res://Graphics/center_pivot.png" id="2_2t7yw"]
 
 [node name="Control" type="Control"]
-custom_minimum_size = Vector2(256, 633)
+custom_minimum_size = Vector2(256, 677)
 layout_mode = 3
 anchors_preset = 0
+offset_right = 256.0
+offset_bottom = 677.0
 
 [node name="render" type="CheckBox" parent="."]
 layout_mode = 2
@@ -247,6 +249,15 @@ offset_bottom = 449.0
 theme_override_font_sizes/font_size = 15
 text = "Scale"
 
+[node name="Label13" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 644.0
+offset_right = 80.0
+offset_bottom = 669.0
+theme_override_font_sizes/font_size = 15
+text = "3D Depth"
+
 [node name="angle" type="SpinBox" parent="."]
 layout_mode = 0
 offset_left = 100.0
@@ -254,13 +265,26 @@ offset_top = 457.0
 offset_right = 270.0
 offset_bottom = 488.0
 scale = Vector2(0.8, 0.8)
-min_value = -360.0
-max_value = 360.0
+min_value = -9000.0
+max_value = 9000.0
 step = 0.01
 allow_greater = true
 allow_lesser = true
 alignment = 1
 suffix = "º"
+
+[node name="depth" type="SpinBox" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 645.0
+offset_right = 270.0
+offset_bottom = 676.0
+scale = Vector2(0.8, 0.8)
+min_value = -2.14748e+09
+max_value = 2.14748e+09
+allow_greater = true
+allow_lesser = true
+alignment = 1
 
 [node name="Label10" type="Label" parent="."]
 layout_mode = 0
@@ -383,5 +407,5 @@ layout_mode = 0
 offset_left = -3.0
 offset_top = -3.0
 offset_right = 270.0
-offset_bottom = 658.0
+offset_bottom = 700.0
 color = Color(0.176471, 0.176471, 0.176471, 0.521569)

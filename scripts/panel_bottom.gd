@@ -369,6 +369,11 @@ func timelineInput(event):
 								owner.time = float(keyframe["timestamp"])
 								selected_keyframe = keyIDX
 								holdingKeyframe = true
+								
+								owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+								owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+								owner.undoHistory[-1].append(owner.time)
+								
 								initial_mouse_pos = get_global_mouse_position()
 								prev_tweening = keyframe["tweening"]
 								if keyIDX < anim_track["Keyframes"].size() -1:
@@ -480,6 +485,9 @@ func addKeyframe():
 	if owner.selected_element != -1:
 		if owner.animation_idx < owner.LayerList[owner.selected_layer][owner.selected_element].animation_list.size():
 			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+			owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+			owner.undoHistory[-1].append(owner.time)
 			var frame = round(($timeline/keyframes.to_local(get_global_mouse_position()).x-8) / (16*zoomLevel))
 			frame = int(snapped(frame, 1/zoomLevel))
 			
@@ -645,19 +653,24 @@ func updateKeyframeSettings(kf, next_kf):
 		
 		#BAD
 		
-		var easein_y = (kf["ease_in"]/abs(kf["data"] - next_kf["data"])) * (abs(kf["timestamp"] - next_kf["timestamp"])*4)
-		var easeout_y = -(kf["ease_out"]/abs(kf["data"] - next_kf["data"])) * (abs(kf["timestamp"] - next_kf["timestamp"])*4)
+		if kf["ease_in"] != 0 or kf["ease_out"] != 0:
 		
-		if kf["data"] < next_kf["data"]:
-			$keyframeSettings/curvePanel/curve/ease_in_btn.position = Vector2(-16,easein_y)
-			$keyframeSettings/curvePanel/curve/ease_out_btn.position = Vector2(142, easeout_y + 108)
-		
-		elif kf["data"] == next_kf["data"]:
+			var easein_y = (kf["ease_in"]/abs(kf["data"] - next_kf["data"])) * (abs(kf["timestamp"] - next_kf["timestamp"])*4)
+			var easeout_y = -(kf["ease_out"]/abs(kf["data"] - next_kf["data"])) * (abs(kf["timestamp"] - next_kf["timestamp"])*4)
+			
+			if kf["data"] < next_kf["data"]:
+				$keyframeSettings/curvePanel/curve/ease_in_btn.position = Vector2(-16,easein_y)
+				$keyframeSettings/curvePanel/curve/ease_out_btn.position = Vector2(142, easeout_y + 108)
+			
+			elif kf["data"] == next_kf["data"]:
+				$keyframeSettings/curvePanel/curve/ease_in_btn.position = Vector2(-16,0)
+				$keyframeSettings/curvePanel/curve/ease_out_btn.position = Vector2(142,108)
+			else:
+				$keyframeSettings/curvePanel/curve/ease_in_btn.position = Vector2(-16,-easein_y)
+				$keyframeSettings/curvePanel/curve/ease_out_btn.position = Vector2(142, -easeout_y + 108)
+		else:
 			$keyframeSettings/curvePanel/curve/ease_in_btn.position = Vector2(-16,0)
 			$keyframeSettings/curvePanel/curve/ease_out_btn.position = Vector2(142,108)
-		else:
-			$keyframeSettings/curvePanel/curve/ease_in_btn.position = Vector2(-16,-easein_y)
-			$keyframeSettings/curvePanel/curve/ease_out_btn.position = Vector2(142, -easeout_y + 108)
 	#$keyframeSettings/curvePanel/curve/Line2D.add_point(Vector2(128,108))
 
 
@@ -670,6 +683,9 @@ var prev_tweening = 1
 func changeTweening(id_pressed):
 	if selected_track != -1:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+		owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+		owner.undoHistory[-1].append(owner.time)
 		for track in element.animation_list[owner.animation_idx]:
 			if track["Motion"] == trackName[selected_track]:
 				track["Keyframes"][selected_keyframe]["tweening"] = id_pressed
@@ -716,17 +732,22 @@ func _on_length_box_value_changed(value):
 
 func deleteKeyframe():
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-	
 	if multiple_select == []:
 		var track_name = trackName[int(selected_track)]
 		for track in element.animation_list[owner.animation_idx]:
 			if track["Motion"] == track_name:
+				owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+				owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+				owner.undoHistory[-1].append(owner.time)
 				track["Keyframes"].remove_at(selected_keyframe)
 				selected_element = []
 				selected_keyframe = -1
 				if track["Keyframes"].size() == 0:
 					element.animation_list[owner.animation_idx].remove_at(element.animation_list[owner.animation_idx].find(track))
 	else:
+		owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+		owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+		owner.undoHistory[-1].append(owner.time)
 		for track in element.animation_list[owner.animation_idx]:
 			var newKeyframeList = []
 			for keyframe in track["Keyframes"]:
@@ -754,6 +775,9 @@ func _on_ease_in_btn_pressed():
 func _on_ease_out_btn_pressed():
 	pass
 
+
+var changing = false
+
 func _on_ease_in_btn_gui_input(event):
 	
 	var keyframe
@@ -774,11 +798,19 @@ func _on_ease_in_btn_gui_input(event):
 		initial_mouse_pos = get_global_mouse_position()
 	
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+		owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+		owner.undoHistory[-1].append(owner.time)
 		keyframe["ease_in"] = 0
 		updateKeyframeSettings(keyframe, next_kf)
 	
 	
 	if holding_ease == 1:
+		if not changing:
+			owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+			owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+			owner.undoHistory[-1].append(owner.time)
+		changing = true
 		#print((initial_mouse_pos.y - get_global_mouse_position().y)*abs(keyframe["data"] - next_kf["data"]))
 		
 		if next_kf["data"] > keyframe["data"]:
@@ -812,10 +844,17 @@ func _on_ease_out_btn_gui_input(event):
 		initial_mouse_pos = get_global_mouse_position()
 	
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+		owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+		owner.undoHistory[-1].append(owner.time)
 		keyframe["ease_out"] = 0
 		updateKeyframeSettings(keyframe, next_kf)
 	if holding_ease == 2:
-		
+		if not changing:
+			owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+			owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+			owner.undoHistory[-1].append(owner.time)
+		changing = true
 		#print(abs(keyframe["data"] - next_kf["data"]))
 		if next_kf["data"] > keyframe["data"]:
 			keyframe["ease_out"] += (initial_mouse_pos.y - get_global_mouse_position().y) * (abs(keyframe["data"] - next_kf["data"])/(abs(keyframe["timestamp"] - next_kf["timestamp"]*4)))
@@ -921,6 +960,11 @@ func _on_loop_visib_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "hide":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -936,6 +980,10 @@ func _on_loop_posx_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "posx":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -951,6 +999,11 @@ func _on_loop_posy_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "posy":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -966,6 +1019,11 @@ func _on_loop_angle_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "angle":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -981,6 +1039,11 @@ func _on_loop_scalex_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "scalex":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -996,6 +1059,11 @@ func _on_loop_scaley_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "scaley":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -1011,6 +1079,11 @@ func _on_loop_sprite_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "sprite_index":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -1026,6 +1099,11 @@ func _on_loop_color_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "rgba":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -1041,6 +1119,11 @@ func _on_loop_color_tl_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "rgba_tl":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -1055,6 +1138,11 @@ func _on_loop_color_bl_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "rgba_bl":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -1069,6 +1157,11 @@ func _on_loop_color_tr_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "rgba_tr":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -1084,6 +1177,11 @@ func _on_loop_color_br_pressed():
 		if owner.animation_idx < element.animation_list.size():
 			for track in element.animation_list[owner.animation_idx]:
 				if track["Motion"] == "rgba_br":
+					
+					owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+					owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+					owner.undoHistory[-1].append(owner.time)
+					
 					if track["Loop"] == 2:
 						track["Loop"] = 0
 					else:
@@ -1091,3 +1189,10 @@ func _on_loop_color_br_pressed():
 					selected_element = []
 					break
 
+
+func updateEasingPreview():
+	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	for track in element.animation_list[owner.animation_idx]:
+		if track["Motion"] == trackName[selected_track]:
+			if selected_keyframe +1 < track["Keyframes"].size():
+				updateKeyframeSettings(track["Keyframes"][selected_keyframe], track["Keyframes"][selected_keyframe+1])

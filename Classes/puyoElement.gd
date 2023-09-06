@@ -38,6 +38,9 @@ var color_tr = Color(1,1,1,1) : set = setColorTR
 var color_br = Color(1,1,1,1) : set = setColorBR
 var mixed_color
 var sprite_list = [] : set = setSpriteList
+var depth = 0 : set = set3dDepth
+var name_order = -2424
+
 
 var defaultSettings = {"visibility" : true,
 						"positionX" : 0.0,
@@ -452,6 +455,8 @@ func setScale(value):
 	setScaley(value[1])
 	
 
+func getScale():
+	return Vector2(scalex, scaley)
 func getScaley():
 	return scaley
 
@@ -538,3 +543,51 @@ func setPosition(value):
 func setSpriteList(value):
 	sprite_list = value
 	update()
+
+func set3dDepth(value):
+	depth = value
+
+func getSize():
+	return element_size
+
+func getFlipX():
+	return flipX
+
+func getFlipY():
+	return flipY
+
+func getVisible():
+	return visibility
+
+func getColor():
+	return color
+
+func getColorTL():
+	return color_tl
+
+func getColorBL():
+	return color_bl
+
+func getColorTR():
+	return color_tr
+	
+func getColorBR():
+	return color_br
+
+func getRender():
+	return render
+
+func getAddBlend():
+	return add_blend
+
+func getName():
+	return element_name
+
+func getSpriteIndex():
+	return sprite_index
+
+func dummy():
+	return ""
+
+func setdummy(dum):
+	pass
