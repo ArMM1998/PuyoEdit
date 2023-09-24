@@ -53,11 +53,19 @@ func _ready():
 	$ScrollContainer/Control/spritelist.item_clicked.connect(itemClicked)
 	
 	$ScrollContainer/Control/depth.value_changed.connect(updateDepth)
+	$ScrollContainer/Control/HSlider.value_changed.connect(updateDepth)
 	
 var selected = -1
 var changing = false
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
+	
+	var is_3ds = owner.project_settings["platform"].find("3DS") != -1
+	
+	$ScrollContainer/Control/HSlider.visible = is_3ds
+	$ScrollContainer/Control/Label13.visible = is_3ds
+	$ScrollContainer/Control/Sprite2D.visible = is_3ds
+	$ScrollContainer/Control/depth.visible = is_3ds
 	
 	if owner.selected_element != -1:
 		$ScrollContainer.visible = true
@@ -86,6 +94,7 @@ func update():
 	if owner.selected_element != -1:
 		var element = owner.LayerList[owner.selected_layer][owner.selected_element] 
 		$ScrollContainer/Control/depth.value = element.depth
+		$ScrollContainer/Control/HSlider.value = element.depth
 		$ScrollContainer/Control/elementName.text = element.element_name
 		$ScrollContainer/Control/render.button_pressed = element.render
 		$ScrollContainer/Control/additive.button_pressed = element.add_blend
@@ -391,7 +400,7 @@ func showSpriteList(del = false):
 	
 	
 	for sprite in owner.spriteCropList:
-		$ScrollContainer/Control/PopupMenu.add_icon_item(resizeTexture(sprite,64), "")
+		$ScrollContainer/Control/PopupMenu.add_icon_item(resizeTexture(sprite,80), "")
 	if del:
 		$ScrollContainer/Control/PopupMenu.add_icon_item(load("res://Graphics/del.png"), "")
 	
@@ -427,6 +436,7 @@ func resizeTexture(sprite, max_size):
 
 func SpriteSelected(idx):
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	owner.add_undo(element.setSpriteList, element.getSpriteList, element.sprite_list.duplicate(true), "value", element)
 	if newSprite:
 		element.sprite_list.append(owner.spriteCropList[idx].texture)
 		element.setSpriteIndex(element.sprite_list.size()-1)
@@ -451,6 +461,13 @@ func sizegui(event):
 		$ScrollContainer/Control/popupmenuMatchSize.position = get_global_mouse_position()
 		$ScrollContainer/Control/popupmenuMatchSize.popup()
 
-func updateDepth(value):
+func updateDepth(dummy):
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-	element.set3dDepth(value)
+	
+	if $ScrollContainer/Control/depth.value == int(dummy):
+		element.set3dDepth($ScrollContainer/Control/depth.value)
+		
+		$ScrollContainer/Control/HSlider.value = $ScrollContainer/Control/depth.value
+	else:
+		element.set3dDepth($ScrollContainer/Control/HSlider.value)
+		$ScrollContainer/Control/depth.value = $ScrollContainer/Control/HSlider.value

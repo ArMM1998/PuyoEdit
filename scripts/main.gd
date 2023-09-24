@@ -252,6 +252,10 @@ func setAnimIdx(idx):
 	animation_idx = idx
 	if animation_idx <= animationList.size()-1:
 		animation_max_time = animationList[idx]["length"]
+	
+	for layer in LayerList:
+		for element in layer:
+			element.animate(time, animation_idx, project_settings["screen_size"])
 
 var autobackup = true
 
@@ -342,6 +346,7 @@ func _process(delta):
 		$"Layer1_Canvas/CanvasViewport/ElementStuff".visible = true
 		for layer in LayerList:
 			for element in layer:
+				#print(element, "element")
 				element.saveDefaults = true
 	$Layer2_Panels/PanelBottom/frameTime.value = round(time) 
 	$Layer2_Panels/PanelBottom/timeline/Head.position = Vector2((time*(16*$Layer2_Panels/PanelBottom.zoomLevel)-$Layer2_Panels/PanelBottom/HScrollBar.value*(16*$Layer2_Panels/PanelBottom.zoomLevel)), 0)
@@ -386,12 +391,16 @@ func _input(event):
 	
 	if event is InputEventKey and event.keycode == KEY_SPACE and event.pressed and $Layer2_Panels/PanelBottom/timeline.has_focus():
 		playing = not playing
+
 	
 	if event is InputEventKey and event.keycode == KEY_S and event.pressed and holdingCtrl:
 		startSaveTask(false)
 	
-	if event is InputEventKey and event.keycode == KEY_F2 and event.pressed:
-		$Layer1_Canvas/CanvasViewport.resetZoom()
+	if event is InputEventKey and event.keycode == KEY_O and event.pressed and holdingCtrl:
+		startOpenFileTask()
+	
+#	if event is InputEventKey and event.keycode == KEY_F2 and event.pressed:
+#		$Layer1_Canvas/CanvasViewport.resetZoom()
 	
 	if event is InputEventKey and event.keycode == KEY_E and holdingCtrl and event.pressed:
 		toggleSpriteEditor()
@@ -400,7 +409,7 @@ func _input(event):
 	if event is InputEventKey and event.keycode == KEY_Z and holdingCtrl and event.pressed:
 		if len(undoHistory) > 0 and not $Layer1_Canvas/CanvasViewport.undoBlock:
 			var undo = undoHistory[len(undoHistory)-1]
-			#status_message.displayMessage(undo[3] + str(undo[2]))
+			status_message.displayMessage("Undo last action.")
 			if undo[3] == "value": #undoing a value change
 				var params = undo[1].call()
 				undo[0].call(undo[2])
@@ -409,7 +418,7 @@ func _input(event):
 				selected_layer = undo[4].layer
 				element_list.updateSelected()
 			
-			if undo[3] == "keyframe":
+			elif undo[3] == "keyframe":
 				var params = undo[1].call()
 				undo[0].call(undo[2])
 				add_redo(undo[0], undo[1], params, undo[3], undo[4])
@@ -424,7 +433,7 @@ func _input(event):
 				$Layer2_Panels/PanelBottom.selected_element = []
 				$Layer2_Panels/PanelBottom.updateEasingPreview()
 			
-			if undo[3] == "deletion": #undoing element deletion
+			elif undo[3] == "deletion": #undoing element deletion
 				
 				#Fill up the layer list with a bunch of strings, to occupy space for insertion.
 				for i in range(64):
@@ -453,16 +462,16 @@ func _input(event):
 				ghostElements.pop_at(len(ghostElements)-1)
 				add_redo(undo[0], undo[1], undo[2], undo[3], undo[4])
 				
-			if undo[3] == "creation":
+			elif undo[3] == "creation":
 				unCreateElement(undo[2])
 			
-			if undo[3] == "layerlist":
+			elif undo[3] == "layerlist":
 				add_redo(LayerList.duplicate(true), undo[1], undo[2], undo[3], undo[4])
 				LayerList = undo[0].duplicate(true)
 				selected_layer = undo[1]
 				selected_element = undo[2]
 			
-			if undo[3] == "hierarchy":
+			elif undo[3] == "hierarchy":
 				add_redo(undo[1].get_parent(), undo[1], undo[2], undo[3], LayerList.duplicate(true))
 				undo[1].reparent(undo[0])
 				undo[1].update()
@@ -471,16 +480,21 @@ func _input(event):
 				updateElementIDs()
 				selected_layer = undo[1].layer
 				selected_element = undo[1].id
-				
+			
+			elif undo[3] == "layerDel":
+				add_redo(undo[0], undo[1], undo[2], undo[3], undo[4])
+				selected_layer = undo[1]
+				LayerList.insert(undo[0], [])
 			undoHistory.pop_back()
 			checkGhosts(-1)
+			$Layer2_Panels/PanelRight.update()
 			$Layer2_Panels/PanelLeft/ElementTree.updateList()
 			$Layer2_Panels/PanelLeft/ElementTree.updateSelected()
 
 	if event is InputEventKey and event.keycode == KEY_Y and holdingCtrl and event.pressed:
 		if len(redoHistory) > 0 and not $Layer1_Canvas/CanvasViewport.undoBlock:
 			var redo = redoHistory[len(redoHistory)-1]
-			#status_message.displayMessage(redo[3])
+			status_message.displayMessage("Redo last action.")
 			if redo[3] == "value":
 				var params = redo[1].call()
 				redo[0].call(redo[2])
@@ -505,10 +519,10 @@ func _input(event):
 				$Layer2_Panels/PanelBottom.selected_element = []
 				$Layer2_Panels/PanelBottom.updateEasingPreview()
 			
-			if redo[3] == "deletion":
+			elif redo[3] == "deletion":
 				delElement(redo[2], true, true)
 			
-			if redo[3] == "creation":
+			elif redo[3] == "creation":
 				#Fill up the layer list with a bunch of strings, to occupy space for insertion.
 				for i in range(64):
 					LayerList[redo[4].layer].append("")
@@ -534,14 +548,14 @@ func _input(event):
 				ghostElements.pop_at(len(ghostElements)-1)
 				add_undo(redo[0], redo[1], redo[2], redo[3], redo[4], false)
 			
-			if redo[3] == "layerlist":
+			elif redo[3] == "layerlist":
 				add_undo(LayerList.duplicate(true), redo[1], redo[2], redo[3], redo[4], false)
 				LayerList = redo[0].duplicate(true)
 				selected_layer = redo[1]
 				selected_element = redo[2]
 				
 			
-			if redo[3] == "hierarchy":
+			elif redo[3] == "hierarchy":
 				add_undo(redo[1].get_parent(), redo[1], redo[2], redo[3], LayerList.duplicate(true), false)
 				redo[1].reparent(redo[0])
 				redo[1].update()
@@ -551,11 +565,15 @@ func _input(event):
 				selected_layer = redo[1].layer
 				selected_element = redo[1].id
 			
-			
+			elif redo[3] == "layerDel":
+				add_undo(redo[0], redo[1], redo[2], redo[3], redo[4], false)
+				LayerList.pop_at(redo[0])
+				selected_layer = redo[1]
 			redoHistory.pop_back()
 			checkGhosts(+1)
 			$Layer2_Panels/PanelLeft/ElementTree.updateList()
 			$Layer2_Panels/PanelLeft/ElementTree.updateSelected()
+			$Layer2_Panels/PanelRight.update()
 
 func checkGhosts(hp):
 	var elementidx = 0
@@ -637,7 +655,10 @@ func updateTargetPlatform(platform_name):
 	project_settings["screen_size"] = platformSettings[platform_name]["screen_size"]
 	user_settings["platform"] = platform_name
 	$Layer2_Panels/PanelTop/platformLabel.text = "Target Platform " + project_settings["platform"]
-	$Layer1_Canvas/CanvasViewport.resetZoom()
+	if not fullscreen:
+		$Layer1_Canvas/CanvasViewport.resetZoom()
+	else:
+		$Layer1_Canvas/CanvasViewport.fillZoom()
 	$Layer1_Canvas/CanvasViewport.updateObjectPositions()
 
 func toggleField():
@@ -1294,7 +1315,6 @@ func fix_hierarchy(input_array):
 
 func change_layer(element, layer, is_child = false, hierarchy = []):
 	selected_layer = layer
-	
 	if not is_child:
 		hierarchy = get_hierarchy_order(element)
 		
@@ -1326,6 +1346,11 @@ func change_layer(element, layer, is_child = false, hierarchy = []):
 				change_layer(child, layer, true, hierarchy)
 	if not is_child:
 		selected_element = element.id
+	
+	for i in range(LayerList[layer].size() - 1, -1, -1):
+		if typeof(LayerList[layer][i]) == TYPE_STRING:
+			LayerList[layer].pop_at(i)
+			
 	
 func move_element_back():
 	$Layer2_Panels/PanelLeft/ElementTree.ignore_selected = true
@@ -1612,6 +1637,7 @@ func duplicate_element(elem = false, parent = false):
 		duplicatedElement.setColorBL(element.color_bl)
 		duplicatedElement.setColorTR(element.color_tr)
 		duplicatedElement.setColorBR(element.color_br)
+		duplicatedElement.depth = element.depth
 		duplicatedElement.animation_list = element.animation_list.duplicate(true)
 		duplicatedElement.defaultSettings = element.defaultSettings.duplicate(true)
 		
@@ -1654,3 +1680,11 @@ func toggle_fullscreen():
 		$Layer2_Panels.visible = true
 		$Layer1_Canvas/CanvasViewport.fillZoom()
 	windowResize()
+
+func delLayer(layer_idx):
+	LayerList.pop_at(layer_idx)
+	add_undo(layer_idx, selected_layer, "", "layerDel", "")
+	if selected_layer != 0:
+		selected_layer-=1
+	$Layer2_Panels/PanelLeft/ElementTree.updateList()
+	

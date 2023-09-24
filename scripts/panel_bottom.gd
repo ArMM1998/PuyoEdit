@@ -25,6 +25,7 @@ func _process(delta):
 	if current_element != [owner.selected_layer, owner.selected_element]:
 		selected_keyframe = -1
 		selected_track = -1
+		multiple_select = []
 	
 	$ColorRect.visible = owner.selected_element == -1
 	
@@ -32,7 +33,8 @@ func _process(delta):
 	$keyframeSettings.visible = selected_keyframe != -1 and selected_track != -1
 	
 	$timeline/focus.visible = $timeline.has_focus()
-	if not $timeline.has_focus():
+	
+	if owner.selected_element == -1:
 		multiple_select = []
 	
 	
@@ -382,7 +384,7 @@ func timelineInput(event):
 									updateKeyframeSettings(keyframe, keyframe)
 								for layer in owner.LayerList:
 									for elem in layer:
-										elem.animate(owner.time, owner.animation_idx, owner.project_settings["screen_size"])
+										elem.animate(owner.time, owner.animation_idx, owner.project_settings["screen_size"], true)
 										owner.panel_right.update()
 								
 								if keyframe not in multiple_select:
@@ -503,8 +505,7 @@ func addKeyframe():
 			
 			if track_name == "hide":
 				data = int(not element.visibility)
-				if prev_tweening == 2:
-					prev_tweening = 0
+				prev_tweening = 0
 				
 			if track_name == "posx":
 				data = element.positionX / owner.project_settings["screen_size"][0]
@@ -523,8 +524,7 @@ func addKeyframe():
 			
 			if track_name == "sprite_index":
 				data = element.sprite_index
-				if prev_tweening == 2:
-					prev_tweening = 0
+				prev_tweening = 0
 				
 			if track_name == "rgba":
 				data = {"red": element.color.r8,
@@ -614,7 +614,7 @@ func _on_stop_pressed():
 	$HScrollBar.value = 0
 	for layer in owner.LayerList:
 		for element in layer:
-			element.restoreDefaults()
+			element.animate(owner.time, owner.animation_idx, owner.project_settings["screen_size"])
 
 func sortArrayByTimestamp(array):
 	for i in range(array.size() - 1):
@@ -671,7 +671,7 @@ func updateKeyframeSettings(kf, next_kf):
 		else:
 			$keyframeSettings/curvePanel/curve/ease_in_btn.position = Vector2(-16,0)
 			$keyframeSettings/curvePanel/curve/ease_out_btn.position = Vector2(142,108)
-	#$keyframeSettings/curvePanel/curve/Line2D.add_point(Vector2(128,108))
+	$keyframeSettings/curvePanel/curve/Line2D.add_point(Vector2(128,108))
 
 
 func _on_dropdown_pressed():
@@ -694,6 +694,7 @@ func changeTweening(id_pressed):
 					updateKeyframeSettings(track["Keyframes"][selected_keyframe], track["Keyframes"][selected_keyframe+1])
 				selected_element = []
 		for keyframe in multiple_select:
+			#print(keyframe, "what")
 			keyframe["tweening"] = id_pressed
 			selected_element = []
 
@@ -712,6 +713,7 @@ func updateAnimList():
 func _on_animation_list_item_clicked(index, _at_position, mouse_button_index):
 	if mouse_button_index == 1:
 		owner.animation_idx = index
+		owner.time = 0
 		selected_element = []
 		updateAnimList()
 

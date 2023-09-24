@@ -18,16 +18,13 @@ shadow_color = Color(0.160784, 0.160784, 0.160784, 1)
 shadow_offset = Vector2(0, 0)
 
 [node name="CanvasViewport" type="Control"]
-clip_contents = true
 layout_mode = 3
 anchors_preset = 0
-focus_mode = 1
 script = ExtResource("1_b3f5c")
 
 [node name="checkbg" type="TextureRect" parent="."]
 z_index = -4096
 z_as_relative = false
-layout_mode = 0
 offset_left = -16.0
 offset_right = 784.0
 offset_bottom = 440.0
@@ -88,7 +85,6 @@ position = Vector2(376, 192)
 
 [node name="zoomLabel" type="Button" parent="."]
 z_index = 4096
-layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 50.0
@@ -99,7 +95,6 @@ text = "100%"
 [node name="status_message" type="Label" parent="."]
 z_index = 4096
 z_as_relative = false
-layout_mode = 0
 offset_left = 16.0
 offset_top = 40.0
 offset_right = 376.0
@@ -120,7 +115,6 @@ default_color = Color(0.403922, 0.415686, 1, 1)
 modulate = Color(0.478431, 0.478431, 0.478431, 1)
 z_index = 4096
 z_as_relative = false
-layout_mode = 0
 offset_left = 564.0
 offset_top = 400.0
 offset_right = 748.0
@@ -220,7 +214,6 @@ default_color = Color(0.647059, 0.6, 0.968627, 1)
 
 [node name="LockToGrid" type="Button" parent="."]
 z_index = 4096
-layout_mode = 0
 offset_left = 440.0
 offset_top = 8.0
 offset_right = 456.0
@@ -232,7 +225,6 @@ icon = ExtResource("8_ydadp")
 
 [node name="maximize_view" type="Button" parent="."]
 z_index = 4096
-layout_mode = 0
 offset_left = 56.0
 offset_top = 8.0
 offset_right = 80.0
@@ -241,8 +233,6 @@ theme_override_colors/font_pressed_color = Color(0.572549, 0.690196, 1, 1)
 theme_override_font_sizes/font_size = 11
 icon = ExtResource("9_x5n8r")
 
-[connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
-[connection signal="focus_exited" from="." to="." method="_on_focus_exited"]
 [connection signal="gui_input" from="checkbg" to="." method="_on_checkbg_gui_input"]
 [connection signal="pressed" from="zoomLabel" to="." method="resetZoom"]
 [connection signal="gui_input" from="ElementStuff/posMoveScaleTop/ScaleTop" to="." method="_on_scale_top_gui_input"]

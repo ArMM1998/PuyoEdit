@@ -1,14 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://dye5mbqgwmkhy"]
+[gd_scene load_steps=4 format=3 uid="uid://dye5mbqgwmkhy"]
 
 [ext_resource type="Texture2D" uid="uid://4ms3remsblny" path="res://Graphics/match_size.png" id="1_6t54b"]
 [ext_resource type="Texture2D" uid="uid://dr5wieon5otcs" path="res://Graphics/center_pivot.png" id="2_2t7yw"]
+[ext_resource type="Texture2D" uid="uid://cbfg0b4ukfiy6" path="res://Graphics/camera_depth.png" id="3_2iq8a"]
 
 [node name="Control" type="Control"]
-custom_minimum_size = Vector2(256, 677)
+custom_minimum_size = Vector2(256, 660)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 256.0
-offset_bottom = 677.0
+offset_bottom = 660.0
 
 [node name="render" type="CheckBox" parent="."]
 layout_mode = 2
@@ -252,9 +253,9 @@ text = "Scale"
 [node name="Label13" type="Label" parent="."]
 layout_mode = 0
 offset_left = 12.0
-offset_top = 644.0
+offset_top = 600.0
 offset_right = 80.0
-offset_bottom = 669.0
+offset_bottom = 625.0
 theme_override_font_sizes/font_size = 15
 text = "3D Depth"
 
@@ -276,14 +277,13 @@ suffix = "º"
 [node name="depth" type="SpinBox" parent="."]
 layout_mode = 0
 offset_left = 100.0
-offset_top = 645.0
+offset_top = 603.0
 offset_right = 270.0
-offset_bottom = 676.0
+offset_bottom = 634.0
 scale = Vector2(0.8, 0.8)
-min_value = -2.14748e+09
-max_value = 2.14748e+09
-allow_greater = true
-allow_lesser = true
+min_value = -90000.0
+max_value = 90000.0
+step = 1000.0
 alignment = 1
 
 [node name="Label10" type="Label" parent="."]
@@ -347,51 +347,55 @@ color = Color(1, 1, 1, 1)
 [node name="Label12" type="Label" parent="."]
 layout_mode = 0
 offset_left = 12.0
-offset_top = 568.0
+offset_top = 553.0
 offset_right = 75.0
-offset_bottom = 593.0
+offset_bottom = 578.0
 theme_override_font_sizes/font_size = 15
 text = "UV Color"
 
 [node name="Line2D" type="Line2D" parent="."]
+position = Vector2(68.2, 200.367)
+scale = Vector2(0.6, 0.616667)
 points = PackedVector2Array(140, 612, 196, 612, 196, 556, 140, 556, 140, 612)
 width = 2.0
 default_color = Color(0.34902, 0.34902, 0.34902, 1)
 
 [node name="color_tl" type="ColorPickerButton" parent="."]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 536.0
-offset_right = 160.0
-offset_bottom = 576.0
+offset_left = 133.0
+offset_top = 526.0
+offset_right = 165.0
+offset_bottom = 558.0
 color = Color(1, 1, 1, 1)
 
 [node name="color_tr" type="ColorPickerButton" parent="."]
 layout_mode = 0
-offset_left = 176.0
-offset_top = 536.0
-offset_right = 216.0
-offset_bottom = 576.0
+offset_left = 175.0
+offset_top = 526.0
+offset_right = 207.0
+offset_bottom = 558.0
 color = Color(1, 1, 1, 1)
 
 [node name="color_bl" type="ColorPickerButton" parent="."]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 592.0
-offset_right = 160.0
-offset_bottom = 632.0
+offset_left = 133.0
+offset_top = 564.0
+offset_right = 165.0
+offset_bottom = 596.0
 color = Color(1, 1, 1, 1)
 
 [node name="color_br" type="ColorPickerButton" parent="."]
 layout_mode = 0
-offset_left = 176.0
-offset_top = 592.0
-offset_right = 216.0
-offset_bottom = 632.0
+offset_left = 175.0
+offset_top = 564.0
+offset_right = 207.0
+offset_bottom = 596.0
 color = Color(1, 1, 1, 1)
 
 [node name="PopupMenu" type="PopupMenu" parent="."]
+size = Vector2i(48, 60)
 always_on_top = true
+max_size = Vector2i(128, 256)
 content_scale_size = Vector2i(1, 1)
 content_scale_aspect = 4
 allow_search = false
@@ -402,7 +406,24 @@ content_scale_size = Vector2i(1, 1)
 content_scale_aspect = 4
 allow_search = false
 
+[node name="HSlider" type="HSlider" parent="."]
+layout_mode = 0
+offset_left = 37.0
+offset_top = 632.0
+offset_right = 244.0
+offset_bottom = 648.0
+min_value = -90000.0
+max_value = 90000.0
+step = 1000.0
+value = -40000.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(18, 640)
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("3_2iq8a")
+
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 layout_mode = 0
 offset_left = -3.0
 offset_top = -3.0

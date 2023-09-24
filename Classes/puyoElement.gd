@@ -242,7 +242,7 @@ func linearInterpolation(given_time: float, lower_range_time: float, upper_range
 	else:
 		return interpolation_ratio
 
-func animate(current_time, anim_idx, screen_size):
+func animate(current_time, anim_idx, screen_size, loop_update_fix = false):
 	#time = round(time)
 	var current_kf
 	var next_kf
@@ -260,7 +260,10 @@ func animate(current_time, anim_idx, screen_size):
 				#print(animation)
 				time = current_time
 				if bool(animation["Loop"]) and animation["Keyframes"].size() > 1:
-					time = float(int(time*60) % int((animation["Keyframes"][animation["Keyframes"].size()-1]["timestamp"])*60))/60
+					if loop_update_fix:
+						time = float(int(time*60) % int((animation["Keyframes"][animation["Keyframes"].size()-1]["timestamp"]+1)*60))/60
+					else:
+						time = float(int(time*60) % int((animation["Keyframes"][animation["Keyframes"].size()-1]["timestamp"])*60))/60
 					
 				#first keyframe doesn't start at 0
 				if time < animation["Keyframes"][0]["timestamp"]:
@@ -589,5 +592,8 @@ func getSpriteIndex():
 func dummy():
 	return ""
 
-func setdummy(dum):
+func setdummy(_dum):
 	pass
+
+func getSpriteList():
+	return sprite_list

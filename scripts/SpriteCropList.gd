@@ -79,8 +79,9 @@ func _on_item_clicked(index, _at_position, _mouse_button_index):
 		selected = index
 		update()
 		
+	clicked_currently = index
 
-
+var clicked_currently = 0
 func _on_item_activated(index):
 	if not index in range(owner.spriteCropList.size()):
 		owner.newSpriteCrop()
@@ -92,3 +93,24 @@ func _on_spin_box_value_changed(value):
 	if not ignore:
 		owner.spriteCropList[selected].setOgTexture(owner.textureList[value], value)
 		update()
+
+
+func _on_gui_input(event):
+	if event is InputEventKey and event.keycode == KEY_DELETE and event.pressed:
+		if clicked_currently != -1 and clicked_currently in range(owner.spriteCropList.size()):
+			#owner.spriteCropList[clicked_currently].queue_free()
+			var spriteCrop = owner.spriteCropList[selected]
+
+			for layer in owner.LayerList:
+				for element in layer:
+					for sprite in element.sprite_list:
+						print(sprite, spriteCrop.texture)
+						if sprite == spriteCrop.texture:
+							element.sprite_list.erase(sprite)
+			
+			owner.spriteCropList.pop_at(selected)
+			
+			if selected != 0:
+				selected -= 1
+			
+			update()

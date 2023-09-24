@@ -61,7 +61,7 @@ func addChildrenToTree(node, parentItem):
 			
 func updateSelected():
 	ignore_selected = true
-	var focus = scene.canvas_viewport.has_focus
+	#var focus = scene.canvas_viewport.has_focus
 	self.grab_focus()
 	if scene.selected_element != -1:
 		for item in itemList:
@@ -73,8 +73,7 @@ func updateSelected():
 		for item in itemList:
 			if item.get_text(0).find("Layer ") != -1 and int(item.get_text(0).split(" ")[1]) == scene.selected_layer:
 				self.set_selected(item, 0)
-	if focus:
-		scene.canvas_viewport.grab_focus()
+
 	ignore_selected = false
 	
 func _on_item_selected():
@@ -110,36 +109,28 @@ var holdingCtrl = false
 
 
 func _on_gui_input(event):
-	if event is InputEventKey and event.keycode == KEY_CTRL:
-		holdingCtrl = event.pressed
 	
 	if self.has_focus():
-		
+		if event is InputEventKey and event.keycode == KEY_DELETE and event.pressed:
+			owner._on_del_element_pressed()
 		if event is InputEventMouseButton:
 			if event.pressed:
 				mouse_state = "clicked"
 				startingMousePos = event.position
 			else:
 				mouse_state = "none"
-				if not holdingCtrl:
-					if dropping_at != -100 and element_id != -100 and layer_id != -100:
-						#print(dropping_at, " ", element_id, " ", layer_id)
-						drag_and_drop(element_id, layer_id)
-						dropping_at = -100
-						element_id = -100
-						layer_id = -100
-				else:
-					print("change visib")
-				scene.canvas_viewport.grab_focus()
+				if dropping_at != -100 and element_id != -100 and layer_id != -100:
+					#print(dropping_at, " ", element_id, " ", layer_id)
+					drag_and_drop(element_id, layer_id)
+					dropping_at = -100
+					element_id = -100
+					layer_id = -100
 				
 		if event is InputEventMouseMotion and mouse_state == "clicked" and ((abs(event.position.x - startingMousePos.x) > draggingRange or abs(event.position.y - startingMousePos.y) > draggingRange) and get_item_at_position(event.position) != self.get_selected()):
 			mouse_state = "dragging"
 		
 		if event is InputEventMouseMotion and mouse_state == "dragging" and self.get_selected():
-			if holdingCtrl:
-				self.drop_mode_flags = DROP_MODE_INBETWEEN
-			else:
-				self.drop_mode_flags = DROP_MODE_ON_ITEM
+			self.drop_mode_flags = DROP_MODE_ON_ITEM
 			
 			
 			if self.get_selected().get_text(0).find("Layer ") == -1:
@@ -160,7 +151,15 @@ func _on_gui_input(event):
 	
 func drag_and_drop(id, layer):
 	var selected_element = scene.LayerList[scene.selected_layer][scene.selected_element]
-	if id <= scene.LayerList[layer].size()-1:
+	if id == -1:
+		scene.status_message.displayMessage(selected_element.element_name + " moved to Layer " + str(layer_id) + ".")
+		scene.add_undo(selected_element.get_parent(), selected_element, "none", "hierarchy", scene.LayerList.duplicate(true))
+		scene.change_layer(selected_element, layer)
+		selected_element.reparent(scene.puyo_canvas)
+		selected_element.update()
+		updateList()
+		updateSelected()
+	elif id <= scene.LayerList[layer].size()-1:
 		var dropped_at
 		if id != -1:
 			dropped_at = scene.LayerList[layer][id]
@@ -186,7 +185,7 @@ func drag_and_drop(id, layer):
 		
 		else:
 			if scene.selected_layer != layer:
-				print("what")
+				#print("what")
 				#Layer change only.
 				scene.status_message.displayMessage(selected_element.element_name + " moved to Layer " + str(layer_id) + ".")
 				scene.add_undo(selected_element.get_parent(), selected_element, "none", "hierarchy", scene.LayerList.duplicate(true))
@@ -195,7 +194,6 @@ func drag_and_drop(id, layer):
 				selected_element.update()
 				updateList()
 				updateSelected()
-
 
 func getcollapsed():
 	collapsedlist = []

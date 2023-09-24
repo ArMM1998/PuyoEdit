@@ -108,7 +108,7 @@ func _process(_delta):
 	else:
 		$ElementStuff.visible = false
 
-func _on_gui_input(event):
+func _gui_input(event):
 	var cursor_pos_text = (get_global_mouse_position() - $posScreenRect.global_position)/zoomLevel
 	cursor_pos_text = Vector2(snapped(cursor_pos_text[0], 0.1), snapped(cursor_pos_text[1], 0.1))
 	$cursorPosLabel.text = str(cursor_pos_text)
@@ -601,7 +601,7 @@ func _on_checkbg_gui_input(event):
 										element.transformTopRight.global_position,
 										element.transformBottomRight.global_position,
 										element.transformBottomLeft.global_position]
-							if is_point_inside_polygon(points) and element.visibility and element.render and not element.hide_editor:
+							if is_point_inside_polygon(points) and element.is_visible_in_tree() and element.render and not element.hide_editor:
 								owner.selected_element = element.id
 								owner.selected_layer = element.layer
 								if owner.selected_element == old_selected_element:

@@ -141,6 +141,7 @@ offset_right = 256.0
 offset_bottom = 408.0
 
 [node name="Control" parent="Layer2_Panels/PanelRight/ScrollContainer" instance=ExtResource("6_mtiep")]
+custom_minimum_size = Vector2(256, 658)
 layout_mode = 2
 
 [node name="toggle_panelLeft" type="TextureButton" parent="Layer2_Panels"]
@@ -373,6 +374,7 @@ script = ExtResource("11_tcy6v")
 [connection signal="pressed" from="Layer2_SpriteEditor_Canvas/Control/zoomLabel" to="Layer2_SpriteEditor_Canvas/Control" method="_on_zoom_label_pressed"]
 [connection signal="pressed" from="Layer2_SpriteEditor_Canvas/close" to="Layer2_SpriteEditor_Canvas/Control" method="_on_close_pressed"]
 [connection signal="value_changed" from="Layer2_SpriteEditor_Canvas/SpinBox" to="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" method="_on_spin_box_value_changed"]
+[connection signal="gui_input" from="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" to="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" method="_on_gui_input"]
 [connection signal="item_activated" from="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" to="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" method="_on_item_activated"]
 [connection signal="item_clicked" from="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" to="Layer2_SpriteEditor_Panels/PanelLeft/ItemList" method="_on_item_clicked"]
 [connection signal="pressed" from="Layer2_SpriteEditor_Panels/PanelLeft/texture_pathBTN" to="." method="_on_texture_path_btn_pressed"]

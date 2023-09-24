@@ -422,7 +422,7 @@ offset_bottom = 149.0
 [node name="Line2D" type="Line2D" parent="keyframeSettings/curvePanel/curve"]
 position = Vector2(8, 8)
 points = PackedVector2Array(24, 24, 72, 24, 72, 40, 24, 40, 24, 24)
-width = 2.0
+width = 1.0
 default_color = Color(0.447059, 0.611765, 0.996078, 1)
 
 [node name="ease_in_btn2" type="TextureButton" parent="keyframeSettings/curvePanel/curve"]
