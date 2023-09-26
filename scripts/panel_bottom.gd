@@ -132,7 +132,7 @@ func _input(event):
 							if keyframe == CBkeyframe:
 								CBkeyframe["track"] = track["Motion"]
 								keyframeClipboard.append(CBkeyframe)
-			
+				DisplayServer.clipboard_set(JSON.stringify(keyframeClipboard))
 			elif selected_keyframe != -1:
 				var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 				for track in element.animation_list[owner.animation_idx]:
@@ -140,9 +140,11 @@ func _input(event):
 						var keyframe_to_copy = track["Keyframes"][selected_keyframe].duplicate(true)
 						keyframe_to_copy["track"] = track["Motion"]
 						keyframeClipboard = [keyframe_to_copy]
-		
+				DisplayServer.clipboard_set(JSON.stringify(keyframeClipboard))
 		if event.keycode == KEY_V and event.pressed and holdingCtrl:
-			if keyframeClipboard != []:
+			keyframeClipboard = JSON.parse_string(DisplayServer.clipboard_get())
+			#print(keyframeClipboard)
+			if keyframeClipboard:
 				var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 				owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
 				owner.undoHistory[-1].append(element.animation_list.duplicate(true))
@@ -302,6 +304,7 @@ func update():
 						
 						if selected_track == current_track and selected_keyframe == track["Keyframes"].find(keyframe) or keyframe in multiple_select:
 							keyframeBTN.modulate = Color(0.5,0.5,1)
+							
 						
 						$timeline/keyframes.add_child(keyframeBTN)
 						line_end_pos = keyframe["timestamp"] * (16 * zoomLevel)
@@ -537,6 +540,9 @@ func timelineInput(event):
 							
 							if (keyframe_time < (select_square_points[0].x-8-$timeline/keyframes.position.x) / (16*zoomLevel) and keyframe_time > (select_square_points[1].x-8-$timeline/keyframes.position.x) / (16*zoomLevel)) or (keyframe_time > (select_square_points[0].x-8-$timeline/keyframes.position.x) / (16*zoomLevel) and keyframe_time < (select_square_points[1].x-8-$timeline/keyframes.position.x) / (16*zoomLevel)):
 								multiple_select.append(keyframe)
+								keyframe["mot"] = anim_track["Motion"]
+								#print(keyframe, anim_track["Motion"])
+								#print(anim_track["Motion"])
 				selected_element = []
 
 
@@ -762,7 +768,15 @@ func changeTweening(id_pressed):
 			#print(keyframe, "what")
 			keyframe["tweening"] = id_pressed
 			selected_element = []
-
+		
+		for track in element.animation_list[owner.animation_idx]:
+			if track["Motion"] == "hide" or track["Motion"] == "sprite_index":
+				for keyframe in track["Keyframes"]:
+					keyframe["tweening"] = 0
+			elif track["Motion"].find("rgba"):
+				for keyframe in track["Keyframes"]:
+					if keyframe["tweening"] == 2:
+						keyframe["tweening"] = 1
 
 func updateAnimList():
 	$AnimationList.clear()
