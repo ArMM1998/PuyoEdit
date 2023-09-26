@@ -47,7 +47,7 @@ func _ready():
 	platform_menu.connect("id_pressed", platformMenu)
 
 func fileMenu(item_id):
-	print(item_id)
+	#print(item_id)
 	if item_id == 0:
 		owner.newFile()
 	if item_id == 1:

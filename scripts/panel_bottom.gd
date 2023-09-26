@@ -773,7 +773,7 @@ func changeTweening(id_pressed):
 			if track["Motion"] == "hide" or track["Motion"] == "sprite_index":
 				for keyframe in track["Keyframes"]:
 					keyframe["tweening"] = 0
-			elif track["Motion"].find("rgba"):
+			elif track["Motion"].find("rgba") != -1:
 				for keyframe in track["Keyframes"]:
 					if keyframe["tweening"] == 2:
 						keyframe["tweening"] = 1
