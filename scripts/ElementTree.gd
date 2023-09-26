@@ -111,8 +111,6 @@ var holdingCtrl = false
 func _on_gui_input(event):
 	
 	if self.has_focus():
-		if event is InputEventKey and event.keycode == KEY_DELETE and event.pressed:
-			owner._on_del_element_pressed()
 		if event is InputEventMouseButton:
 			if event.pressed:
 				mouse_state = "clicked"

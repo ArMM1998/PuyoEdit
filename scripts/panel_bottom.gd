@@ -103,8 +103,17 @@ func setTimeLabels():
 		timelabel.position = Vector2(i* (5*16) - 24, 0)
 		
 		$timeline/labels.add_child(timelabel)
+var holdingCtrl = false
+var holdingShift = false
+
+var keyframeClipboard = []
 
 func _input(event):
+	
+	if event is InputEventKey and event.keycode == KEY_CTRL:
+		holdingCtrl = event.pressed
+	if event is InputEventKey and event.keycode == KEY_SHIFT:
+		holdingShift = event.pressed
 	
 	if event is InputEventMouseButton and not event.pressed:
 		holding_ease = 0
@@ -113,8 +122,56 @@ func _input(event):
 		if event.keycode == KEY_DELETE and event.pressed:
 			if (selected_keyframe != -1 and selected_track != -1) or multiple_select != []:
 				deleteKeyframe()
-
-	if event is InputEventKey and $timeline.has_focus():
+		if event.keycode == KEY_C and event.pressed and holdingCtrl:
+			if multiple_select != []:
+				keyframeClipboard = []
+				var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+				for CBkeyframe in multiple_select.duplicate(true):
+					for track in element.animation_list[owner.animation_idx]:
+						for keyframe in track["Keyframes"]:
+							if keyframe == CBkeyframe:
+								CBkeyframe["track"] = track["Motion"]
+								keyframeClipboard.append(CBkeyframe)
+			
+			elif selected_keyframe != -1:
+				var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+				for track in element.animation_list[owner.animation_idx]:
+					if track["Motion"] == trackName[selected_track]:
+						var keyframe_to_copy = track["Keyframes"][selected_keyframe].duplicate(true)
+						keyframe_to_copy["track"] = track["Motion"]
+						keyframeClipboard = [keyframe_to_copy]
+		
+		if event.keycode == KEY_V and event.pressed and holdingCtrl:
+			if keyframeClipboard != []:
+				var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+				owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+				owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+				owner.undoHistory[-1].append(owner.time)
+				
+				for copied_keyframe in keyframeClipboard:
+					var has_track = false
+					for track in element.animation_list[owner.animation_idx]:
+						if track["Motion"] == copied_keyframe["track"]:
+							has_track = true
+					if not has_track:
+						element.animation_list[owner.animation_idx].append({"Motion": copied_keyframe["track"],"Loop": 0,"Keyframes" : []})
+				
+				var lowest_timestamp = 999999999
+				for copied_keyframe in keyframeClipboard:
+					if copied_keyframe["timestamp"] < lowest_timestamp:
+						lowest_timestamp = copied_keyframe["timestamp"]
+				
+				for track in element.animation_list[owner.animation_idx]:
+					for copied_keyframe in keyframeClipboard:
+						if track["Motion"] == copied_keyframe["track"]:
+							var keyframe_to_paste = copied_keyframe.duplicate(true)
+							keyframe_to_paste.erase("track")
+							if holdingShift:
+								keyframe_to_paste["timestamp"] += -lowest_timestamp + round(owner.time)
+							track["Keyframes"].append(keyframe_to_paste)
+					track["Keyframes"] = sortArrayByTimestamp(track["Keyframes"])
+			selected_element = []
+		
 		if event.keycode == KEY_LEFT and event.pressed:
 			for keyframe in multiple_select:
 				keyframe["timestamp"]-= 1
@@ -617,13 +674,21 @@ func _on_stop_pressed():
 			element.animate(owner.time, owner.animation_idx, owner.project_settings["screen_size"])
 
 func sortArrayByTimestamp(array):
+	
 	for i in range(array.size() - 1):
 		for j in range(array.size() - i - 1):
 			if array[j]["timestamp"] > array[j + 1]["timestamp"]:
 				var temp = array[j]
 				array[j] = array[j + 1]
 				array[j + 1] = temp
-	return array
+	
+	var result = [array[0]]
+	
+	for i in range(1, len(array)):
+		if array[i]["timestamp"] != result[-1]["timestamp"]:
+			result.append(array[i])
+	
+	return result
 
 func updateKeyframeSettings(kf, next_kf):
 	if kf["tweening"] != 2:
@@ -766,6 +831,7 @@ func deleteKeyframe():
 		element.animation_list[owner.animation_idx] = newTrackList
 			
 		selected_element = []
+	owner.updateElementsettings()
 var holding_ease = 0
 
 var initial_mouse_pos = Vector2(0,0)

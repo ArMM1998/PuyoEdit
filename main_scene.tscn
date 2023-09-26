@@ -33,6 +33,12 @@ offset_left = 264.0
 offset_top = 40.0
 offset_right = 744.0
 offset_bottom = 312.0
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath(".")
+focus_neighbor_right = NodePath(".")
+focus_neighbor_bottom = NodePath(".")
+focus_next = NodePath(".")
+focus_previous = NodePath(".")
 metadata/_edit_use_anchors_ = true
 
 [node name="Layer2_Panels" type="CanvasLayer" parent="."]

@@ -389,6 +389,7 @@ func toggleSpriteEditor():
 
 func _input(event):
 	
+	
 	if event is InputEventKey and event.keycode == KEY_SPACE and event.pressed and $Layer2_Panels/PanelBottom/timeline.has_focus():
 		playing = not playing
 
@@ -490,6 +491,8 @@ func _input(event):
 			$Layer2_Panels/PanelRight.update()
 			$Layer2_Panels/PanelLeft/ElementTree.updateList()
 			$Layer2_Panels/PanelLeft/ElementTree.updateSelected()
+			
+			updateElementsettings()
 
 	if event is InputEventKey and event.keycode == KEY_Y and holdingCtrl and event.pressed:
 		if len(redoHistory) > 0 and not $Layer1_Canvas/CanvasViewport.undoBlock:
@@ -574,6 +577,7 @@ func _input(event):
 			$Layer2_Panels/PanelLeft/ElementTree.updateList()
 			$Layer2_Panels/PanelLeft/ElementTree.updateSelected()
 			$Layer2_Panels/PanelRight.update()
+			updateElementsettings()
 
 func checkGhosts(hp):
 	var elementidx = 0
@@ -1103,11 +1107,16 @@ func updateElementIDs():
 
 func newElement(parent = -1, undo = true):
 	if selected_layer != -1:
+		
+
+		
 		status_message.displayMessage("New element created.")
 		var puyoElement = PuyoElement.new()
 		var newName = ensure_unique_element_name("NewElement")
 		puyoElement.setName(newName)
-		
+		var parent_elem = -1
+		if parent != -1:
+			parent_elem = LayerList[selected_layer][parent]
 		#selected_element = puyoElement.id
 		if parent <= -1:
 			puyo_canvas.add_child(puyoElement)
@@ -1123,7 +1132,8 @@ func newElement(parent = -1, undo = true):
 			LayerList[selected_layer][parent].add_child(puyoElement)
 			LayerList[selected_layer].insert(newID+1, puyoElement)
 		updateElementIDs()
-		
+		if parent != -1:
+			selected_element = parent_elem.id
 		for anim in animationList:
 			puyoElement.animation_list.append([])
 		
@@ -1137,6 +1147,7 @@ func newElement(parent = -1, undo = true):
 			add_undo(puyoElement.get_parent().add_child, puyoElement.get_parent, puyoElement, "creation", puyoElement)
 		else:
 			add_undo(puyoElement.get_parent().add_child, puyoElement.get_parent, puyoElement, "creation", puyoElement,false)
+		
 	else:
 		status_message.displayMessage("Cannot create element. Create a new layer first.")
 
@@ -1682,9 +1693,17 @@ func toggle_fullscreen():
 	windowResize()
 
 func delLayer(layer_idx):
+	#print("why")
 	LayerList.pop_at(layer_idx)
 	add_undo(layer_idx, selected_layer, "", "layerDel", "")
-	if selected_layer != 0:
+	if selected_layer != 0 or LayerList.size() == 0:
 		selected_layer-=1
+	selected_element = -1
 	$Layer2_Panels/PanelLeft/ElementTree.updateList()
 	
+func updateElementsettings():
+	for layer in LayerList:
+		for element in layer:
+			element.restoreDefaults()
+	
+	animate()

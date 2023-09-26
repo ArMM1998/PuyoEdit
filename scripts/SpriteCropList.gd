@@ -104,7 +104,7 @@ func _on_gui_input(event):
 			for layer in owner.LayerList:
 				for element in layer:
 					for sprite in element.sprite_list:
-						print(sprite, spriteCrop.texture)
+						#print(sprite, spriteCrop.texture)
 						if sprite == spriteCrop.texture:
 							element.sprite_list.erase(sprite)
 			

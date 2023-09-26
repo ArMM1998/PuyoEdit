@@ -200,11 +200,14 @@ func _gui_input(event):
 				owner.move_element_front()
 			else:
 				owner.move_element_up()
+			self.grab_focus()
+			
 		if event is InputEventKey and (event.keycode == KEY_PAGEDOWN or event.keycode == 4194324) and self.has_focus() and event.pressed and not owner.playing:
 			if holdingControl:
 				owner.move_element_back()
 			else:
 				owner.move_element_down()
+			self.grab_focus()
 		updateObjectPositions()
 
 func customFloor(value: float) -> int:
@@ -286,6 +289,8 @@ func _input(event):
 					$ElementStuff/posMoveAlongY.global_position = initialElementPos
 					$ElementStuff/posMoveAlongX.global_position = element.global_position
 					
+					element.setPosition(element.position)
+					
 				else:
 					element.global_position = Vector2(initialElementPos.x, (get_global_mouse_position() - (initialMousePos - initialElementPos)).y)
 					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
@@ -297,6 +302,8 @@ func _input(event):
 					$ElementStuff/posMoveAlongY.modulate = Color(1,1,1,1)
 					$ElementStuff/posMoveAlongY.global_position = element.global_position
 					$ElementStuff/posMoveAlongX.global_position = initialElementPos
+					
+					element.setPosition(element.position)
 					
 			else:
 				$ElementStuff/posMoveAlongX.visible = false
