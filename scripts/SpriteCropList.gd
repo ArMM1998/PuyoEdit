@@ -6,6 +6,7 @@ func _ready():
 	pass # Replace with function body.
 
 func update():
+	
 	self.clear()
 	for i in owner.spriteCropList:
 		self.add_icon_item(i.texture)
@@ -17,8 +18,12 @@ func update():
 		#print(owner.spriteCropList[selected])
 		
 		var texIDX = owner.spriteCropList[selected].texIDX
-		$"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/texture".texture = owner.textureList[texIDX]
-		
+		if $"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/texture".texture != null:
+			
+			$"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/texture".texture = owner.textureList[texIDX]
+		else:
+			$"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/texture".texture = owner.textureList[texIDX]
+			$"../../../Layer2_SpriteEditor_Canvas/Control"._on_zoom_label_pressed()
 		var topleft = owner.spriteCropList[selected].texture.region.position
 		var topright = owner.spriteCropList[selected].texture.region.position + Vector2(owner.spriteCropList[selected].texture.region.size.x, 0)
 		var bottomright =  owner.spriteCropList[selected].texture.region.position + owner.spriteCropList[selected].texture.region.size

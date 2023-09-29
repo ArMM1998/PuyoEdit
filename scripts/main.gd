@@ -26,7 +26,6 @@ var fullscreen = false
 signal texture_dir_task_finished
 
 
-
 var project_settings = {"platform" : "PSP",
 						"field" : [44,32,124,222],
 						"hide_field" : true,
@@ -486,6 +485,19 @@ func _input(event):
 				add_redo(undo[0], undo[1], undo[2], undo[3], undo[4])
 				selected_layer = undo[1]
 				LayerList.insert(undo[0], [])
+			elif undo[3] == "delAnim":
+				add_redo("", undo[1], undo[2], undo[3], undo[4])
+				animationList.append(undo[2])
+				animation_idx = undo[1]
+				var layer_idx = 0
+				for layer in LayerList:
+					var element_idx = 0
+					for element in layer:
+						undo[0][layer_idx]
+						element.animation_list.append(undo[0][layer_idx][element_idx].duplicate(true))
+						element_idx += 1
+					layer_idx+=1
+				$Layer2_Panels/PanelBottom.updateAnimList()
 			undoHistory.pop_back()
 			checkGhosts(-1)
 			$Layer2_Panels/PanelRight.update()
@@ -572,6 +584,11 @@ func _input(event):
 				add_undo(redo[0], redo[1], redo[2], redo[3], redo[4], false)
 				LayerList.pop_at(redo[0])
 				selected_layer = redo[1]
+			elif redo[3] == "delAnim":
+				delAnimation(false)
+				$Layer2_Panels/PanelBottom.updateAnimList()
+			
+			
 			redoHistory.pop_back()
 			checkGhosts(+1)
 			$Layer2_Panels/PanelLeft/ElementTree.updateList()
@@ -1195,7 +1212,7 @@ func unCreateElement(element):
 	for child in element.get_children():
 		if child is PuyoElement:
 			unCreateElement(child)
-	
+			
 	var idx = LayerList[element.layer].find(element)
 	LayerList[element.layer].pop_at(idx)
 	addGhostElement(maxUndo+2, element)
@@ -1555,7 +1572,7 @@ func intToBinaryString(number: int) -> String:
 	return final_string
 
 func newAnimation(anim_name = "defaultAnim", length = 60):
-	add_undo(animationList, "none", "none", "none", "animation_creation", "none")
+	add_undo({"name" : anim_name, "length" : length}, "none", "none", "none", "animation_creation", "none")
 	animationList.append({"name" : anim_name, "length" : length})
 
 func newSpriteCrop():
@@ -1707,3 +1724,21 @@ func updateElementsettings():
 			element.restoreDefaults()
 	
 	animate()
+
+func delAnimation(undo = true):
+	#print("???")
+	var restore_animation = []
+	var layer_idx = 0
+	for layer in LayerList:
+		restore_animation.append([])
+		for element in layer:
+			restore_animation[layer_idx].append(element.animation_list[animation_idx].duplicate(true))
+			element.animation_list.pop_at(animation_idx)
+		layer_idx+= 1
+	var animation_settings = animationList[animation_idx].duplicate(true)
+	add_undo(restore_animation, animation_idx, animation_settings, "delAnim", "", undo)
+	animationList.pop_at(animation_idx)
+	if animation_idx != 0:
+		animation_idx-= 1
+	$Layer2_Panels/PanelBottom.updateAnimList()
+	$Layer2_Panels/PanelBottom/AnimationList.select(animation_idx)

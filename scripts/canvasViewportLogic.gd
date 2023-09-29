@@ -6,7 +6,7 @@ func _ready():
 	$ElementStuff/ElementRect.rotation_degrees = 0
 	$ElementStuff/ElementRect.global_position = Vector2(0,0)
 signal selected_element
-var zoomIntervals = [0.025,0.05,0.1,0.15,0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18,20]
+var zoomIntervals = [0.025,0.05,0.1,0.15,0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 18.0,20.0]
 var zoomLevel = 1
 
 var holdingMoveKey = false
@@ -26,7 +26,6 @@ var inverY = false
 var inverX = false
 var holdingControl = false
 var holdingShift = false
-
 
 
 func _process(_delta):
@@ -279,8 +278,10 @@ func _input(event):
 			if holdingShift:
 				if abs(initialMousePos.x - get_global_mouse_position().x) > abs(initialMousePos.y - get_global_mouse_position().y):
 					element.global_position = Vector2((get_global_mouse_position() - (initialMousePos - initialElementPos)).x, initialElementPos.y)
-					checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
+					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posx")
 					element.setPositionX(element.position.x)
+					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
+					element.setPositionY(element.position.y)
 					$ElementStuff/posMoveAlongX.visible = true
 					$ElementStuff/posMoveAlongY.visible = true
 					
@@ -293,8 +294,11 @@ func _input(event):
 					
 				else:
 					element.global_position = Vector2(initialElementPos.x, (get_global_mouse_position() - (initialMousePos - initialElementPos)).y)
+					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posx")
+					element.setPositionX(element.position.x)
 					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
 					element.setPositionY(element.position.y)
+					
 					$ElementStuff/posMoveAlongX.visible = true
 					$ElementStuff/posMoveAlongY.visible = true
 					
@@ -461,8 +465,8 @@ func snap_to_closest_zoom(lvl_of_zoom) -> float:
 		if difference < minDifference:
 			minDifference = difference
 			minIndex = i
-
-	return zoomIntervals[minIndex]
+	#print(typeof(zoomIntervals[minIndex]))
+	return float(zoomIntervals[minIndex])
 
 func fillZoom():
 	# Calculate the scale factor for X and Y dimensions separately
@@ -631,7 +635,7 @@ func _on_checkbg_gui_input(event):
 									element.transformTopRight.global_position,
 									element.transformBottomRight.global_position,
 									element.transformBottomLeft.global_position]
-						if is_point_inside_polygon(points)  and element.visibility and element.render and not element.hide_editor:
+						if is_point_inside_polygon(points)  and element.is_visible_in_tree() and element.render and not element.hide_editor:
 							owner.selected_element = element.id
 							owner.selected_layer = element.layer
 							if owner.selected_element == old_selected_element:

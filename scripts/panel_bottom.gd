@@ -217,7 +217,7 @@ func _gui_input(event):
 			if mult > 30:
 				mult = 30
 			_on_h_scroll_bar_scrolling()
-		
+			
 		elif event.button_index == MOUSE_BUTTON_WHEEL_LEFT:
 			$HScrollBar.value -= (0.2)/zoomLevel
 		elif event.button_index == MOUSE_BUTTON_WHEEL_RIGHT:
@@ -1279,3 +1279,9 @@ func updateEasingPreview():
 			if track["Motion"] == trackName[selected_track]:
 				if selected_keyframe +1 < track["Keyframes"].size():
 					updateKeyframeSettings(track["Keyframes"][selected_keyframe], track["Keyframes"][selected_keyframe+1])
+
+
+func _on_animation_list_gui_input(event):
+	if event is InputEventKey and event.keycode == KEY_DELETE and event.pressed:
+		if owner.animationList.size() != 0:
+			owner.delAnimation()

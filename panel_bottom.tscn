@@ -536,4 +536,5 @@ color = Color(0.14902, 0.14902, 0.14902, 0.647059)
 [connection signal="gui_input" from="keyframeSettings/curvePanel/curve/ease_out_btn" to="." method="_on_ease_out_btn_gui_input"]
 [connection signal="pressed" from="keyframeSettings/tweening_btn" to="." method="_on_dropdown_pressed"]
 [connection signal="pressed" from="keyframeSettings/dropdown" to="." method="_on_dropdown_pressed"]
+[connection signal="gui_input" from="AnimationList" to="." method="_on_animation_list_gui_input"]
 [connection signal="item_clicked" from="AnimationList" to="." method="_on_animation_list_item_clicked"]
