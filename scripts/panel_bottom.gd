@@ -37,6 +37,8 @@ func _process(delta):
 	if owner.selected_element == -1:
 		multiple_select = []
 	
+	if panning_tl:
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
 	
 	update()
 	doubletimer += delta
@@ -109,9 +111,9 @@ var holdingShift = false
 var keyframeClipboard = []
 
 func _input(event):
-	
+	#print($timeline.get_rect().has_point(Vector2(1,1)))
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_MIDDLE:
+		if event.button_index == MOUSE_BUTTON_MIDDLE and $timeline.has_focus():
 			panning_tl = event.pressed
 			if panning_tl:
 				pan_mousepos = get_global_mouse_position()
@@ -207,12 +209,14 @@ func _input(event):
 			$timeline.grab_focus()
 			selected_element = []
 	if event is InputEventMouseMotion and panning_tl:
-		$HScrollBar.value -= (get_global_mouse_position() - pan_mousepos).x / (16*zoomLevel)
+		if $timeline.has_focus():
+			$HScrollBar.value -= (get_global_mouse_position() - pan_mousepos).x / (16*zoomLevel)
 		
-		if not holdingShift:
-			if $HScrollBar.value < 0:
-				$HScrollBar.value = 0
-		
+			if not holdingShift:
+				if $HScrollBar.value < 0:
+					$HScrollBar.value = 0
+		else:
+			panning_tl = false
 		pan_mousepos = get_global_mouse_position()
 		#print("fung")
 
@@ -424,8 +428,15 @@ func timelineInput(event):
 			for anim_track in element.animation_list[owner.animation_idx]:
 				sortArrayByTimestamp(anim_track["Keyframes"])
 	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+	if event is InputEventMouseButton and event.pressed:
 		$timeline.grab_focus()
+		
+		if event.button_index == MOUSE_BUTTON_MIDDLE:
+			panning_tl = true
+			pan_mousepos = get_global_mouse_position()
+		
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		
 		owner.time = round(($timeline/keyframes.to_local(get_global_mouse_position()).x-7) / (16*zoomLevel))
 		owner.time = snapped(owner.time, 1/(zoomLevel))
 		selected_track = int(round(($timeline/keyframes.to_local(get_global_mouse_position()).y-32) / 16))

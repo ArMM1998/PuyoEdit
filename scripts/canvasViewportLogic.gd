@@ -118,7 +118,7 @@ func _gui_input(event):
 		if self.has_focus():
 			owner.panel_right.update()
 		
-		if event is InputEventMouseButton and event.pressed and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
+		if event is InputEventMouseButton and event.pressed:
 			grab_focus()
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE and event.pressed:
 			holdingMoveKey = event.pressed
