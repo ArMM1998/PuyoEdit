@@ -110,6 +110,12 @@ var keyframeClipboard = []
 
 func _input(event):
 	
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_MIDDLE:
+			panning_tl = event.pressed
+			if panning_tl:
+				pan_mousepos = get_global_mouse_position()
+	
 	if event is InputEventKey and event.keycode == KEY_CTRL:
 		holdingCtrl = event.pressed
 	if event is InputEventKey and event.keycode == KEY_SHIFT:
@@ -117,6 +123,7 @@ func _input(event):
 	
 	if event is InputEventMouseButton and not event.pressed:
 		holding_ease = 0
+		panning_tl = false
 	
 	if event is InputEventKey and $timeline.has_focus():
 		if event.keycode == KEY_DELETE and event.pressed:
@@ -199,9 +206,22 @@ func _input(event):
 			
 			$timeline.grab_focus()
 			selected_element = []
+	if event is InputEventMouseMotion and panning_tl:
+		$HScrollBar.value -= (get_global_mouse_position() - pan_mousepos).x / (16*zoomLevel)
+		
+		if not holdingShift:
+			if $HScrollBar.value < 0:
+				$HScrollBar.value = 0
+		
+		pan_mousepos = get_global_mouse_position()
+		#print("fung")
+
+var panning_tl = false
+var pan_mousepos = Vector2()
 
 func _gui_input(event):
 	if event is InputEventMouseButton:
+		
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			selected_element = []
 			mult -=1
@@ -222,6 +242,8 @@ func _gui_input(event):
 			$HScrollBar.value -= (0.2)/zoomLevel
 		elif event.button_index == MOUSE_BUTTON_WHEEL_RIGHT:
 			$HScrollBar.value += (0.2)/zoomLevel
+
+
 var selected_element 
 
 func update():

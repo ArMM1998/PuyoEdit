@@ -7,7 +7,7 @@ func _ready():
 	$ElementStuff/ElementRect.global_position = Vector2(0,0)
 signal selected_element
 var zoomIntervals = [0.025,0.05,0.1,0.15,0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 18.0,20.0]
-var zoomLevel = 1
+var zoomLevel = 1.0
 
 var holdingMoveKey = false
 var initialPos = Vector2(0,0)
@@ -167,19 +167,19 @@ func _gui_input(event):
 				
 				
 		if event is InputEventKey and event.keycode == KEY_KP_1 and self.has_focus() and event.pressed:
-			zoomLevel = 1
+			zoomLevel = 1.0
 			updateScale()
 		
 		if event is InputEventKey and event.keycode == KEY_KP_2 and self.has_focus() and event.pressed:
-			zoomLevel = 2
+			zoomLevel = 2.0
 			updateScale()
 		
 		if event is InputEventKey and event.keycode == KEY_KP_3 and self.has_focus() and event.pressed:
-			zoomLevel = 3
+			zoomLevel = 3.0
 			updateScale()
 		
 		if event is InputEventKey and event.keycode == KEY_KP_4 and self.has_focus() and event.pressed:
-			zoomLevel = 4
+			zoomLevel = 4.0
 			updateScale()
 		
 		if event is InputEventKey and event.keycode == KEY_F and self.has_focus() and event.pressed:
@@ -449,7 +449,7 @@ func updateObjectPositions():
 	$zoomLabel.text = str(100*zoomLevel) + "%"
 
 func resetZoom():
-	zoomLevel = 1
+	zoomLevel = 1.0
 	$Center.position = self.size/2
 	$Center/Canvas.position = Vector2(0,0) - Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/2
 	updateScale()

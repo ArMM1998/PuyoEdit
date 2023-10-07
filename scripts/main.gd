@@ -349,26 +349,7 @@ func _process(delta):
 				element.saveDefaults = true
 	$Layer2_Panels/PanelBottom/frameTime.value = round(time) 
 	$Layer2_Panels/PanelBottom/timeline/Head.position = Vector2((time*(16*$Layer2_Panels/PanelBottom.zoomLevel)-$Layer2_Panels/PanelBottom/HScrollBar.value*(16*$Layer2_Panels/PanelBottom.zoomLevel)), 0)
-	
-	#print(($Layer2_Panels/PanelBottom.size.x - 528)/(16*$Layer2_Panels/PanelBottom.zoomLevel) - 1)
-#
-#	if centerHead:
-#		if $Layer2_Panels/PanelBottom/timeline/Head.global_position.x < 256:
-#			#print("off screen")
-#			$Layer2_Panels/PanelBottom/HScrollBar.value = time - 256
-#			get_viewport().warp_mouse(Vector2($Layer2_Panels/PanelBottom.size.x -272, get_global_mouse_position().y))
-#
-#		elif $Layer2_Panels/PanelBottom/timeline/Head.global_position.x > $Layer2_Panels/PanelBottom.size.x - 272:
-#			$Layer2_Panels/PanelBottom/HScrollBar.value = time - ($Layer2_Panels/PanelBottom.size.x - 528)/(16*$Layer2_Panels/PanelBottom.zoomLevel) - 1
-#			get_viewport().warp_mouse(Vector2(272, get_global_mouse_position().y))
-	
-	
-#	##DELETE THIS LATER - CURVE DISPLAY
-#	var points = 50.0
-#	$Layer2_Panels/PanelBottom/DELETE_LINE2D.clear_points()
-#	for i in range(points+1):
-#		$Layer2_Panels/PanelBottom/DELETE_LINE2D.add_point(Vector2(i*(20)/points + 200, smoothCurve(i/points,keyframe1,keyframe2)))
-#
+
 
 
 func toggleSpriteEditor():
@@ -493,7 +474,7 @@ func _input(event):
 				for layer in LayerList:
 					var element_idx = 0
 					for element in layer:
-						undo[0][layer_idx]
+#						undo[0][layer_idx]
 						element.animation_list.append(undo[0][layer_idx][element_idx].duplicate(true))
 						element_idx += 1
 					layer_idx+=1
