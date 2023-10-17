@@ -591,6 +591,9 @@ func addKeyframe():
 			
 			var track_name = trackName[int(round(($timeline/keyframes.to_local(get_global_mouse_position()).y-32) / 16))]
 			
+			if track_name == null:
+				return
+			
 			var track_idx = 0
 			for anim_track in element.animation_list[owner.animation_idx]:
 				if anim_track["Motion"] == track_name:

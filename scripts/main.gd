@@ -581,7 +581,7 @@ func checkGhosts(hp):
 	var elementidx = 0
 	for element in ghostElements:
 		if element[0] <= 0:
-			if element[1]:
+			if not element[1] == null:
 				element[1].queue_free()
 			ghostElements.pop_at(elementidx)
 		else:
@@ -1343,9 +1343,11 @@ func change_layer(element, layer, is_child = false, hierarchy = []):
 		hierarchy = fix_hierarchy(hierarchy)
 		for item in hierarchy:
 			LayerList[layer].append("")
-		
+	
 	if element.layer != layer:
+		#print(hierarchy)
 		var index = hierarchy[0]
+		#print(LayerList[layer])
 		hierarchy.pop_at(0)
 		LayerList[layer][index] = element
 		LayerList[element.layer].pop_at(element.id)
@@ -1356,9 +1358,9 @@ func change_layer(element, layer, is_child = false, hierarchy = []):
 	if not is_child:
 		selected_element = element.id
 	
-	for i in range(LayerList[layer].size() - 1, -1, -1):
-		if typeof(LayerList[layer][i]) == TYPE_STRING:
-			LayerList[layer].pop_at(i)
+		for i in range(LayerList[layer].size() - 1, -1, -1):
+			if typeof(LayerList[layer][i]) == TYPE_STRING:
+				LayerList[layer].pop_at(i)
 			
 	
 func move_element_back():
