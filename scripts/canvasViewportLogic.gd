@@ -294,7 +294,7 @@ func _input(event):
 					
 				else:
 					element.global_position = Vector2(initialElementPos.x, (get_global_mouse_position() - (initialMousePos - initialElementPos)).y)
-					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posx")
+					checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][1], "posx")
 					element.setPositionX(element.position.x)
 					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
 					element.setPositionY(element.position.y)
