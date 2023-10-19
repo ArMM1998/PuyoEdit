@@ -278,7 +278,7 @@ func _input(event):
 			if holdingShift:
 				if abs(initialMousePos.x - get_global_mouse_position().x) > abs(initialMousePos.y - get_global_mouse_position().y):
 					element.global_position = Vector2((get_global_mouse_position() - (initialMousePos - initialElementPos)).x, initialElementPos.y)
-					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posx")
+					checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
 					element.setPositionX(element.position.x)
 					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
 					element.setPositionY(element.position.y)
@@ -294,7 +294,7 @@ func _input(event):
 					
 				else:
 					element.global_position = Vector2(initialElementPos.x, (get_global_mouse_position() - (initialMousePos - initialElementPos)).y)
-					checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][1], "posx")
+					checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
 					element.setPositionX(element.position.x)
 					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
 					element.setPositionY(element.position.y)
