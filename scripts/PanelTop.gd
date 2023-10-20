@@ -82,6 +82,7 @@ func helpMenu(item_id):
 		owner.about.popup()
 		await owner.about.confirmed
 	if item_id == 1:
+		
 		OS.shell_open("https://docs.google.com/document/d/1hvHQTxsCdjIkRdY6yn8P2_9U6CVT1cY_T7exJMBxgPw/view")
 	if item_id == 2:
 		OS.shell_open("https://ko-fi.com/armm1998")

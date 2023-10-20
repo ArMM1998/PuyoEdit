@@ -1,5 +1,8 @@
 extends Node2D
 
+var current_version = "0.5"
+
+
 @onready var layer_2_panels = $Layer2_Panels
 @onready var fileDialog = $Layer3_Popups/FileDialog
 @onready var accept_dialog = $Layer3_Popups/AcceptDialog
@@ -1725,3 +1728,12 @@ func delAnimation(undo = true):
 		animation_idx-= 1
 	$Layer2_Panels/PanelBottom.updateAnimList()
 	$Layer2_Panels/PanelBottom/AnimationList.select(animation_idx)
+
+func popupUpdate(version):
+	$Layer3_Popups/Update.dialog_text = "New version found: " + version
+	$Layer3_Popups/Update.popup()
+	
+
+
+func _on_update_confirmed():
+	OS.shell_open("https://github.com/ArMM1998/PuyoEdit/releases")
