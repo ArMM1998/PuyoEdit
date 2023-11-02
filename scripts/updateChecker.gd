@@ -5,7 +5,7 @@ func _ready():
 	request(url)
 
 
-func _on_request_completed(result, response_code, headers, body):
+func _on_request_completed(_result, response_code, _headers, body):
 	if response_code == 200:  # Success
 		body = str(body.get_string_from_ascii())
 		

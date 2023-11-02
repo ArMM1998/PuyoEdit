@@ -24,6 +24,11 @@ anchors_preset = 0
 focus_mode = 1
 script = ExtResource("1_b3f5c")
 
+[node name="Center" type="Node2D" parent="."]
+position = Vector2(376, 192)
+
+[node name="Canvas" type="Node2D" parent="Center"]
+
 [node name="checkbg" type="TextureRect" parent="."]
 z_index = -4096
 z_as_relative = false
@@ -80,11 +85,6 @@ points = PackedVector2Array(-4092, 0, -168, 0, 4092, 0)
 width = 1.0
 default_color = Color(0.823529, 0.329412, 0.360784, 1)
 antialiased = true
-
-[node name="Center" type="Node2D" parent="."]
-position = Vector2(376, 192)
-
-[node name="Canvas" type="Node2D" parent="Center"]
 
 [node name="zoomLabel" type="Button" parent="."]
 z_index = 4096

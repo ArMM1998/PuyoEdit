@@ -4,7 +4,7 @@ extends Panel
 @onready var color_tr = $ScrollContainer/Control/color_tr
 @onready var color_bl = $ScrollContainer/Control/color_bl
 @onready var color_br = $ScrollContainer/Control/color_br
-
+@onready var element_name = $ScrollContainer/Control/elementName
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -88,12 +88,16 @@ func _input(event):
 #		releaseFocus(0)
 #	if owner.timeline.has_focus() or owner.canvas_viewport.has_focus():
 #		update()
-	
+
+var ignore = false
+
 func update():
 	updating = true
 	if owner.selected_element != -1:
-		var element = owner.LayerList[owner.selected_layer][owner.selected_element] 
+		var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+		ignore = true
 		$ScrollContainer/Control/depth.value = element.depth
+		ignore = false
 		$ScrollContainer/Control/HSlider.value = element.depth
 		$ScrollContainer/Control/elementName.text = element.element_name
 		$ScrollContainer/Control/render.button_pressed = element.render
@@ -463,6 +467,10 @@ func sizegui(event):
 
 func updateDepth(dummy):
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	
+	if not changing and not ignore:
+		owner.add_undo(element.set3dDepth, element.get3dDepth, element.get3dDepth(), "value", element)
+	changing = true
 	
 	if $ScrollContainer/Control/depth.value == int(dummy):
 		element.set3dDepth($ScrollContainer/Control/depth.value)

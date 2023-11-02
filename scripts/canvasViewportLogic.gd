@@ -118,6 +118,9 @@ func _gui_input(event):
 		if self.has_focus():
 			owner.panel_right.update()
 		
+		
+		if event is InputEventKey and event.keycode == KEY_C and owner.selected_element != -1 and holdingControl and event.pressed:
+			owner.clipboardElement()
 		if event is InputEventMouseButton and event.pressed:
 			grab_focus()
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE and event.pressed:

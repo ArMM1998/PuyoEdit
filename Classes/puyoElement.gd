@@ -194,8 +194,14 @@ func _process(_delta):
 		var scene = get_root_parent(self)
 		self.global_skew = 0
 		
-		self.global_scale = Vector2(scalex, scaley) * scene.canvas_viewport.zoomLevel
-	
+		#self.get_parent().scalex
+		
+		self.global_scale.x = scalex* scene.canvas_viewport.zoomLevel
+		self.global_scale.y = -scaley* scene.canvas_viewport.zoomLevel
+		
+		if global_transform[0].x > 0:
+			self.rotation_degrees -= 180
+			
 	elif not inherit_scale[0]:
 		var scene = get_root_parent(self)
 		self.global_skew = 0
@@ -597,3 +603,6 @@ func setdummy(_dum):
 
 func getSpriteList():
 	return sprite_list
+
+func get3dDepth():
+	return depth

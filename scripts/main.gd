@@ -1,7 +1,10 @@
 extends Node2D
 
-var current_version = "0.5"
+var current_version = "0.5.3"
 
+var changelog = "-You can undo 3D depth and element duplication.
+				 -fixed an issue where selecting an element from the left panel wouldn't update the right panel.
+				 -If you press F2 after clicking an element on the left panel, you can quickly rename it"
 
 @onready var layer_2_panels = $Layer2_Panels
 @onready var fileDialog = $Layer3_Popups/FileDialog
@@ -341,7 +344,7 @@ func _process(delta):
 #
 				
 		
-		$Layer2_Panels/PanelRight.update()
+		panel_right.update()
 	else:
 		$Layer2_Panels/PanelBottom/playPause.icon = load("res://Graphics/timeline/play.png")
 		$"Layer2_Panels/PanelRight/ScrollContainer/Control/ColorRect".visible = false
@@ -1655,12 +1658,13 @@ func duplicate_element(elem = false, parent = false):
 		duplicatedElement.animation_list = element.animation_list.duplicate(true)
 		duplicatedElement.defaultSettings = element.defaultSettings.duplicate(true)
 		
-		
 		LayerList[selected_layer].insert(element.id+1, duplicatedElement)
 		updateElementIDs()
 		selected_element = duplicatedElement.id
 		$Layer2_Panels/PanelLeft/ElementTree.updateList()
 		element_list.updateSelected()
+		
+		add_undo(duplicatedElement.get_parent().add_child, duplicatedElement.get_parent, duplicatedElement, "creation", duplicatedElement,false)
 
 func backupSave():
 	var save_backup = false
@@ -1730,10 +1734,14 @@ func delAnimation(undo = true):
 	$Layer2_Panels/PanelBottom/AnimationList.select(animation_idx)
 
 func popupUpdate(version):
-	$Layer3_Popups/Update.dialog_text = "New version found: " + version
+	$Layer3_Popups/Update.dialog_text = "New version found: " + version + ". \nDo you wish to download it?"
 	$Layer3_Popups/Update.popup()
 	
 
 
 func _on_update_confirmed():
 	OS.shell_open("https://github.com/ArMM1998/PuyoEdit/releases")
+
+func clipboardElement():
+	pass
+	

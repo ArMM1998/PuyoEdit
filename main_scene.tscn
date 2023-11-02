@@ -373,7 +373,7 @@ texture_normal = ExtResource("10_iig2l")
 script = ExtResource("11_tcy6v")
 
 [node name="Update" type="AcceptDialog" parent="Layer3_Popups"]
-title = "New version found."
+title = "New version available"
 position = Vector2i(380, 192)
 size = Vector2i(300, 150)
 exclusive = false

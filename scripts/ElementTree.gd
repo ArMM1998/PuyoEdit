@@ -84,6 +84,8 @@ func _on_item_selected():
 		else:
 			scene.selected_element = int(self.get_selected().get_text(1))
 			scene.selected_layer = getLayerIndex(self.get_selected())
+		get_parent().get_parent().get_parent().panel_right.update()
+		
 #Take an item from the tree and determine which "layer" it's on
 func getLayerIndex(item):
 	if item.get_text(0).find("Layer ") != -1:
@@ -111,6 +113,9 @@ var holdingCtrl = false
 func _on_gui_input(event):
 	
 	if self.has_focus():
+		if event is InputEventKey and event.keycode == KEY_F2 and scene.selected_element != -1:
+			scene.panel_right.element_name.grab_focus()
+			scene.panel_right.element_name.select_all()
 		if event is InputEventMouseButton:
 			if event.pressed:
 				mouse_state = "clicked"
