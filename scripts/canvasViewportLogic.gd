@@ -226,6 +226,9 @@ func customFmodf(a: float, b: float) -> float:
 
 func _input(event):
 	
+	if event is InputEventKey and event.keycode == KEY_Z:
+		updateKeyPos = event.pressed and (not draggingElement)
+	
 	if event is InputEventKey and event.keycode == KEY_CTRL:
 		holdingControl = event.pressed
 		
@@ -258,6 +261,8 @@ func _input(event):
 		
 		
 		if event is InputEventMouseButton and not event.pressed:
+			if draggingElement:
+				checkKeyframeSavingPos(owner.LayerList[owner.selected_layer][owner.selected_element], pos_diff)
 			draggingElement = false
 			draggingScaleY = false
 			draggingScaleX = false
@@ -277,14 +282,20 @@ func _input(event):
 			updateObjectPositions()
 			
 		if event is InputEventMouseMotion and draggingElement:
+			
 			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 			if holdingShift:
 				if abs(initialMousePos.x - get_global_mouse_position().x) > abs(initialMousePos.y - get_global_mouse_position().y):
 					element.global_position = Vector2((get_global_mouse_position() - (initialMousePos - initialElementPos)).x, initialElementPos.y)
+					
+					
 					checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
 					element.setPositionX(element.position.x)
 					checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
 					element.setPositionY(element.position.y)
+					
+					
+					
 					$ElementStuff/posMoveAlongX.visible = true
 					$ElementStuff/posMoveAlongY.visible = true
 					
@@ -319,13 +330,13 @@ func _input(event):
 				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
 				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
 				element.setPosition(element.position)
-			
+				
 			
 			if locktogrid:
 				element.position = Vector2(round(snappedf(element.position[0], owner.project_settings["screen_size"][0]/60)), round(snappedf(element.position[1], owner.project_settings["screen_size"][0]/60)))
-				element.setPosition(element.position)
 				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
 				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
+				element.setPosition(element.position)
 				
 			if holdingAlt:
 				element.position = Vector2(round(element.position[0]), round(element.position[1]))
@@ -335,6 +346,7 @@ func _input(event):
 				element.setPosition(element.position)
 				
 			$status_message.displayMessage("Updated " + element.element_name + " position to: " + str(element.position))
+			
 		
 		if event is InputEventMouseMotion and draggingPivot:
 			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
@@ -598,6 +610,7 @@ func _on_checkbg_gui_input(event):
 					owner.selected_layer = alreadySelectedElement.layer
 					if owner.selected_element == old_selected_element:
 						draggingElement = true
+						pos_diff = alreadySelectedElement.position
 						initialMousePos = get_global_mouse_position()
 						owner.add_undo(alreadySelectedElement.setPosition, alreadySelectedElement.getPosition, alreadySelectedElement.position, "value", alreadySelectedElement)
 						initialElementPos = alreadySelectedElement.global_position
@@ -620,6 +633,7 @@ func _on_checkbg_gui_input(event):
 								owner.selected_layer = element.layer
 								if owner.selected_element == old_selected_element:
 									draggingElement = true
+									pos_diff = element.position
 									initialMousePos = get_global_mouse_position()
 									owner.add_undo(element.setPosition, element.getPosition, element.position, "value", element)
 									initialElementPos = element.global_position
@@ -643,6 +657,7 @@ func _on_checkbg_gui_input(event):
 							owner.selected_layer = element.layer
 							if owner.selected_element == old_selected_element:
 								draggingElement = true
+								pos_diff = element.position
 								initialMousePos = get_global_mouse_position()
 								owner.add_undo(element.setPosition, element.getPosition, element.position, "value", element)
 								initialElementPos = element.global_position
@@ -669,6 +684,9 @@ func is_point_inside_polygon(points: Array) -> bool:
 func cross_product(v1: Vector2, v2: Vector2) -> float:
 	return v1.x * v2.y - v1.y * v2.x
 
+var pos_diff = Vector2(2,2)
+
+var updateKeyPos = false
 var changing = false
 func checkKeyframeSaving(element, value, track_name):
 	if owner.panel_bottom.selected_keyframe != -1 or owner.panel_bottom.multiple_select != []:
@@ -688,7 +706,34 @@ func checkKeyframeSaving(element, value, track_name):
 							element.saveDefaults = false
 							if track["Keyframes"].find(keyframe)+1 < track["Keyframes"].size():
 								owner.panel_bottom.updateKeyframeSettings(keyframe, track["Keyframes"][track["Keyframes"].find(keyframe)+1])
-
+		
+func checkKeyframeSavingPos(element, offset):
+	var not_skip = false
+	offset = element.position - offset
+	
+	if (owner.panel_bottom.multiple_select == []):
+		return 
+	if owner.animation_idx < element.animation_list.size():
+		for keyframe in owner.panel_bottom.multiple_select:
+			for track in element.animation_list[owner.animation_idx]:
+				if track["Motion"] == "posx":
+					
+					var selected_kf = track["Keyframes"][owner.panel_bottom.selected_keyframe]
+					if selected_kf["timestamp"] != owner.time:
+						not_skip = true
+					
+					if keyframe != track["Keyframes"][owner.panel_bottom.selected_keyframe] and keyframe["mot"] == "posx" or not_skip:
+						keyframe["data"] += offset.x / owner.project_settings["screen_size"][0]
+				
+				elif track["Motion"] == "posy":
+					
+					var selected_kf = track["Keyframes"][owner.panel_bottom.selected_keyframe]
+					if selected_kf["timestamp"] != owner.time:
+						not_skip = true
+					
+					if keyframe != track["Keyframes"][owner.panel_bottom.selected_keyframe] and keyframe["mot"] == "posy" or not_skip:
+						keyframe["data"] += offset.y / owner.project_settings["screen_size"][1]
+	
 var locktogrid = false
 
 func _on_lock_to_grid_toggled(button_pressed):

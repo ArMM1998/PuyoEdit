@@ -4,7 +4,9 @@ var current_version = "0.5.3"
 
 var changelog = "-You can undo 3D depth and element duplication.
 				 -fixed an issue where selecting an element from the left panel wouldn't update the right panel.
-				 -If you press F2 after clicking an element on the left panel, you can quickly rename it"
+				 -If you press F2 after clicking an element on the left panel, you can quickly rename it
+				 -Hold CTRL to select multiple keyframes
+				 -Select multiple \"position\" keyframes to offset their data while dragging and dropping an element."
 
 @onready var layer_2_panels = $Layer2_Panels
 @onready var fileDialog = $Layer3_Popups/FileDialog
@@ -90,6 +92,14 @@ func _ready():
 	
 	if user_settings["platform"] not in platformSettings:
 		user_settings["platform"] = "PSP"
+	
+	if "version" not in user_settings:
+		print("open up changelog")
+		user_settings["version"] = current_version
+	else:
+		if user_settings["version"] != current_version:
+			print("open up changelog")
+			user_settings["version"] = current_version
 	
 	#update project_settings
 	project_settings["platform"] = user_settings["platform"]
@@ -331,7 +341,7 @@ func _process(delta):
 				playing = false
 				#$Layer2_Panels/PanelBottom/HScrollBar.value = 0 
 				
-		if $Layer2_Panels/PanelBottom/timeline/Head.global_position.x > $Layer2_Panels/PanelBottom.size.x - 384 or $Layer2_Panels/PanelBottom/timeline/Head.global_position.x < 256:
+		if $Layer2_Panels/PanelBottom/timeline/Head.global_position.x > $Layer2_Panels/PanelBottom.size.x - 264 or $Layer2_Panels/PanelBottom/timeline/Head.global_position.x < 256:
 			#print("off screen")
 			$Layer2_Panels/PanelBottom/HScrollBar.value = time
 		

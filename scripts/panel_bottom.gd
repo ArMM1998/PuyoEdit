@@ -458,10 +458,22 @@ func timelineInput(event):
 						var keyIDX = 0
 						for keyframe in anim_track["Keyframes"]:
 							
-							var in_button_range = int(owner.time) in range(int(keyframe["timestamp"] - (0.5)/zoomLevel), int(keyframe["timestamp"] + (0.5)/zoomLevel))
+							#print()
+							var in_button_range
+							if zoomLevel != 1:
+								in_button_range = int(owner.time) in range(int(keyframe["timestamp"] - (0.5)/zoomLevel), int(keyframe["timestamp"] + (0.5)/zoomLevel))
+							else:
+								in_button_range = int(owner.time) == keyframe["timestamp"]
+							
 							#print(int(owner.time), ": - : ", int(owner.time - (0.5)/zoomLevel), ",", int(owner.time + (0.5)*zoomLevel))
 							if keyframe["timestamp"] == owner.time or in_button_range:
 								owner.time = float(keyframe["timestamp"])
+								
+								if holdingCtrl:
+									if keyframe not in multiple_select:
+										multiple_select.append(keyframe)
+										keyframe["mot"] = anim_track["Motion"]
+									
 								selected_keyframe = keyIDX
 								holdingKeyframe = true
 								
