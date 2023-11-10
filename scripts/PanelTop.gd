@@ -11,6 +11,8 @@ func _ready():
 	$MenuButton_File.get_popup().add_item("Save")
 	$MenuButton_File.get_popup().add_item("Save As...")
 	$MenuButton_File.get_popup().add_separator()
+	$MenuButton_File.get_popup().add_item("User Settings")
+	$MenuButton_File.get_popup().add_separator()
 	$MenuButton_File.get_popup().add_item("Exit")
 	
 	var platform_menu = PopupMenu.new()
@@ -47,7 +49,7 @@ func _ready():
 	platform_menu.connect("id_pressed", platformMenu)
 
 func fileMenu(item_id):
-	#print(item_id)
+	print(item_id)
 	if item_id == 0:
 		owner.newFile()
 	if item_id == 1:
@@ -57,6 +59,8 @@ func fileMenu(item_id):
 	if item_id == 4:
 		owner.startSaveAsTask()
 	if item_id == 6:
+		owner.settings.popup()
+	if item_id == 8:
 		get_tree().quit()
 		
 	$MenuButton_File.release_focus()

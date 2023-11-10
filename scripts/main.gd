@@ -1,12 +1,18 @@
 extends Node2D
 
-var current_version = "0.5.3"
+var current_version = "0.6"
 
-var changelog = "-You can undo 3D depth and element duplication.
-				 -fixed an issue where selecting an element from the left panel wouldn't update the right panel.
-				 -If you press F2 after clicking an element on the left panel, you can quickly rename it
-				 -Hold CTRL to select multiple keyframes
-				 -Select multiple \"position\" keyframes to offset their data while dragging and dropping an element."
+var changelog = "
+NEW FEATURES:
+-You can now undo 3D depth and element duplication. (press CTRL + D to duplicate)
+-Added a \"user settings\" menu.
+-You can now press F2 after clicking an element on the left panel, you can quickly rename it
+-Multiple \"position\" keyframes to offset their data while dragging and dropping an element
+-CTRL to add a keyframe to the multiple keyframes selection.
+
+FIXES:
+-Fixed an issue where selecting an element from the left panel wouldn't update the right panel.
+"
 
 @onready var layer_2_panels = $Layer2_Panels
 @onready var fileDialog = $Layer3_Popups/FileDialog
@@ -21,6 +27,7 @@ var changelog = "-You can undo 3D depth and element duplication.
 @onready var panel_right = $Layer2_Panels/PanelRight
 @onready var panel_bottom = $Layer2_Panels/PanelBottom
 @onready var timeline = $Layer2_Panels/PanelBottom/timeline
+@onready var settings = $Layer3_Popups/Settings
 
 
 var undoHistory = []
@@ -52,7 +59,8 @@ var user_settings = {"platform" : "PSP", #Default
 					"hide_axis" : false,
 					"boot_up_times": 0,
 					"autobackup" : true,
-					"backuptimer" : 120}
+					"backuptimer" : 120,
+					"auto_update" : true}
 
 var platformSettings = []
 var textureList = []
@@ -83,23 +91,36 @@ func _ready():
 		user_settings = JSON.parse_string(userData.get_as_text())
 		userData.close()
 	
+	if not "auto_update" in user_settings:
+		user_settings["auto_update"] = true
+	
+	$Layer3_Popups/Settings/Node2D/btn_check_updates.button_pressed = user_settings["auto_update"]
+	
 	if "autobackup" in user_settings:
 		autobackup = user_settings["autobackup"]
 		backupTimeLimit = user_settings["backuptimer"]
+		
 	else:
 		user_settings["autobackup"] = autobackup
 		user_settings["backuptimer"] = backupTimeLimit
+	
+	$Layer3_Popups/Settings/Node2D/btn_autosave.button_pressed = autobackup
+	$Layer3_Popups/Settings/Node2D/autosave_interval.value = backupTimeLimit / 60
+	
 	
 	if user_settings["platform"] not in platformSettings:
 		user_settings["platform"] = "PSP"
 	
 	if "version" not in user_settings:
-		print("open up changelog")
+		$Layer3_Popups/Changelog.dialog_text = changelog
+		$Layer3_Popups/Changelog.popup()
 		user_settings["version"] = current_version
 	else:
 		if user_settings["version"] != current_version:
-			print("open up changelog")
+			$Layer3_Popups/Changelog.dialog_text = changelog
+			$Layer3_Popups/Changelog.popup()
 			user_settings["version"] = current_version
+	
 	
 	#update project_settings
 	project_settings["platform"] = user_settings["platform"]
@@ -698,7 +719,7 @@ func toggleAxis():
 
 func newFile():
 	resetVariables()
-	get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor"
+	get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor v" + current_version
 	project_settings["file_path"] = ""
 	project_settings["texture_dir"] = ""
 	updatePathLabel()
@@ -770,7 +791,7 @@ func loadJsonFile(file_path, backup = false):
 	
 	if not backup:
 		user_settings["filedialog_dir"] = $Layer3_Popups/FileDialog.current_dir
-	get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor : " + file_path
+	get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor : " + file_path + " v" + current_version
 	var jsonFile = FileAccess.open(file_path, FileAccess.READ)
 	var jsonData = JSON.parse_string(jsonFile.get_as_text())
 	fileDialog.hide()
@@ -828,7 +849,7 @@ func loadJsonFile(file_path, backup = false):
 		if loadReady:
 			if backup:
 				project_settings["file_path"] = jsonData["Editor Settings"]["file_dir"]
-				get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor: " + jsonData["Editor Settings"]["file_dir"] 
+				get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor: " + jsonData["Editor Settings"]["file_dir"] + " v" + current_version
 			else:
 				project_settings["file_path"] = file_path
 			status_message.displayMessage("Loaded: " + file_path + ".", true)
@@ -935,7 +956,7 @@ func saveAt(path, backup = false, update_path = false):
 	else:
 		if update_path:
 			user_settings["filedialog_dir"] = $Layer3_Popups/SaveDialog.current_dir
-		get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor :" + path
+		get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor :" + path + " v" + current_version
 		status_message.displayMessage("Saved at: " + path, true)
 	new_json =  JSON.stringify(new_json, "\t", false)
 	var file = FileAccess.open(path, FileAccess.WRITE)
@@ -1755,3 +1776,15 @@ func _on_update_confirmed():
 func clipboardElement():
 	pass
 	
+
+
+func _on_btn_autosave_pressed():
+	user_settings["autobackup"] = $Layer3_Popups/Settings/Node2D/btn_autosave.button_pressed
+
+
+func _on_autosave_interval_changed(_dummy):
+	user_settings["backuptimer"] = $Layer3_Popups/Settings/Node2D/autosave_interval.value * 60
+
+
+func _on_btn_check_updates_pressed():
+	user_settings["auto_update"] = $Layer3_Popups/Settings/Node2D/btn_check_updates.button_pressed
