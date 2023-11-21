@@ -14,6 +14,8 @@ FIXES:
 "
 
 
+const appname = "Puyo Puyo Animation Studio"
+
 @onready var layer_2_panels = $Layer2_Panels
 @onready var fileDialog = $Layer3_Popups/FileDialog
 @onready var accept_dialog = $Layer3_Popups/AcceptDialog
@@ -717,9 +719,11 @@ func toggleAxis():
 	$Layer1_Canvas/CanvasViewport.updateObjectPositions()
 #####FILE STUFF####
 
+
+
 func newFile():
 	resetVariables()
-	get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor v" + current_version
+	get_viewport().title = appname + " v" + current_version
 	project_settings["file_path"] = ""
 	project_settings["texture_dir"] = ""
 	updatePathLabel()
@@ -791,7 +795,7 @@ func loadJsonFile(file_path, backup = false):
 	
 	if not backup:
 		user_settings["filedialog_dir"] = $Layer3_Popups/FileDialog.current_dir
-	get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor : " + file_path + " v" + current_version
+	get_viewport().title = appname + " v" + current_version + " : " + file_path
 	var jsonFile = FileAccess.open(file_path, FileAccess.READ)
 	var jsonData = JSON.parse_string(jsonFile.get_as_text())
 	fileDialog.hide()
@@ -849,7 +853,7 @@ func loadJsonFile(file_path, backup = false):
 		if loadReady:
 			if backup:
 				project_settings["file_path"] = jsonData["Editor Settings"]["file_dir"]
-				get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor: " + jsonData["Editor Settings"]["file_dir"] + " v" + current_version
+				get_viewport().title = appname + " v" + current_version + " : " + jsonData["Editor Settings"]["file_dir"]
 			else:
 				project_settings["file_path"] = file_path
 			status_message.displayMessage("Loaded: " + file_path + ".", true)
@@ -958,7 +962,7 @@ func saveAt(path, backup = false, update_path = false):
 	else:
 		if update_path:
 			user_settings["filedialog_dir"] = $Layer3_Popups/SaveDialog.current_dir
-		get_viewport().title = "Puyo Edit - Puyo Puyo Animation Editor :" + path + " v" + current_version
+		get_viewport().title = appname + " v" + current_version + " : " + path
 		status_message.displayMessage("Saved at: " + path, true)
 	new_json =  JSON.stringify(new_json, "\t", false)
 	var file = FileAccess.open(path, FileAccess.WRITE)

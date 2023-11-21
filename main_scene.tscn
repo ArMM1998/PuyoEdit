@@ -359,7 +359,7 @@ exclusive = false
 unresizable = true
 min_size = Vector2i(144, 0)
 ok_button_text = "Close"
-dialog_text = "-Puyo Puyo Animation Editor-
+dialog_text = "-Puyo Puyo Animation Studio-
 By: Armando (ArMM1998)
 
 Supported games:
