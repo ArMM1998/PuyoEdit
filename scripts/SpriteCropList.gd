@@ -21,13 +21,20 @@ func update():
 		if $"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/texture".texture != null:
 			
 			$"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/texture".texture = owner.textureList[texIDX]
+			
+			
 		else:
 			$"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/texture".texture = owner.textureList[texIDX]
 			$"../../../Layer2_SpriteEditor_Canvas/Control"._on_zoom_label_pressed()
+		
+		
+		
+		
 		var topleft = owner.spriteCropList[selected].texture.region.position
 		var topright = owner.spriteCropList[selected].texture.region.position + Vector2(owner.spriteCropList[selected].texture.region.size.x, 0)
 		var bottomright =  owner.spriteCropList[selected].texture.region.position + owner.spriteCropList[selected].texture.region.size
 		var bottomleft = topleft + Vector2(0,owner.spriteCropList[selected].texture.region.size.y)
+		
 		
 		$"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/square".add_point(topleft)
 		$"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/square".add_point(topright)
@@ -45,6 +52,18 @@ func update():
 		texturerect.add_point(owner.spriteCropList[selected].texture.atlas.get_size())
 		texturerect.add_point(Vector2(0,owner.spriteCropList[selected].texture.atlas.get_size().y))
 		texturerect.add_point(Vector2(0,0))
+		
+		
+		var cell_size = 1
+		$"../../../Layer2_SpriteEditor_Canvas/Control".gridZoomLevel = 4.0
+		
+		#For my use :))))
+		if owner.png_list[texIDX].find("psphd") != -1:
+			cell_size = 4
+			$"../../../Layer2_SpriteEditor_Canvas/Control".gridZoomLevel = 1.0
+		
+		$"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/grid_potentially".set_grid_size(owner.spriteCropList[selected].texture.atlas.get_size(), Vector2(cell_size, cell_size))
+		
 		texturerect.width = 1.0 / $"../../../Layer2_SpriteEditor_Canvas/Control".zoomLevel
 		texturerect.modulate = Color(0.3,0.3,0.3,1)
 		$"../../../Layer2_SpriteEditor_Canvas/Control/Center/Canvas/other_crops".add_child(texturerect)

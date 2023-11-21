@@ -392,6 +392,22 @@ offset_right = 207.0
 offset_bottom = 596.0
 color = Color(1, 1, 1, 1)
 
+[node name="label_wii_filter" type="Label" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 601.0
+offset_right = 80.0
+offset_bottom = 626.0
+theme_override_font_sizes/font_size = 15
+text = "Bilinear Filter"
+
+[node name="wiifilter" type="CheckBox" parent="."]
+layout_mode = 2
+offset_left = 151.0
+offset_top = 603.0
+offset_right = 175.0
+offset_bottom = 627.0
+
 [node name="PopupMenu" type="PopupMenu" parent="."]
 size = Vector2i(48, 60)
 always_on_top = true

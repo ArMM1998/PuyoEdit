@@ -12,6 +12,20 @@ var zoomLevel = 1.0
 
 var holdingCTRL = false
 
+var gridZoomLevel = 4
+
+
+
+func _process(_delta):
+	if $"../Gridbtn".button_pressed:
+		$"../Gridbtn".modulate = Color(0.5,0.5,1)
+		if zoomLevel > gridZoomLevel:
+			$Center/Canvas/grid_potentially.set_grid_visibility(true)
+		elif $Center/Canvas/grid_potentially.grid_visible:
+			$Center/Canvas/grid_potentially.set_grid_visibility(false)
+	else:
+		$"../Gridbtn".modulate = Color(1,1,1)
+		$Center/Canvas/grid_potentially.set_grid_visibility(false)
 func _input(event):
 	if event is InputEventKey and event.keycode == KEY_CTRL:
 		holdingCTRL = event.pressed
@@ -130,4 +144,4 @@ func _on_zoom_label_pressed():
 		$Center.global_position = self.size/2 - owner.spriteCropList[$"../../Layer2_SpriteEditor_Panels/PanelLeft/ItemList".selected].texture.atlas.get_size()/2 + Vector2(128,0)
 	zoomLevel = 1.0
 	updateScale()
-	
+

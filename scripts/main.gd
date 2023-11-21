@@ -1,18 +1,18 @@
 extends Node2D
 
-var current_version = "0.6"
+var current_version = "0.6.1"
 
 var changelog = "
 NEW FEATURES:
--You can now undo 3D depth and element duplication. (press CTRL + D to duplicate)
--Added a \"user settings\" menu.
--You can now press F2 after clicking an element on the left panel, you can quickly rename it
--Multiple \"position\" keyframes to offset their data while dragging and dropping an element
--CTRL to add a keyframe to the multiple keyframes selection.
+-A grid will now appear when using the sprite editor and after zooming in at least 400%.
+-A grid will now appear when using the lock to grid button.
+-You can customize the lock grid's size in pixels in the user settings aswell as toggle its visibility. (If it's on but not visible, it will still snap.)
+-You can turn off bilinear filtering for sprites while using Wii as the target platform. (It will still be filtered it in the editor)
 
 FIXES:
--Fixed an issue where selecting an element from the left panel wouldn't update the right panel.
+-Checkerboard background is now darker to help visibility.
 "
+
 
 @onready var layer_2_panels = $Layer2_Panels
 @onready var fileDialog = $Layer3_Popups/FileDialog
@@ -870,9 +870,11 @@ func startTextureDirTask():
 func reloadTextures(_dummy):
 	selectedTextureDir(project_settings["texture_dir"])
 
+var png_list
+
 func selectedTextureDir(selected_dir):
 	if selected_dir != "":
-		var png_list = list_files_in_directory(selected_dir)
+		png_list = list_files_in_directory(selected_dir)
 		if len(png_list) != 0:
 			for child in $directory_watcher.get_children():
 				child.queue_free()
@@ -1037,7 +1039,8 @@ func formatAnimationData():
 				flipValue = 04
 			elif element.flipY:
 				flipValue = 08
-			flipValue+= 16
+			if element.filter_wii:
+				flipValue+= 16
 			JsonElement["Render Settings"] = {"dodge_blend" : int(element.add_blend),
 											"unknown_1" : flipValue,
 											"unknown_2": 5}
@@ -1480,6 +1483,11 @@ func LoadData(data):
 			new_element.setSpriteIndex(element["Default Settings"]["sprite_index"])
 			
 			var flip = element["Render Settings"]["unknown_1"]
+			
+			if flip == 0 or flip == 4 or flip == 8 or flip == 12:
+				new_element.setFiltering(false)
+			
+			
 			if flip == 4 or flip == 20 or flip == 36 or flip == 52:
 				new_element.setFlipX(true)
 			if flip == 8 or flip == 24 or flip == 40 or flip == 56:
@@ -1711,6 +1719,7 @@ func backupSave():
 func toggle_fullscreen():
 	fullscreen = not fullscreen
 	if fullscreen:
+		$Layer1_Canvas/CanvasViewport/LockToGrid.button_pressed = false
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		$Layer1_Canvas/CanvasViewport/status_message.position = Vector2(-100,-100)
 		$Layer1_Canvas/CanvasViewport/maximize_view.position = Vector2(-100,-100)
@@ -1780,10 +1789,12 @@ func clipboardElement():
 
 func _on_btn_autosave_pressed():
 	user_settings["autobackup"] = $Layer3_Popups/Settings/Node2D/btn_autosave.button_pressed
+	autobackup = $Layer3_Popups/Settings/Node2D/btn_autosave.button_pressed
 
 
 func _on_autosave_interval_changed(_dummy):
 	user_settings["backuptimer"] = $Layer3_Popups/Settings/Node2D/autosave_interval.value * 60
+	backupTimeLimit = $Layer3_Popups/Settings/Node2D/autosave_interval.value * 60
 
 
 func _on_btn_check_updates_pressed():

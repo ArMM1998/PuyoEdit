@@ -3,6 +3,9 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	
+	$posScreenRect/Grid.set_grid_size(Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])*4, Vector2(owner.project_settings["screen_size"][0]/60, owner.project_settings["screen_size"][1]/60))
+	
 	$ElementStuff/ElementRect.rotation_degrees = 0
 	$ElementStuff/ElementRect.global_position = Vector2(0,0)
 signal selected_element
@@ -28,7 +31,18 @@ var holdingControl = false
 var holdingShift = false
 
 
+var grid_division = 8.0
+
 func _process(_delta):
+	var cell_size = Vector2(grid_division, grid_division)*zoomLevel
+	$posScreenRect/Grid.set_grid_size((Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1]))*zoomLevel, cell_size)
+	$posScreenRect/Grid.position = Vector2(0,0)
+	
+	if zoomLevel > 0.5 and $"../../Layer3_Popups/Settings/Node2D/btn_check_updates2".button_pressed:
+		$posScreenRect/Grid.set_grid_visibility(locktogrid)
+	else:
+		$posScreenRect/Grid.set_grid_visibility(false)
+	
 	if draggingPivot or draggingElement or draggingScaleX or draggingScaleY or draggingAngle:
 		undoBlock = true
 	else:
@@ -333,7 +347,7 @@ func _input(event):
 				
 			
 			if locktogrid:
-				element.position = Vector2(round(snappedf(element.position[0], owner.project_settings["screen_size"][0]/60)), round(snappedf(element.position[1], owner.project_settings["screen_size"][0]/60)))
+				element.position = Vector2(snappedf(element.position[0], grid_division), snappedf(element.position[1], grid_division))
 				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
 				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
 				element.setPosition(element.position)
@@ -749,3 +763,7 @@ func _on_maximize_view_pressed():
 	fillZoom()
 
 
+
+
+func _on_btn_lockgrid_value_changed(value):
+	grid_division = float(value)

@@ -40,6 +40,7 @@ var mixed_color
 var sprite_list = [] : set = setSpriteList
 var depth = 0 : set = set3dDepth
 var name_order = -2424
+var filter_wii = true : set = setFiltering
 
 
 var defaultSettings = {"visibility" : true,
@@ -606,3 +607,6 @@ func getSpriteList():
 
 func get3dDepth():
 	return depth
+
+func setFiltering(value):
+	filter_wii = value

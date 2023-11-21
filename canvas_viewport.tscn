@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://d02nd2drmop08"]
+[gd_scene load_steps=12 format=3 uid="uid://d02nd2drmop08"]
 
 [ext_resource type="Texture2D" uid="uid://iqctjs0vvuy1" path="res://Graphics/viewportbg.png" id="1_8n31f"]
 [ext_resource type="Script" path="res://scripts/canvasViewportLogic.gd" id="1_b3f5c"]
 [ext_resource type="Script" path="res://scripts/status_message.gd" id="3_k33xf"]
+[ext_resource type="Script" path="res://scripts/grid_potentially.gd" id="3_ybs2o"]
 [ext_resource type="Texture2D" uid="uid://cxr8srpndrly" path="res://Graphics/move_btn.png" id="4_1400k"]
 [ext_resource type="Texture2D" uid="uid://du3wsm73i7plp" path="res://Graphics/scale_btn.png" id="5_0dlbw"]
 [ext_resource type="Texture2D" uid="uid://c5yoj4l7epe73" path="res://Graphics/scale_btnvertical.png" id="6_3f7sb"]
@@ -52,6 +53,9 @@ points = PackedVector2Array(0, 0, 480, 0, 480, 272, 0, 272, 0, 0)
 width = 1.0
 default_color = Color(0.403922, 0.580392, 0.996078, 1)
 antialiased = true
+
+[node name="Grid" type="Node2D" parent="posScreenRect"]
+script = ExtResource("3_ybs2o")
 
 [node name="posFieldRect" type="Marker2D" parent="."]
 z_index = -4092

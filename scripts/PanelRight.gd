@@ -54,6 +54,7 @@ func _ready():
 	
 	$ScrollContainer/Control/depth.value_changed.connect(updateDepth)
 	$ScrollContainer/Control/HSlider.value_changed.connect(updateDepth)
+	$ScrollContainer/Control/wiifilter.toggled.connect(wiiFilterToggle)
 	
 var selected = -1
 var changing = false
@@ -66,6 +67,11 @@ func _process(_delta):
 	$ScrollContainer/Control/Label13.visible = is_3ds
 	$ScrollContainer/Control/Sprite2D.visible = is_3ds
 	$ScrollContainer/Control/depth.visible = is_3ds
+	
+	var is_wii = owner.project_settings["platform"].find("Wii") != -1
+	
+	$ScrollContainer/Control/wiifilter.visible = is_wii
+	$ScrollContainer/Control/label_wii_filter.visible = is_wii
 	
 	if owner.selected_element != -1:
 		$ScrollContainer.visible = true
@@ -98,6 +104,9 @@ func update():
 		ignore = true
 		$ScrollContainer/Control/depth.value = element.depth
 		ignore = false
+		
+		$ScrollContainer/Control/wiifilter.button_pressed = element.filter_wii
+		
 		$ScrollContainer/Control/HSlider.value = element.depth
 		$ScrollContainer/Control/elementName.text = element.element_name
 		$ScrollContainer/Control/render.button_pressed = element.render
@@ -479,3 +488,7 @@ func updateDepth(dummy):
 	else:
 		element.set3dDepth($ScrollContainer/Control/HSlider.value)
 		$ScrollContainer/Control/depth.value = $ScrollContainer/Control/HSlider.value
+
+func wiiFilterToggle(value):
+	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	element.setFiltering(value)
