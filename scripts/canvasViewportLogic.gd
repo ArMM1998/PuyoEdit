@@ -347,7 +347,8 @@ func _input(event):
 				
 			
 			if locktogrid:
-				element.position = Vector2(snappedf(element.position[0], grid_division), snappedf(element.position[1], grid_division))
+				element.global_position = Vector2(snappedf($Center/Canvas.to_local(element.global_position).x, grid_division), snappedf($Center/Canvas.to_local(element.global_position).y, grid_division))*zoomLevel + $Center/Canvas.global_position
+				#element.position = Vector2(snappedf(element.position[0], grid_division), snappedf(element.position[1], grid_division))
 				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
 				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
 				element.setPosition(element.position)
