@@ -1,6 +1,6 @@
 extends Panel
 
-var platforms = ["Wii 16:9", "Wii 4:3", "PS2", "PSP", "3DS top", "3DS bottom", "DS", "Mobile"]
+var platforms = ["Wii 16:9", "Wii 4:3", "PS2", "PSP", "3DS top", "3DS bottom", "3DS Dual Screen", "DS", "Mobile", "Mobile Touch"]
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$MenuButton_File.set_focus_mode(true)
@@ -17,7 +17,7 @@ func _ready():
 	
 	var platform_menu = PopupMenu.new()
 	platform_menu.name = "platform_menu"
-	super.add_child(platform_menu)
+	$MenuButton_Project.get_popup().add_child(platform_menu)
 	
 	platform_menu.add_item("Wii 16:9")
 	platform_menu.add_item("Wii 4:3")
@@ -25,12 +25,14 @@ func _ready():
 	platform_menu.add_item("PSP")
 	platform_menu.add_item("3DS Top")
 	platform_menu.add_item("3DS Bottom")
+	platform_menu.add_item("3DS Dual Screen")
 	platform_menu.add_item("NDS")
 	platform_menu.add_item("Mobile")
+	platform_menu.add_item("Mobile Touch")
 	
 	
 	$MenuButton_Project.get_popup().add_item("Sprite Editor")
-	$MenuButton_Project.get_popup().add_submenu_item("Target Platform", platform_menu.get_path())
+	$MenuButton_Project.get_popup().add_submenu_item("Target Platform", platform_menu.name)
 	$MenuButton_Project.get_popup().add_separator()
 	$MenuButton_Project.get_popup().add_item("(A) Toggle Axis")
 	$MenuButton_Project.get_popup().add_item("(S) Toggle Screen")

@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bkbtnkgk8e0f0"]
+[gd_scene load_steps=4 format=3 uid="uid://bkbtnkgk8e0f0"]
 
 [ext_resource type="Texture2D" uid="uid://clfm3bhq5mjsl" path="res://Graphics/timeline/head.png" id="1_4uk8c"]
 [ext_resource type="Texture2D" uid="uid://cyngjh4lblgs2" path="res://Graphics/timeline/timeline_grid.png" id="1_qkhag"]
+[ext_resource type="Texture2D" uid="uid://hm7noqcrjlxe" path="res://Graphics/timeline/range.png" id="2_0rvpj"]
 
 [node name="timeline" type="Control"]
 clip_children = 2
@@ -69,6 +70,16 @@ offset_right = 752.0
 offset_bottom = 216.0
 mouse_filter = 2
 color = Color(0.0784314, 0.0784314, 0.0784314, 1)
+
+[node name="range_start" type="Sprite2D" parent="."]
+texture = ExtResource("2_0rvpj")
+centered = false
+
+[node name="range_end" type="Sprite2D" parent="."]
+texture = ExtResource("2_0rvpj")
+centered = false
+offset = Vector2(8, 0)
+flip_h = true
 
 [node name="Head" type="Sprite2D" parent="."]
 texture = ExtResource("1_4uk8c")

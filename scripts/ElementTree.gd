@@ -116,7 +116,7 @@ func _on_gui_input(event):
 		if event is InputEventKey and event.keycode == KEY_F2 and scene.selected_element != -1:
 			scene.panel_right.element_name.grab_focus()
 			scene.panel_right.element_name.select_all()
-		if event is InputEventMouseButton:
+		if event is InputEventMouseButton and (event.button_index == 1 or event.button_index == 2):
 			if event.pressed:
 				mouse_state = "clicked"
 				startingMousePos = event.position
@@ -131,9 +131,19 @@ func _on_gui_input(event):
 				
 		if event is InputEventMouseMotion and mouse_state == "clicked" and ((abs(event.position.x - startingMousePos.x) > draggingRange or abs(event.position.y - startingMousePos.y) > draggingRange) and get_item_at_position(event.position) != self.get_selected()):
 			mouse_state = "dragging"
-		
+			
 		if event is InputEventMouseMotion and mouse_state == "dragging" and self.get_selected():
 			self.drop_mode_flags = DROP_MODE_ON_ITEM
+			
+			if get_item_at_position(event.position) != null:
+				if event.position.y < 128:
+					var item_to_scroll = get_item_at_position(event.position).get_prev_in_tree()
+					if item_to_scroll != null:
+						self.scroll_to_item(item_to_scroll)
+				elif event.position.y > self.size.y - 32:
+					var item_to_scroll = get_item_at_position(event.position).get_next_in_tree()
+					if item_to_scroll != null:
+						self.scroll_to_item(item_to_scroll)
 			
 			
 			if self.get_selected().get_text(0).find("Layer ") == -1:

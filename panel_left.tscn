@@ -19,6 +19,7 @@ offset_top = 24.0
 offset_right = 248.0
 offset_bottom = 384.0
 theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/title_button_font_size = 12
 columns = 2
 column_titles_visible = true
 select_mode = 1

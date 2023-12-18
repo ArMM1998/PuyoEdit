@@ -22,6 +22,17 @@ func _ready():
 var current_element
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	
+	$timeline/range_start.visible = owner.play_range[2]
+	$timeline/range_end.visible = owner.play_range[2]
+	
+	if owner.play_range[2]:
+		$timeline/range_start.position = Vector2((owner.play_range[0]*(16*zoomLevel)-$HScrollBar.value*(16*zoomLevel)), 0)
+		$timeline/range_end.position = Vector2((owner.play_range[1]*(16*zoomLevel)-$HScrollBar.value*(16*zoomLevel)), 0)
+	
+	$removaudio.position =  $speed.position - Vector2(32,12)
+	$removaudio.visible = "Audio" in owner.project_settings
+	
 	if current_element != [owner.selected_layer, owner.selected_element]:
 		selected_keyframe = -1
 		selected_track = -1
@@ -363,6 +374,7 @@ func _on_h_scroll_bar_value_changed(_value):
 
 var holdingHead = false
 var starting_pos 
+var setting_playrange = [false, 0]
 
 func headInput(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -371,6 +383,39 @@ func headInput(event):
 		holdingHead = event.pressed
 		starting_pos = get_global_mouse_position()
 		owner.centerHead = false
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		$timeline.grab_focus()
+		#owner.playing = false
+		setting_playrange[0] = event.pressed
+		if setting_playrange[0]:
+			var mouse_frame = round(((get_global_mouse_position().x - 270) - ($timeline/keyframes.position.x))/(16*zoomLevel))
+			if owner.play_range[2]: #there's an existing range active
+				if abs(mouse_frame - owner.play_range[0]) < abs(mouse_frame - owner.play_range[1]):
+					owner.play_range[0] = mouse_frame
+					setting_playrange[1] = 0
+				else:
+					owner.play_range[1] = mouse_frame
+					setting_playrange[1] = 1
+			else:
+				owner.play_range[0] = round(((get_global_mouse_position().x - 270) - ($timeline/keyframes.position.x))/(16*zoomLevel))
+				owner.play_range[1] = owner.play_range[0]+1
+				setting_playrange[1] = 1
+				
+		owner.play_range[2] = owner.play_range[0] < owner.play_range[1]
+		if not owner.play_range[2]:
+			owner.play_range[0] = 0
+			owner.play_range[1] = 0 
+	
+	if setting_playrange[0]:
+		if setting_playrange[1] == 0:
+			owner.play_range[0] = round(((get_global_mouse_position().x - 270) - ($timeline/keyframes.position.x))/(16*zoomLevel))
+			if owner.play_range[0] > owner.play_range[1]:
+				owner.play_range[0] = owner.play_range[1]
+		else:
+			owner.play_range[1] = round(((get_global_mouse_position().x - 270) - ($timeline/keyframes.position.x))/(16*zoomLevel))
+			if owner.play_range[1] < owner.play_range[0]:
+				owner.play_range[1] = owner.play_range[0]
+		
 	
 	if holdingHead:
 		owner.time =  ((get_global_mouse_position().x - 270) - ($timeline/keyframes.position.x))/(16*zoomLevel)
@@ -436,7 +481,7 @@ func timelineInput(event):
 			pan_mousepos = get_global_mouse_position()
 		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		
+		owner.playing = false
 		owner.time = round(($timeline/keyframes.to_local(get_global_mouse_position()).x-7) / (16*zoomLevel))
 		owner.time = snapped(owner.time, 1/(zoomLevel))
 		selected_track = int(round(($timeline/keyframes.to_local(get_global_mouse_position()).y-32) / 16))
@@ -1333,3 +1378,7 @@ func _on_animation_list_gui_input(event):
 	if event is InputEventKey and event.keycode == KEY_DELETE and event.pressed:
 		if owner.animationList.size() != 0:
 			owner.delAnimation()
+
+
+func _on_removaudio_pressed():
+	owner.removeAudio()

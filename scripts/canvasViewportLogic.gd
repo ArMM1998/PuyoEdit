@@ -449,6 +449,7 @@ func updateScale():
 	$Center.scale = Vector2(zoomLevel, zoomLevel)
 	$Center.global_position = Vector2(int($Center.global_position[0]), int($Center.global_position[1]))
 	$Center/Canvas.global_position = Vector2(int($Center/Canvas.global_position[0]), int($Center/Canvas.global_position[1]))
+
 func updateObjectPositions():
 	#update positions
 	$posAxis.global_position = $Center/Canvas.global_position
@@ -458,9 +459,43 @@ func updateObjectPositions():
 	$posScreenRect.visible = not owner.user_settings["hide_screen"]
 	$posAxis.visible = not owner.user_settings["hide_axis"]
 	#update screen rect size
-	$posScreenRect/ScreenRect.set_point_position(1, Vector2(owner.project_settings["screen_size"][0], 0)*zoomLevel)
-	$posScreenRect/ScreenRect.set_point_position(2, Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])*zoomLevel)
-	$posScreenRect/ScreenRect.set_point_position(3, Vector2(0, owner.project_settings["screen_size"][1])*zoomLevel)
+	if owner.project_settings["platform"] == "3DS Dual Screen":
+		if $posScreenRect/ScreenRect.get_point_count() < 9:
+			$posScreenRect/ScreenRect.add_point(Vector2(0,0))
+			$posScreenRect/ScreenRect.add_point(Vector2(0,0))
+			$posScreenRect/ScreenRect.add_point(Vector2(0,0))
+			$posScreenRect/ScreenRect.add_point(Vector2(0,0))
+			$posScreenRect/ScreenRect.add_point(Vector2(0,0))
+			$posScreenRect/ScreenRect.add_point(Vector2(0,0))
+			
+		$posScreenRect/ScreenRect.set_point_position(0, Vector2(40, 0)*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(1, Vector2(owner.project_settings["screen_size"][2]+40, 0)*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(2, Vector2(owner.project_settings["screen_size"][2]+40, owner.project_settings["screen_size"][3])*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(3, Vector2(40, owner.project_settings["screen_size"][3])*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(4, Vector2(40, 0)*zoomLevel)
+		
+		$posScreenRect/ScreenRect.set_point_position(5, Vector2(0, 0))
+		
+		$posScreenRect/ScreenRect.set_point_position(6, Vector2(0, -280)*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(7, Vector2(owner.project_settings["screen_size"][0], -280)*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(8, Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1]-280)*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(9, Vector2(0, owner.project_settings["screen_size"][1]-280)*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(10, Vector2(0, -280)*zoomLevel)
+	
+	else:
+		if $posScreenRect/ScreenRect.get_point_count() > 6:
+			$posScreenRect/ScreenRect.remove_point(5)
+			$posScreenRect/ScreenRect.remove_point(5)
+			$posScreenRect/ScreenRect.remove_point(5)
+			$posScreenRect/ScreenRect.remove_point(5)
+			$posScreenRect/ScreenRect.remove_point(5)
+			$posScreenRect/ScreenRect.remove_point(5)
+			
+		$posScreenRect/ScreenRect.set_point_position(0, Vector2(0, 0))
+		$posScreenRect/ScreenRect.set_point_position(1, Vector2(owner.project_settings["screen_size"][0], 0)*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(2, Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(3, Vector2(0, owner.project_settings["screen_size"][1])*zoomLevel)
+		$posScreenRect/ScreenRect.set_point_position(4, Vector2(0, 0))
 	
 	#update field rect
 	if owner.project_settings["field"] is Array and owner.project_settings["hide_field"] == false:

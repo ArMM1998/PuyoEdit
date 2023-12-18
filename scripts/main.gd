@@ -1,18 +1,22 @@
 extends Node2D
 
-var current_version = "0.6.1"
+var current_version = "0.6.2"
 
 var changelog = "
 NEW FEATURES:
--A grid will now appear when using the sprite editor and after zooming in at least 400%.
--A grid will now appear when using the lock to grid button.
--You can customize the lock grid's size in pixels in the user settings aswell as toggle its visibility. (If it's on but not visible, it will still snap.)
--You can turn off bilinear filtering for sprites while using Wii as the target platform. (It will still be filtered it in the editor)
+-Drag and drop .json files into the window to load it.
+-Drag and drop an .ogg file into the window and it will be set to play during the animation. (Editor only).
+	A button will appear on top of the timeline to remove it.
+-Added 3DS Dual Screen as a platform.
+-While dragging an element in the Left Panel, it will scroll up or down if you hover the element around the edges.
+	-You can also now use the scroll wheel properly while dragigng an element.
+-You can now set a range for the animation preview by right clicking on the top bar of the timeline.
+	(The one that has the timestamp numbers on it and looks like a ruler)
+	-To clear this range, drag the range tabs until they touch.
 
 FIXES:
--Checkerboard background is now darker to help visibility.
+-Fixed an issue with duplicating a group of elements and then trying to undo that action.
 "
-
 
 const appname = "Puyo Puyo Animation Studio"
 
@@ -76,6 +80,7 @@ var LayerList = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	get_tree().get_root().files_dropped.connect(_on_files_dropped)
 	$Layer3_Popups/SaveDialog.add_filter("*.json")
 	texture_dir_task_finished.connect(updatePathLabel)
 	var file = FileAccess.open("res://settings/platform_settings.json", FileAccess.READ)
@@ -282,6 +287,8 @@ var time = 0.0
 var animation_max_time = 60
 var playing = false 
 
+var play_range = [0,0, false]
+
 func setAnimIdx(idx):
 	for layer in LayerList:
 		for element in layer:
@@ -298,7 +305,13 @@ func setAnimIdx(idx):
 var autobackup = true
 
 func _process(delta):
-	
+	var time_scale = $Layer2_Panels/PanelBottom/speed.value
+	$AudioStreamPlayer2D.pitch_scale = time_scale
+	if $AudioStreamPlayer2D.stream and playing and time/60 < $AudioStreamPlayer2D.stream.get_length():
+		if $AudioStreamPlayer2D.playing != playing:
+			$AudioStreamPlayer2D.play(time/60)
+	elif $AudioStreamPlayer2D.playing:
+		$AudioStreamPlayer2D.playing = false
 	#auto backup
 	if autobackup:
 		if backupTimer >= backupTimeLimit:
@@ -322,9 +335,15 @@ func _process(delta):
 		$Layer2_Panels/PanelBottom/autoplay.modulate = Color(1,1,1)
 	
 	
-	var time_scale = $Layer2_Panels/PanelBottom/speed.value
 	$Layer2_Panels/PanelBottom/speed/playbackSpeedLabel.text = "Playback Speed:     " + str(time_scale) + "x"
 	if playing:
+		if not play_range[2]:
+			play_range[0] = 0
+			play_range[1] = animation_max_time
+		else:
+			if time < play_range[0]:
+				time = play_range[0]
+			
 		$Layer2_Panels/PanelBottom/playPause.icon = load("res://Graphics/timeline/pause.png")
 		$Layer1_Canvas/CanvasViewport.draggingPivot = false
 		$Layer1_Canvas/CanvasViewport.draggingElement = false
@@ -345,9 +364,9 @@ func _process(delta):
 			status_message.displayMessage("Playing \"" + animationList[animation_idx]["name"] + "\" - Frame " + str(int(time)))
 		time += (60*time_scale)*delta
 		
-		if time >= animation_max_time:
-			
-			time = 0.0
+		if time >= play_range[1]:
+			$AudioStreamPlayer2D.playing = false
+			time = play_range[0]
 			
 			if $Layer2_Panels/PanelBottom/autoplay.button_pressed:
 				if animation_idx < animationList.size()-1:
@@ -738,6 +757,10 @@ func newFile():
 	status_message.displayMessage("New file created")
 	
 func resetVariables():
+	play_range = [0,0, false]
+	if "Audio" in project_settings:
+		project_settings.erase("Audio")
+	$AudioStreamPlayer2D.stream = null
 	time = 0
 	playing = false
 	animation_idx = 0
@@ -989,6 +1012,7 @@ func formatAnimationData():
 	for bank in LayerList:
 		var JsonBankList = []
 		for element in bank:
+			#element.restoreDefaults()
 			var JsonElement = {}
 			JsonElement["Index"] = element.id
 			JsonElement["Name"] = element.element_name
@@ -1058,7 +1082,7 @@ func formatAnimationData():
 					idx+= 1
 			
 			JsonElement["Sprite List"] = spriteIDXList
-			JsonElement["Default Settings"] = {"hide" : int(not element.visibility),
+			JsonElement["Default Settings"] = {"hide" : int(not element.defaultSettings["visibility"]),
 												"posx" : element.defaultSettings["positionX"] / project_settings["screen_size"][0],
 												"posy" : element.defaultSettings["positionY"] / project_settings["screen_size"][1],
 												"angle" : -element.defaultSettings["angle"],
@@ -1128,6 +1152,10 @@ func formatAnimationData():
 		"Sprite Crops": spriteCrops,
 		"Element Banks": elementBanks,
 		"Animations": jsonAnimList}
+	
+	if "Audio" in project_settings:
+		anim_data_json["Misc. Info"]["Audio"] = project_settings["Audio"]
+	
 	return (anim_data_json)
 ###PuyoElementStuff###
 
@@ -1450,6 +1478,11 @@ func LoadData(data):
 	#print(platform)
 	updateTargetPlatform(platform)
 	
+	if "Audio" in data["Misc. Info"]:
+		var audio_stream = AudioStreamOggVorbis.load_from_file(data["Misc. Info"]["Audio"])
+		$AudioStreamPlayer2D.stream = audio_stream
+		if $AudioStreamPlayer2D.stream:
+			project_settings["Audio"] = data["Misc. Info"]["Audio"]
 	
 	for crop in data["Sprite Crops"]:
 		var spritecrop = PuyoSprite.new()
@@ -1665,8 +1698,10 @@ func duplicate_element(elem = false, parent = false):
 		
 		if parent:
 			parent.add_child(duplicatedElement)
+			add_undo(duplicatedElement.get_parent().add_child, duplicatedElement.get_parent, duplicatedElement, "creation", duplicatedElement)
 		else:
 			element.get_parent().add_child(duplicatedElement)
+			add_undo(duplicatedElement.get_parent().add_child, duplicatedElement.get_parent, duplicatedElement, "creation", duplicatedElement)
 		
 		for child in element.get_children():
 			if child is PuyoElement:
@@ -1707,7 +1742,7 @@ func duplicate_element(elem = false, parent = false):
 		$Layer2_Panels/PanelLeft/ElementTree.updateList()
 		element_list.updateSelected()
 		
-		add_undo(duplicatedElement.get_parent().add_child, duplicatedElement.get_parent, duplicatedElement, "creation", duplicatedElement,false)
+		
 
 func backupSave():
 	var save_backup = false
@@ -1734,7 +1769,10 @@ func toggle_fullscreen():
 		$Layer1_Canvas/CanvasViewport.fillZoom()
 		
 	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		@warning_ignore("int_as_enum_without_cast")
+		DisplayServer.window_set_mode(2)
+		#DisplayServer.window_set_mode(2)
+		#print(DisplayServer.window_get_mode())
 		$Layer1_Canvas/CanvasViewport/status_message.position = Vector2(-100,-100)
 		$Layer1_Canvas/CanvasViewport/maximize_view.position = Vector2(56, 8)
 		$Layer1_Canvas/CanvasViewport/LockToGrid.position = Vector2(-100,8)
@@ -1803,3 +1841,20 @@ func _on_autosave_interval_changed(_dummy):
 
 func _on_btn_check_updates_pressed():
 	user_settings["auto_update"] = $Layer3_Popups/Settings/Node2D/btn_check_updates.button_pressed
+
+func _on_files_dropped(files):
+	#print(files)
+	for file in files:
+		if file.find(".ogg") != -1:
+			var audio_stream = AudioStreamOggVorbis.load_from_file(file)
+			$AudioStreamPlayer2D.stream = audio_stream
+			if $AudioStreamPlayer2D.stream:
+				project_settings["Audio"] = file
+				status_message.displayMessage("Added audio file " + file, true)
+		if file.find(".json") != -1:
+			loadJsonFile(file)
+		
+
+func removeAudio():
+	$AudioStreamPlayer2D.stream = null
+	project_settings.erase("Audio")

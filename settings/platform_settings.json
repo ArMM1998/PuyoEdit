@@ -54,5 +54,26 @@
 		"field" : false,
 		"endianness" :  "<",
 		"magic" : "DSIF"
+	},
+	"Mobile Touch" : {
+		"screen_size" : [640,960],
+		"aspect" : "640/960", 
+		"field" : false,
+		"endianness" :  "<",
+		"magic" : "DSIF"
+	},
+	"3DS Dual Screen" : {
+		"screen_size" : [400,240,320,240],
+		"aspect" : "512/308", 
+		"field" : false,
+		"endianness" :  "<",
+		"magic" : "DSIF"
+	},
+	"DS Dual Screen" : {
+		"screen_size" : [256,192],
+		"aspect" : "4/3", 
+		"field" : false,
+		"endianness" :  "<",
+		"magic" : "DSIF"
 	}
 }
