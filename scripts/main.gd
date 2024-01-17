@@ -1,12 +1,16 @@
 extends Node2D
 
-var current_version = "0.6.4"
+var current_version = "0.6.3"
 
 var changelog = "
 NEW FEATURES:
-	-
-FIXES:
-	- 
+	-Work in progress inheritance settings
+		Note that It is unstable and may cause many issues during editing.
+	-Place keyframes with number keys rather than having to double click
+		1 = No interpolation
+		2 = Linear interpolation
+		3 = Ease In/Out interpolation
+	-FPS Counter.
 "
 
 const appname = "Puyo Puyo Animation Studio"
