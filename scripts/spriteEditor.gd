@@ -71,10 +71,24 @@ func _gui_input(event):
 		else:
 			var selectedCrop = $"../../Layer2_SpriteEditor_Panels/PanelLeft/ItemList".selected
 			var sprite = owner.spriteCropList[selectedCrop]
-			var newCrop = [round(sprite.cropping_positions[0] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().x)/owner.spriteCropList[selectedCrop].texture.atlas.get_size().x,
+			var texIDX = owner.spriteCropList[$"../../Layer2_SpriteEditor_Panels/PanelLeft/ItemList".selected].texIDX
+			
+			var newCrop = []
+			
+			if owner.png_list[texIDX].find("psphd") != -1:
+				newCrop = [snapped(sprite.cropping_positions[0] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().x, 4)/owner.spriteCropList[selectedCrop].texture.atlas.get_size().x,
+						snapped(sprite.cropping_positions[1] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().y, 4)/owner.spriteCropList[selectedCrop].texture.atlas.get_size().y,
+						snapped(sprite.cropping_positions[2] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().x, 4)/owner.spriteCropList[selectedCrop].texture.atlas.get_size().x,
+						snapped(sprite.cropping_positions[3] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().y, 4)/owner.spriteCropList[selectedCrop].texture.atlas.get_size().y]
+			else:
+				newCrop = [round(sprite.cropping_positions[0] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().x)/owner.spriteCropList[selectedCrop].texture.atlas.get_size().x,
 						round(sprite.cropping_positions[1] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().y)/owner.spriteCropList[selectedCrop].texture.atlas.get_size().y,
 						round(sprite.cropping_positions[2] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().x)/owner.spriteCropList[selectedCrop].texture.atlas.get_size().x,
 						round(sprite.cropping_positions[3] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().y)/owner.spriteCropList[selectedCrop].texture.atlas.get_size().y]
+			
+			#print(newCrop)
+			
+			
 			
 			sprite.setCrop(newCrop)
 			$"../../Layer2_SpriteEditor_Panels/PanelLeft/ItemList".update()
@@ -87,6 +101,10 @@ func _gui_input(event):
 			var newCrop = [newPos[0],newPos[1],sprite.cropping_positions[2], sprite.cropping_positions[3]]
 			
 			if newCrop[0] < newCrop[2] and newCrop[1] < newCrop[3]:
+				var texIDX = owner.spriteCropList[$"../../Layer2_SpriteEditor_Panels/PanelLeft/ItemList".selected].texIDX
+				if owner.png_list[texIDX].find("psphd") != -1:
+					newCrop[0] = snapped((newCrop[0] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().x) + 1, 4) /owner.spriteCropList[selectedCrop].texture.atlas.get_size().x
+					newCrop[1] = snapped((newCrop[1] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().y) + 1, 4) /owner.spriteCropList[selectedCrop].texture.atlas.get_size().y
 				sprite.setCrop(newCrop)
 			else:
 				newCrop[2] = newCrop[0]+ (1/ owner.spriteCropList[selectedCrop].texture.atlas.get_size().x)
@@ -105,7 +123,13 @@ func _gui_input(event):
 			var newCrop = [sprite.cropping_positions[0], sprite.cropping_positions[1],newPos[0],newPos[1]]
 			
 			if newCrop[0] < newCrop[2] and newCrop[1] < newCrop[3]:
+				var texIDX = owner.spriteCropList[$"../../Layer2_SpriteEditor_Panels/PanelLeft/ItemList".selected].texIDX
+				if owner.png_list[texIDX].find("psphd") != -1:
+					#print("fucck")
+					newCrop[2] = snapped((newCrop[2] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().x) + 1, 4) /owner.spriteCropList[selectedCrop].texture.atlas.get_size().x
+					newCrop[3] = snapped((newCrop[3] * owner.spriteCropList[selectedCrop].texture.atlas.get_size().y) + 1, 4) /owner.spriteCropList[selectedCrop].texture.atlas.get_size().y
 				sprite.setCrop(newCrop)
+					
 			else:
 				newCrop[2] = newCrop[0]+ (1/ owner.spriteCropList[selectedCrop].texture.atlas.get_size().x)
 				newCrop[3] = newCrop[1]+ (1/ owner.spriteCropList[selectedCrop].texture.atlas.get_size().y)

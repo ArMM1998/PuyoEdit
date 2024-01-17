@@ -13,6 +13,9 @@ func _ready():
 	$ScrollContainer/Control/popupmenuMatchSize.add_item("2x")
 	$ScrollContainer/Control/popupmenuMatchSize.add_item("0.5x")
 	$ScrollContainer/Control/popupmenuMatchSize.add_item("0.25x")
+	
+	$inheritance.get_popup().index_pressed.connect(inheritanceUpdate)
+	
 	$ScrollContainer/Control/PopupMenu.index_pressed.connect(SpriteSelected)
 	$ScrollContainer/Control/elementName.text_changed.connect(updateName)
 	$ScrollContainer/Control/elementName.text_submitted.connect(releaseFocus)
@@ -73,10 +76,10 @@ func _process(_delta):
 	$ScrollContainer/Control/wiifilter.visible = is_wii
 	$ScrollContainer/Control/label_wii_filter.visible = is_wii
 	
-	if owner.selected_element != -1:
-		$ScrollContainer.visible = true
-	else:
-		$ScrollContainer.visible = false
+	
+	
+	$inheritance.visible = owner.selected_element != -1
+	$ScrollContainer.visible = owner.selected_element != -1
 	
 	
 	if selected != owner.selected_element:
@@ -121,7 +124,12 @@ func update():
 		$ScrollContainer/Control/flipx.button_pressed = element.flipX
 		$ScrollContainer/Control/flipy.button_pressed = element.flipY
 		
-
+		$inheritance.get_popup().set_item_checked(0, element.inherit_scale[0] and element.inherit_scale[1])
+		$inheritance.get_popup().set_item_checked(1, element.inherit_position[0])
+		$inheritance.get_popup().set_item_checked(2, element.inherit_position[1])
+		$inheritance.get_popup().set_item_checked(3, element.inherit_angle)
+		$inheritance.get_popup().set_item_checked(4, element.inherit_color)
+		
 		$ScrollContainer/Control/spritelist.clear()
 		
 		for i in element.sprite_list:
@@ -492,3 +500,19 @@ func updateDepth(dummy):
 func wiiFilterToggle(value):
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 	element.setFiltering(value)
+
+func inheritanceUpdate(index):
+	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	if index == 0:
+		element.inherit_scale[0] = not element.inherit_scale[0]
+		element.inherit_scale[1] = element.inherit_scale[0]
+	if index == 1:
+		element.inherit_position[0] = not element.inherit_position[0]
+	if index == 2:
+		element.inherit_position[1] = not element.inherit_position[1]
+	if index == 3:
+		element.inherit_angle = not element.inherit_angle
+	if index == 4:
+		element.inherit_color = not element.inherit_color
+	
+	update()

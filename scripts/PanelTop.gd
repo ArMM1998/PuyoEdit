@@ -50,6 +50,9 @@ func _ready():
 	$MenuButton_Help.get_popup().connect("id_pressed", helpMenu)
 	platform_menu.connect("id_pressed", platformMenu)
 
+func _process(delta):
+	$platformLabel/fps.text = str(delta*3600) + " FPS"
+
 func fileMenu(item_id):
 	print(item_id)
 	if item_id == 0:

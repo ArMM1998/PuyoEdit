@@ -1,21 +1,12 @@
 extends Node2D
 
-var current_version = "0.6.2"
+var current_version = "0.6.4"
 
 var changelog = "
 NEW FEATURES:
--Drag and drop .json files into the window to load it.
--Drag and drop an .ogg file into the window and it will be set to play during the animation. (Editor only).
-	A button will appear on top of the timeline to remove it.
--Added 3DS Dual Screen as a platform.
--While dragging an element in the Left Panel, it will scroll up or down if you hover the element around the edges.
-	-You can also now use the scroll wheel properly while dragigng an element.
--You can now set a range for the animation preview by right clicking on the top bar of the timeline.
-	(The one that has the timestamp numbers on it and looks like a ruler)
-	-To clear this range, drag the range tabs until they touch.
-
+	-
 FIXES:
--Fixed an issue with duplicating a group of elements and then trying to undo that action.
+	- 
 "
 
 const appname = "Puyo Puyo Animation Studio"
@@ -205,7 +196,7 @@ func windowResize():
 		$Layer1_Canvas/CanvasViewport.size = Vector2(viewport_width, viewport_height)
 		$Layer1_Canvas/CanvasViewport/status_message.position = Vector2(8,viewport_height - 18)
 		$Layer1_Canvas/CanvasViewport.position = viewport_position
-		$Layer2_Panels/PanelTop/platformLabel.position = Vector2(get_viewport_rect().size[0] - $Layer2_Panels/PanelTop/platformLabel.get_rect().size[0] - 8, 8)
+		$Layer2_Panels/PanelTop/platformLabel.position.x = get_viewport_rect().size[0] - $Layer2_Panels/PanelTop/platformLabel.get_rect().size[0] - 8
 		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(1, Vector2(canvas_viewport.size[0], 1))
 		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(2, Vector2(canvas_viewport.size[0], canvas_viewport.size[1]))
 		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(3, Vector2(1, canvas_viewport.size[1]))
@@ -295,6 +286,11 @@ func setAnimIdx(idx):
 			element.restoreDefaults()
 	
 	animation_idx = idx
+	
+	for layer in LayerList:
+		for element in layer:
+			element.restoreDefaults()
+	
 	if animation_idx <= animationList.size()-1:
 		animation_max_time = animationList[idx]["length"]
 	
@@ -305,11 +301,18 @@ func setAnimIdx(idx):
 var autobackup = true
 
 func _process(delta):
+	if user_settings["filedialog_dir"] != "" and $Layer3_Popups/FileDialog.current_dir != user_settings["filedialog_dir"] and not ($Layer3_Popups/FileDialog.visible or $Layer3_Popups/SaveDialog.visible or $Layer3_Popups/dirDialog.visible):
+		$Layer3_Popups/FileDialog.current_dir = user_settings["filedialog_dir"]
+		$Layer3_Popups/SaveDialog.current_dir = user_settings["filedialog_dir"]
+		$Layer3_Popups/dirDialog.current_dir = user_settings["filedialog_dir"]
+	
 	var time_scale = $Layer2_Panels/PanelBottom/speed.value
-	$AudioStreamPlayer2D.pitch_scale = time_scale
-	if $AudioStreamPlayer2D.stream and playing and time/60 < $AudioStreamPlayer2D.stream.get_length():
-		if $AudioStreamPlayer2D.playing != playing:
-			$AudioStreamPlayer2D.play(time/60)
+	
+	if $AudioStreamPlayer2D.stream:
+		$AudioStreamPlayer2D.pitch_scale = time_scale
+		if playing and time/60 < $AudioStreamPlayer2D.stream.get_length():
+			if $AudioStreamPlayer2D.playing != playing:
+				$AudioStreamPlayer2D.play(time/60)
 	elif $AudioStreamPlayer2D.playing:
 		$AudioStreamPlayer2D.playing = false
 	#auto backup
@@ -383,7 +386,7 @@ func _process(delta):
 				playing = false
 				#$Layer2_Panels/PanelBottom/HScrollBar.value = 0 
 				
-		if $Layer2_Panels/PanelBottom/timeline/Head.global_position.x > $Layer2_Panels/PanelBottom.size.x - 264 or $Layer2_Panels/PanelBottom/timeline/Head.global_position.x < 256:
+		if $Layer2_Panels/PanelBottom/timeline/Head.global_position.x > $Layer2_Panels/PanelBottom.size.x - 380 or $Layer2_Panels/PanelBottom/timeline/Head.global_position.x < 256:
 			#print("off screen")
 			$Layer2_Panels/PanelBottom/HScrollBar.value = time
 		
@@ -1012,7 +1015,7 @@ func formatAnimationData():
 	for bank in LayerList:
 		var JsonBankList = []
 		for element in bank:
-			#element.restoreDefaults()
+			element.restoreDefaults()
 			var JsonElement = {}
 			JsonElement["Index"] = element.id
 			JsonElement["Name"] = element.element_name
@@ -1119,6 +1122,7 @@ func formatAnimationData():
 			if element.name_order != -2424:
 				JsonElement["Name Index"] = element.name_order
 			JsonBankList.append(JsonElement)
+			element.animate(time, animation_idx, project_settings["screen_size"])
 		elementBanks.append(JsonBankList)
 	
 	var jsonAnimList = []
@@ -1156,6 +1160,10 @@ func formatAnimationData():
 	if "Audio" in project_settings:
 		anim_data_json["Misc. Info"]["Audio"] = project_settings["Audio"]
 	
+	anim_data_json["Misc. Info"]["Platform"] = project_settings["platform"]
+	anim_data_json["Misc. Info"]["Play Range"] = play_range
+	
+	
 	return (anim_data_json)
 ###PuyoElementStuff###
 
@@ -1184,6 +1192,7 @@ func newElement(parent = -1, undo = true):
 		var puyoElement = PuyoElement.new()
 		var newName = ensure_unique_element_name("NewElement")
 		puyoElement.setName(newName)
+		puyoElement.setTransformHelper($Layer1_Canvas/CanvasViewport/Center/Canvas/transformhelper)
 		var parent_elem = -1
 		if parent != -1:
 			parent_elem = LayerList[selected_layer][parent]
@@ -1475,6 +1484,13 @@ func LoadData(data):
 	resetVariables()
 	var screen_size = [int(data["Misc. Info"]["Screen Size"].split("x")[0]), int(data["Misc. Info"]["Screen Size"].split("x")[1])]
 	var platform = get_platform(screen_size, data["Misc. Info"]["Header Magic"])
+	
+	if "Platform" in data["Misc. Info"]:
+		platform = data["Misc. Info"]["Platform"]
+	
+	if "Play Range" in data["Misc. Info"]:
+		play_range = data["Misc. Info"]["Play Range"]
+	
 	#print(platform)
 	updateTargetPlatform(platform)
 	
@@ -1676,6 +1692,7 @@ func addAnimation():
 	
 	for layer in LayerList:
 		for element in layer:
+			element.restoreDefaults()
 			element.animation_list.append([])
 	
 	animation_idx = animationList.size()-1
@@ -1735,6 +1752,7 @@ func duplicate_element(elem = false, parent = false):
 		duplicatedElement.depth = element.depth
 		duplicatedElement.animation_list = element.animation_list.duplicate(true)
 		duplicatedElement.defaultSettings = element.defaultSettings.duplicate(true)
+		duplicatedElement.transform_helper = $Layer1_Canvas/CanvasViewport/Center/Canvas/transformhelper
 		
 		LayerList[selected_layer].insert(element.id+1, duplicatedElement)
 		updateElementIDs()
@@ -1804,6 +1822,7 @@ func delAnimation(undo = true):
 	for layer in LayerList:
 		restore_animation.append([])
 		for element in layer:
+			element.restoreDefaults()
 			restore_animation[layer_idx].append(element.animation_list[animation_idx].duplicate(true))
 			element.animation_list.pop_at(animation_idx)
 		layer_idx+= 1

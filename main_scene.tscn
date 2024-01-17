@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://bnun2iv8b4jy2"]
+[gd_scene load_steps=24 format=3 uid="uid://bnun2iv8b4jy2"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_k4y86"]
 [ext_resource type="Script" path="res://scripts/Panels.gd" id="2"]
@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://8g4p1n4v87au" path="res://Graphics/panel_show.png" id="7_f8e1x"]
 [ext_resource type="Texture2D" uid="uid://cwn5bw37gjble" path="res://Graphics/panel_hover.png" id="8_whaa2"]
 [ext_resource type="Texture2D" uid="uid://iqctjs0vvuy1" path="res://Graphics/viewportbg.png" id="9_5h6cm"]
+[ext_resource type="Texture2D" uid="uid://4rc3rtsmslyv" path="res://Graphics/timeline/stop.png" id="9_7mc1n"]
 [ext_resource type="Script" path="res://scripts/spriteEditor.gd" id="9_mavd5"]
 [ext_resource type="Texture2D" uid="uid://dmfpd8kghrhqv" path="res://Graphics/add_sprite.png" id="9_x3jkg"]
 [ext_resource type="Texture2D" uid="uid://unjs5hwc34g0" path="res://Graphics/puyologo.png" id="9_x474k"]
@@ -114,12 +115,24 @@ metadata/_edit_use_anchors_ = true
 [node name="platformLabel" type="Label" parent="Layer2_Panels/PanelTop"]
 layout_mode = 0
 offset_left = 960.0
-offset_top = 8.0
+offset_top = 14.0
 offset_right = 1271.0
-offset_bottom = 27.0
+offset_bottom = 33.0
 theme_override_colors/font_color = Color(0.374139, 0.374139, 0.374139, 1)
 theme_override_font_sizes/font_size = 11
 text = "Target Platform: PSP"
+horizontal_alignment = 2
+
+[node name="fps" type="Label" parent="Layer2_Panels/PanelTop/platformLabel"]
+layout_mode = 0
+offset_left = -79.0
+offset_top = -13.0
+offset_right = 313.0
+offset_bottom = 10.0
+theme_override_colors/font_color = Color(0.364706, 0.364706, 0.364706, 1)
+theme_override_font_sizes/font_size = 11
+text = "60FPS
+"
 horizontal_alignment = 2
 
 [node name="PanelBottom" parent="Layer2_Panels" instance=ExtResource("6_b6dm2")]
@@ -152,6 +165,29 @@ offset_bottom = 408.0
 [node name="Control" parent="Layer2_Panels/PanelRight/ScrollContainer" instance=ExtResource("6_mtiep")]
 custom_minimum_size = Vector2(256, 658)
 layout_mode = 2
+
+[node name="inheritance" type="MenuButton" parent="Layer2_Panels/PanelRight"]
+layout_mode = 0
+offset_left = 232.0
+offset_right = 256.0
+offset_bottom = 24.0
+icon = ExtResource("9_7mc1n")
+item_count = 5
+popup/item_0/text = "Inherit Scale"
+popup/item_0/checkable = 1
+popup/item_0/id = 1
+popup/item_1/text = "Inherit Position X"
+popup/item_1/checkable = 1
+popup/item_1/id = 2
+popup/item_2/text = "Inherit Position Y"
+popup/item_2/checkable = 1
+popup/item_2/id = 3
+popup/item_3/text = "Inherit Angle"
+popup/item_3/checkable = 1
+popup/item_3/id = 4
+popup/item_4/text = "Inherit Color"
+popup/item_4/checkable = 1
+popup/item_4/id = 5
 
 [node name="toggle_panelLeft" type="TextureButton" parent="Layer2_Panels"]
 offset_left = 256.0

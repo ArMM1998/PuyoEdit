@@ -41,7 +41,7 @@ var sprite_list = [] : set = setSpriteList
 var depth = 0 : set = set3dDepth
 var name_order = -2424
 var filter_wii = true : set = setFiltering
-
+var transform_helper : set = setTransformHelper
 
 var defaultSettings = {"visibility" : true,
 						"positionX" : 0.0,
@@ -72,7 +72,7 @@ var transformBottomRight = Marker2D.new()
 var transformTopRight = Marker2D.new()
 var transformTopLeft = Marker2D.new()
 var transformBottomLeft = Marker2D.new()
-
+var play_anims = true
 
 #ANIMATION SHIT idk
 var saveDefaults = true
@@ -152,6 +152,7 @@ func smoothCurve(time, keyframe1, keyframe2):
 	return cubic_term + quadratic_term + linear_term + constant_term
 
 func _process(_delta):
+	
 	var parent = self.get_parent()
 	if parent is PuyoElement and self.inherit_color:
 		mixed_color = parent.mixed_color * color
@@ -170,52 +171,51 @@ func _process(_delta):
 	#update()
 	
 	var pos = Vector2(0,0)
+	var scene = get_root_parent(self)
 	
+		
+	transform_helper.scale = Vector2(1,1)
+	transform_helper.position = Vector2(0,0)
+	transform_helper.rotation_degrees = 0
+	
+	self.update()
+	
+	rotation_degrees = angle
+	if not inherit_angle:
+		transform_helper.rotation_degrees = angle
+		
+	else:
+		self.rotation_degrees = angle
+		transform_helper.global_rotation_degrees = global_rotation_degrees
+	
+	
+	if not inherit_scale[0]:
+		transform_helper.scale.x = scalex
+	else:
+		transform_helper.global_scale.x = global_scale.x
+	
+	if not inherit_scale[1]:
+		transform_helper.scale.y = scaley
+	else:
+		transform_helper.global_scale.y = global_scale.y
+	
+	position = Vector2(positionX, positionY)
 	if not inherit_position[0] and not inherit_position[1]:
-		var scene = get_root_parent(self)
 		pos =  scene.puyo_canvas.global_position + Vector2(positionX, positionY)* scene.canvas_viewport.zoomLevel
 		self.global_position = pos
 	elif not inherit_position[0]:
-		var scene = get_root_parent(self)
 		pos =  Vector2(scene.puyo_canvas.global_position.x + positionX* scene.canvas_viewport.zoomLevel,self.global_position.y)
 		self.global_position = pos
 	elif not inherit_position[1]:
-		var scene = get_root_parent(self)
 		pos =  Vector2(self.global_position.x, scene.puyo_canvas.global_position.y + positionY* scene.canvas_viewport.zoomLevel)
 		self.global_position = pos
 	else:
 		self.position = Vector2(positionX, positionY)
 	
-	if not inherit_angle:
-		self.global_rotation_degrees = angle
-	else:
-		self.rotation_degrees = angle
+	transform_helper.global_position = self.global_position
 	
-	if not inherit_scale[0] and not inherit_scale[1]:
-		var scene = get_root_parent(self)
-		self.global_skew = 0
-		
-		#self.get_parent().scalex
-		
-		self.global_scale.x = scalex* scene.canvas_viewport.zoomLevel
-		self.global_scale.y = -scaley* scene.canvas_viewport.zoomLevel
-		
-		if global_transform[0].x > 0:
-			self.rotation_degrees -= 180
-			
-	elif not inherit_scale[0]:
-		var scene = get_root_parent(self)
-		self.global_skew = 0
-		self.global_scale.x = scalex* scene.canvas_viewport.zoomLevel
-	
-	elif not inherit_scale[1]:
-		var scene = get_root_parent(self)
-		self.global_skew = 0
-		self.global_scale.y = scaley* scene.canvas_viewport.zoomLevel
-	
-	else:
-		self.scale = Vector2(scalex, scaley)
-	
+	if not inherit_scale[1] or not inherit_scale[0] or not inherit_angle:
+		global_transform = transform_helper.global_transform
 	
 	
 func get_root_parent(child):
@@ -250,6 +250,10 @@ func linearInterpolation(given_time: float, lower_range_time: float, upper_range
 		return interpolation_ratio
 
 func animate(current_time, anim_idx, screen_size, loop_update_fix = false):
+	
+	if not play_anims:
+		return
+	
 	#time = round(time)
 	var current_kf
 	var next_kf
@@ -610,3 +614,9 @@ func get3dDepth():
 
 func setFiltering(value):
 	filter_wii = value
+
+func setTransformHelper(node):
+	transform_helper = node
+
+func toggle_animations():
+	play_anims = not play_anims

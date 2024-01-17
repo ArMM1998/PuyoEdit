@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://d02nd2drmop08"]
+[gd_scene load_steps=13 format=3 uid="uid://d02nd2drmop08"]
 
 [ext_resource type="Texture2D" uid="uid://iqctjs0vvuy1" path="res://Graphics/viewportbg.png" id="1_8n31f"]
 [ext_resource type="Script" path="res://scripts/canvasViewportLogic.gd" id="1_b3f5c"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://b0t8860oy7uwf" path="res://Graphics/rot_btn.png" id="6_apnpn"]
 [ext_resource type="Texture2D" uid="uid://bwxg0ytrc60pb" path="res://Graphics/snap_grid.png" id="8_ydadp"]
 [ext_resource type="Texture2D" uid="uid://06uwq1xpr36d" path="res://Graphics/fill_screen.png" id="9_x5n8r"]
+[ext_resource type="Texture2D" uid="uid://dm51oe6v3q0c2" path="res://Graphics/icon.png" id="11_s2u58"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_tdl1p"]
 font_size = 11
@@ -29,6 +30,11 @@ script = ExtResource("1_b3f5c")
 position = Vector2(376, 192)
 
 [node name="Canvas" type="Node2D" parent="Center"]
+
+[node name="transformhelper" type="Sprite2D" parent="Center/Canvas"]
+visible = false
+position = Vector2(-376, -192)
+texture = ExtResource("11_s2u58")
 
 [node name="checkbg" type="TextureRect" parent="."]
 z_index = -4096

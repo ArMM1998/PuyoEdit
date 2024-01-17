@@ -36,7 +36,10 @@ func updateList():
 			if obj is PuyoElement:
 				if not obj.get_parent() is PuyoElement:
 					var item = tree.create_item(layerItem)
-					item.set_text(0 ,obj.element_name)
+					var element_name = obj.element_name
+					if not obj.play_anims:
+						element_name = "⏸" + element_name
+					item.set_text(0 , element_name)
 					item.set_text(1, str(obj.id))
 					addChildrenToTree(obj, item)
 					itemList.append(item)
@@ -52,7 +55,11 @@ func addChildrenToTree(node, parentItem):
 	for child in node.get_children():
 		if child is PuyoElement:
 			var item = tree.create_item(parentItem)
-			item.set_text(0, child.element_name)
+			var element_name = child.element_name
+			if not child.play_anims:
+				element_name = "⏸" + element_name
+				item.set_text(0 , element_name)
+			item.set_text(0, element_name)
 			item.set_text(1, str(child.id))
 			if child.get_child_count() > 9:
 				addChildrenToTree(child, item)
@@ -112,11 +119,19 @@ var holdingCtrl = false
 
 func _on_gui_input(event):
 	
+	
+	if event is InputEventMouseButton and (event.button_index == 2) and event.pressed:
+		if get_item_at_position(event.position).get_text(0).find("Layer") == -1:
+			var element = scene.LayerList[int(getLayerIndex(get_item_at_position(event.position)))][int(get_item_at_position(event.position).get_text(1))]
+			element.toggle_animations()
+			updateList()
+			updateSelected()
+	
 	if self.has_focus():
 		if event is InputEventKey and event.keycode == KEY_F2 and scene.selected_element != -1:
 			scene.panel_right.element_name.grab_focus()
 			scene.panel_right.element_name.select_all()
-		if event is InputEventMouseButton and (event.button_index == 1 or event.button_index == 2):
+		if event is InputEventMouseButton and (event.button_index == 1):
 			if event.pressed:
 				mouse_state = "clicked"
 				startingMousePos = event.position
@@ -128,7 +143,7 @@ func _on_gui_input(event):
 					dropping_at = -100
 					element_id = -100
 					layer_id = -100
-				
+		
 		if event is InputEventMouseMotion and mouse_state == "clicked" and ((abs(event.position.x - startingMousePos.x) > draggingRange or abs(event.position.y - startingMousePos.y) > draggingRange) and get_item_at_position(event.position) != self.get_selected()):
 			mouse_state = "dragging"
 			

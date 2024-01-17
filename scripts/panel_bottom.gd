@@ -142,6 +142,43 @@ func _input(event):
 		if event.keycode == KEY_DELETE and event.pressed:
 			if (selected_keyframe != -1 and selected_track != -1) or multiple_select != []:
 				deleteKeyframe()
+		
+		if event.keycode == KEY_1 and event.pressed:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			var track = trackName[selected_track]
+			var is_free = true
+			
+			if track in element.animation_list[owner.animation_idx]:
+				for keyframe in element.animation_list[owner.animation_idx][track]["Keyframes"]:
+					if keyframe["Timestamp"] == owner.time:
+						is_free = false
+			if is_free:
+				addKeyframe(0)
+		
+		if event.keycode == KEY_2 and event.pressed:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			var track = trackName[selected_track]
+			var is_free = true
+			
+			if track in element.animation_list[owner.animation_idx]:
+				for keyframe in element.animation_list[owner.animation_idx][track]["Keyframes"]:
+					if keyframe["Timestamp"] == owner.time:
+						is_free = false
+			if is_free:
+				addKeyframe(1)
+			
+		if event.keycode == KEY_3 and event.pressed:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			var track = trackName[selected_track]
+			var is_free = true
+			
+			if track in element.animation_list[owner.animation_idx]:
+				for keyframe in element.animation_list[owner.animation_idx][track]["Keyframes"]:
+					if keyframe["Timestamp"] == owner.time:
+						is_free = false
+			if is_free:
+				addKeyframe(2)
+		
 		if event.keycode == KEY_C and event.pressed and holdingCtrl:
 			if multiple_select != []:
 				keyframeClipboard = []
@@ -636,14 +673,16 @@ func timelineInput(event):
 				selected_element = []
 
 
-func addKeyframe():
+func addKeyframe(tweening = 2424):
+	if tweening != 2424:
+		prev_tweening = tweening
 	if owner.selected_element != -1:
 		if owner.animation_idx < owner.LayerList[owner.selected_layer][owner.selected_element].animation_list.size():
 			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 			owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
 			owner.undoHistory[-1].append(element.animation_list.duplicate(true))
 			owner.undoHistory[-1].append(owner.time)
-			var frame = round(($timeline/keyframes.to_local(get_global_mouse_position()).x-8) / (16*zoomLevel))
+			var frame = owner.time
 			frame = int(snapped(frame, 1/zoomLevel))
 			
 			var track_name = trackName[int(round(($timeline/keyframes.to_local(get_global_mouse_position()).y-32) / 16))]
@@ -766,8 +805,8 @@ func _on_play_pause_pressed():
 
 func _on_stop_pressed():
 	owner.playing = false
-	owner.time = 0.0
-	$HScrollBar.value = 0
+	owner.time = owner.play_range[0]
+	$HScrollBar.value = owner.time
 	for layer in owner.LayerList:
 		for element in layer:
 			element.animate(owner.time, owner.animation_idx, owner.project_settings["screen_size"])
