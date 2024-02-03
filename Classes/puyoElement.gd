@@ -177,9 +177,10 @@ func _process(_delta):
 	transform_helper.scale = Vector2(1,1)
 	transform_helper.position = Vector2(0,0)
 	transform_helper.rotation_degrees = 0
-	
+	var initialsaveDefaults = saveDefaults
+	saveDefaults = false
 	self.update()
-	
+	saveDefaults = initialsaveDefaults
 	rotation_degrees = angle
 	if not inherit_angle:
 		transform_helper.rotation_degrees = angle
@@ -257,11 +258,12 @@ func animate(current_time, anim_idx, screen_size, loop_update_fix = false):
 	#time = round(time)
 	var current_kf
 	var next_kf
-	var old_default = defaultSettings
+	var old_default = defaultSettings.duplicate(true)
 	saveDefaults = false
 	
 	
 	var time = current_time 
+	
 	#for motion in animation list
 	if animation_list.size()-1 < anim_idx:
 		pass
@@ -358,9 +360,12 @@ func animate(current_time, anim_idx, screen_size, loop_update_fix = false):
 					setColorBR(value)
 				
 			
-		
+	
+	
 	defaultSettings = old_default
-
+	
+	
+	
 
 func setRender(value):
 	render = value
@@ -452,6 +457,7 @@ func setPositionY(value):
 	positionY = value
 	
 	if saveDefaults:
+#		print("why")
 		defaultSettings["positionY"] = positionY
 
 func getAngle():

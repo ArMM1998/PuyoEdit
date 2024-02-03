@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://d02nd2drmop08"]
+[gd_scene load_steps=16 format=3 uid="uid://d02nd2drmop08"]
 
 [ext_resource type="Texture2D" uid="uid://iqctjs0vvuy1" path="res://Graphics/viewportbg.png" id="1_8n31f"]
 [ext_resource type="Script" path="res://scripts/canvasViewportLogic.gd" id="1_b3f5c"]
@@ -11,6 +11,8 @@
 [ext_resource type="Texture2D" uid="uid://bwxg0ytrc60pb" path="res://Graphics/snap_grid.png" id="8_ydadp"]
 [ext_resource type="Texture2D" uid="uid://06uwq1xpr36d" path="res://Graphics/fill_screen.png" id="9_x5n8r"]
 [ext_resource type="Texture2D" uid="uid://dm51oe6v3q0c2" path="res://Graphics/icon.png" id="11_s2u58"]
+[ext_resource type="Texture2D" uid="uid://cbfg0b4ukfiy6" path="res://Graphics/camera_depth.png" id="12_svw4f"]
+[ext_resource type="Texture2D" uid="uid://gcv6skd11wyl" path="res://Graphics/recording.png" id="13_cs83v"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_tdl1p"]
 font_size = 11
@@ -19,6 +21,9 @@ shadow_size = 8
 shadow_color = Color(0.160784, 0.160784, 0.160784, 1)
 shadow_offset = Vector2(0, 0)
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_ny6hq"]
+viewport_path = NodePath("SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport")
+
 [node name="CanvasViewport" type="Control"]
 clip_contents = true
 layout_mode = 3
@@ -26,25 +31,57 @@ anchors_preset = 0
 focus_mode = 1
 script = ExtResource("1_b3f5c")
 
-[node name="Center" type="Node2D" parent="."]
-position = Vector2(376, 192)
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 0
+offset_right = 512.0
+offset_bottom = 512.0
+stretch = true
 
-[node name="Canvas" type="Node2D" parent="Center"]
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+render_target_update_mode = 4
 
-[node name="transformhelper" type="Sprite2D" parent="Center/Canvas"]
-visible = false
-position = Vector2(-376, -192)
-texture = ExtResource("11_s2u58")
-
-[node name="checkbg" type="TextureRect" parent="."]
+[node name="checkbg" type="TextureRect" parent="SubViewportContainer/SubViewport"]
+visibility_layer = 2
 z_index = -4096
 z_as_relative = false
-layout_mode = 0
 offset_left = -16.0
 offset_right = 784.0
 offset_bottom = 440.0
 texture = ExtResource("1_8n31f")
 stretch_mode = 1
+
+[node name="Camera2D" type="Camera2D" parent="SubViewportContainer/SubViewport"]
+position = Vector2(264, 40)
+anchor_mode = 0
+
+[node name="Center" type="Node2D" parent="SubViewportContainer/SubViewport"]
+
+[node name="Canvas" type="Node2D" parent="SubViewportContainer/SubViewport/Center"]
+
+[node name="transformhelper" type="Sprite2D" parent="SubViewportContainer/SubViewport/Center/Canvas"]
+visible = false
+texture = ExtResource("11_s2u58")
+
+[node name="extra_cam_container" type="SubViewportContainer" parent="SubViewportContainer/SubViewport/Center/Canvas"]
+z_index = -4096
+z_as_relative = false
+texture_filter = 1
+offset_right = 512.0
+offset_bottom = 512.0
+size_flags_horizontal = 3
+
+[node name="extra_cam_viewport" type="SubViewport" parent="SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container"]
+transparent_bg = true
+handle_input_locally = false
+canvas_cull_mask = 4294967293
+render_target_update_mode = 4
+
+[node name="extra_cam" type="Camera2D" parent="SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport"]
+anchor_mode = 0
+enabled = false
+editor_draw_screen = false
 
 [node name="posScreenRect" type="Marker2D" parent="."]
 z_index = 4096
@@ -81,7 +118,6 @@ antialiased = true
 position = Vector2(136, 80)
 
 [node name="Y" type="Line2D" parent="posAxis"]
-z_index = -4096
 z_as_relative = false
 points = PackedVector2Array(0, -4092, 0, 4092)
 width = 1.0
@@ -89,8 +125,6 @@ default_color = Color(0.458824, 0.333333, 0.878431, 1)
 antialiased = true
 
 [node name="X" type="Line2D" parent="posAxis"]
-z_index = -4096
-z_as_relative = false
 points = PackedVector2Array(-4092, 0, -168, 0, 4092, 0)
 width = 1.0
 default_color = Color(0.823529, 0.329412, 0.360784, 1)
@@ -254,9 +288,39 @@ theme_override_colors/font_pressed_color = Color(0.572549, 0.690196, 1, 1)
 theme_override_font_sizes/font_size = 11
 icon = ExtResource("9_x5n8r")
 
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 40.0
+offset_right = 32.0
+offset_bottom = 64.0
+icon = ExtResource("12_svw4f")
+
+[node name="Window" type="Window" parent="."]
+mode = 3
+title = "Preview"
+initial_position = 2
+visible = false
+
+[node name="color_rect" type="ColorRect" parent="Window"]
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0, 0, 1)
+
+[node name="TextureRect" type="TextureRect" parent="Window"]
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("ViewportTexture_ny6hq")
+expand_mode = 1
+
+[node name="recording" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(176, 16)
+texture = ExtResource("13_cs83v")
+
 [connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
 [connection signal="focus_exited" from="." to="." method="_on_focus_exited"]
-[connection signal="gui_input" from="checkbg" to="." method="_on_checkbg_gui_input"]
+[connection signal="gui_input" from="SubViewportContainer/SubViewport/checkbg" to="." method="_on_checkbg_gui_input"]
 [connection signal="pressed" from="zoomLabel" to="." method="resetZoom"]
 [connection signal="gui_input" from="ElementStuff/posMoveScaleTop/ScaleTop" to="." method="_on_scale_top_gui_input"]
 [connection signal="gui_input" from="ElementStuff/posMoveScaleBottom/ScaleBottom" to="." method="_on_scale_bottom"]
@@ -265,3 +329,7 @@ icon = ExtResource("9_x5n8r")
 [connection signal="gui_input" from="ElementStuff/posRotate/Rotate" to="." method="_on_angle_gui_input"]
 [connection signal="toggled" from="LockToGrid" to="." method="_on_lock_to_grid_toggled"]
 [connection signal="pressed" from="maximize_view" to="." method="_on_maximize_view_pressed"]
+[connection signal="gui_input" from="Button" to="." method="_on_Button_gui_input"]
+[connection signal="close_requested" from="Window" to="." method="_on_window_close_requested"]
+[connection signal="size_changed" from="Window" to="." method="_on_window_resized"]
+[connection signal="gui_input" from="Window/TextureRect" to="." method="_on_texture_rect_gui_input"]

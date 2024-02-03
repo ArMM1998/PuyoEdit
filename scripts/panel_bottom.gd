@@ -20,6 +20,7 @@ func _ready():
 
 #var movingKeyframe = false
 var current_element
+var recording_position = false
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	
@@ -536,6 +537,18 @@ func timelineInput(event):
 			if owner.animation_idx < owner.LayerList[owner.selected_layer][owner.selected_element].animation_list.size():
 				for anim_track in element.animation_list[owner.animation_idx]:
 					var track_name = trackName[selected_track]
+					
+					if track_name == "posx":
+						$keyframeSettings/curvePanel/curve/ease_in.step = 0.5/owner.project_settings["screen_size"][0]
+						$keyframeSettings/curvePanel/curve/ease_out.step = 0.5/owner.project_settings["screen_size"][0]
+					elif track_name == "posy":
+						$keyframeSettings/curvePanel/curve/ease_in.step = 1/owner.project_settings["screen_size"][1]
+						$keyframeSettings/curvePanel/curve/ease_out.step = 1/owner.project_settings["screen_size"][1]
+					elif track_name == "scalex" or track_name == "scaley":
+						$keyframeSettings/curvePanel/curve/ease_in.step = 0.1
+						$keyframeSettings/curvePanel/curve/ease_out.step = 0.1
+					else:
+						$keyframeSettings/curvePanel/curve/ease_out.step = 1
 					if anim_track["Motion"] == track_name:
 						var keyIDX = 0
 						for keyframe in anim_track["Keyframes"]:
@@ -673,29 +686,30 @@ func timelineInput(event):
 				selected_element = []
 
 
-func addKeyframe(tweening = 2424):
+func addKeyframe(tweening = 2424, track_name = "null", update_timeline = true, finalvalue = -696969, time = -199800):
 	if tweening != 2424:
 		prev_tweening = tweening
 	if owner.selected_element != -1:
 		if owner.animation_idx < owner.LayerList[owner.selected_layer][owner.selected_element].animation_list.size():
 			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
-			owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
-			owner.undoHistory[-1].append(element.animation_list.duplicate(true))
-			owner.undoHistory[-1].append(owner.time)
+			if update_timeline:
+				owner.add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+				owner.undoHistory[-1].append(element.animation_list.duplicate(true))
+				owner.undoHistory[-1].append(owner.time)
 			var frame = owner.time
 			frame = int(snapped(frame, 1/zoomLevel))
+			var track_idx = 0
 			
-			var track_name = trackName[int(round(($timeline/keyframes.to_local(get_global_mouse_position()).y-32) / 16))]
+			if track_name == "null":
+				track_name = trackName[int(round(($timeline/keyframes.to_local(get_global_mouse_position()).y-32) / 16))]
 			
 			if track_name == null:
 				return
 			
-			var track_idx = 0
 			for anim_track in element.animation_list[owner.animation_idx]:
 				if anim_track["Motion"] == track_name:
 					break
 				track_idx+= 1
-			
 			var data = 0
 			
 			if track_name == "hide":
@@ -761,6 +775,8 @@ func addKeyframe(tweening = 2424):
 				if prev_tweening == 2:
 					prev_tweening = 1
 			
+			if finalvalue != -696969:
+				data = finalvalue
 			
 			if track_idx > element.animation_list[owner.animation_idx].size()-1:
 				element.animation_list[owner.animation_idx].append({
@@ -770,6 +786,9 @@ func addKeyframe(tweening = 2424):
 									})
 			
 			var replaced = false
+			
+			if time != -199800:
+				frame = float(time)
 			
 			for keyframe in element.animation_list[owner.animation_idx][track_idx]["Keyframes"]:
 				if keyframe["timestamp"] == frame:
@@ -792,14 +811,10 @@ func addKeyframe(tweening = 2424):
 										"ease_out": 0,
 										"unk": 0
 									})
+			if update_timeline:
+				element.animation_list[owner.animation_idx][track_idx]["Keyframes"] = sortArrayByTimestamp(element.animation_list[owner.animation_idx][track_idx]["Keyframes"])
+				selected_element = []
 				
-			element.animation_list[owner.animation_idx][track_idx]["Keyframes"] = sortArrayByTimestamp(element.animation_list[owner.animation_idx][track_idx]["Keyframes"])
-				
-			selected_element = []
-		else:
-			pass
-			#print("????")
-			
 func _on_play_pause_pressed():
 	owner.playing = not owner.playing
 
@@ -812,7 +827,6 @@ func _on_stop_pressed():
 			element.animate(owner.time, owner.animation_idx, owner.project_settings["screen_size"])
 
 func sortArrayByTimestamp(array):
-	
 	for i in range(array.size() - 1):
 		for j in range(array.size() - i - 1):
 			if array[j]["timestamp"] > array[j + 1]["timestamp"]:
@@ -827,6 +841,24 @@ func sortArrayByTimestamp(array):
 			result.append(array[i])
 	
 	return result
+
+func remov_dupes(element, track_name):
+	var result = []
+	for track in element.animation_list[owner.animation_idx]:
+		if track["Motion"] == track_name:
+			track["Keyframes"] = sortArrayByTimestamp(track["Keyframes"])
+			var key_idx = 0
+			for keyframe in track["Keyframes"]:
+				if key_idx > 0:
+					if key_idx < len(track["Keyframes"])-1:
+						if keyframe["data"] == track["Keyframes"][key_idx-1]["data"] and keyframe["data"] == track["Keyframes"][key_idx+1]["data"]:
+							pass
+						else:
+							result.append(keyframe)
+				key_idx+= 1
+			track["Keyframes"] = result
+			break
+	selected_element = []
 
 func updateKeyframeSettings(kf, next_kf):
 	if kf["tweening"] != 2:
@@ -857,7 +889,8 @@ func updateKeyframeSettings(kf, next_kf):
 		#BAD
 		
 		if kf["ease_in"] != 0 or kf["ease_out"] != 0:
-		
+			$keyframeSettings/curvePanel/curve/ease_in.value = kf["ease_in"]
+			$keyframeSettings/curvePanel/curve/ease_out.value = kf["ease_out"]
 			var easein_y = (kf["ease_in"]/abs(kf["data"] - next_kf["data"])) * (abs(kf["timestamp"] - next_kf["timestamp"])*4)
 			var easeout_y = -(kf["ease_out"]/abs(kf["data"] - next_kf["data"])) * (abs(kf["timestamp"] - next_kf["timestamp"])*4)
 			
@@ -1421,3 +1454,26 @@ func _on_animation_list_gui_input(event):
 
 func _on_removaudio_pressed():
 	owner.removeAudio()
+
+
+func _on_ease_in_value_changed(value):
+	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	var keyframe
+	var track_name = trackName[selected_track]
+	for track in element.animation_list[owner.animation_idx]:
+		if track["Motion"] == track_name:
+			keyframe = track["Keyframes"][selected_keyframe]
+	keyframe["ease_in"] = value
+	element.animate(owner.time, owner.animation_idx, owner.project_settings["screen_size"])
+	updateEasingPreview()
+	
+func _on_ease_out_value_changed(value):
+	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+	var keyframe
+	var track_name = trackName[selected_track]
+	for track in element.animation_list[owner.animation_idx]:
+		if track["Motion"] == track_name:
+			keyframe = track["Keyframes"][selected_keyframe]
+	keyframe["ease_out"] = value
+	element.animate(owner.time, owner.animation_idx, owner.project_settings["screen_size"])
+	updateEasingPreview()

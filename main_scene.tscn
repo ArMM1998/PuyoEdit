@@ -135,6 +135,15 @@ text = "60FPS
 "
 horizontal_alignment = 2
 
+[node name="preview" type="Button" parent="Layer2_Panels/PanelTop"]
+layout_mode = 0
+offset_left = 266.0
+offset_top = 4.0
+offset_right = 382.0
+offset_bottom = 35.0
+scale = Vector2(0.75, 0.75)
+text = "Open Preview"
+
 [node name="PanelBottom" parent="Layer2_Panels" instance=ExtResource("6_b6dm2")]
 
 [node name="PanelRight" type="Panel" parent="Layer2_Panels"]
@@ -528,6 +537,12 @@ title = "Changelog"
 initial_position = 2
 ok_button_text = "Close"
 
+[node name="ColorRect" type="ColorRect" parent="Layer3_Popups"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0.0196078, 0.0196078, 0.0196078, 0.494118)
+
 [node name="directory_watcher" type="Node" parent="."]
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
@@ -536,6 +551,7 @@ script = ExtResource("20_r06tp")
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 
 [connection signal="selected_element" from="Layer1_Canvas/CanvasViewport" to="." method="_on_canvas_viewport_selected_element"]
+[connection signal="pressed" from="Layer2_Panels/PanelTop/preview" to="." method="_on_preview_pressed"]
 [connection signal="toggled" from="Layer2_Panels/toggle_panelLeft" to="Layer2_Panels" method="panelLeftToggle"]
 [connection signal="toggled" from="Layer2_Panels/toggle_panelRight" to="Layer2_Panels" method="panelRightToggle"]
 [connection signal="toggled" from="Layer2_Panels/toggle_panelBottom" to="Layer2_Panels" method="panelBottomToggle"]

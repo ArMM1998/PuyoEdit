@@ -459,6 +459,30 @@ offset_right = 152.0
 offset_bottom = 8.0
 texture_normal = ExtResource("7_vu2xa")
 
+[node name="ease_in" type="SpinBox" parent="keyframeSettings/curvePanel/curve"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = -26.0
+offset_right = 90.0625
+offset_bottom = 5.0
+scale = Vector2(0.8, 0.8)
+min_value = -1200.0
+max_value = 1200.0
+allow_greater = true
+allow_lesser = true
+
+[node name="ease_out" type="SpinBox" parent="keyframeSettings/curvePanel/curve"]
+layout_mode = 0
+offset_left = 71.0
+offset_top = 121.0
+offset_right = 154.063
+offset_bottom = 152.0
+scale = Vector2(0.8, 0.8)
+min_value = -1200.0
+max_value = 1200.0
+allow_greater = true
+allow_lesser = true
+
 [node name="tweening_btn" type="Button" parent="keyframeSettings"]
 layout_mode = 0
 offset_left = 112.0
@@ -507,7 +531,7 @@ allow_reselect = true
 layout_mode = 0
 offset_left = 264.0
 offset_top = 56.0
-offset_right = 1288.0
+offset_right = 1016.0
 offset_bottom = 248.0
 color = Color(0.14902, 0.14902, 0.14902, 0.647059)
 
@@ -544,6 +568,8 @@ icon = ExtResource("8_yg2g2")
 [connection signal="gui_input" from="keyframeSettings/curvePanel/curve/ease_in_btn" to="." method="_on_ease_in_btn_gui_input"]
 [connection signal="pressed" from="keyframeSettings/curvePanel/curve/ease_in_btn" to="." method="_on_ease_in_btn_pressed"]
 [connection signal="gui_input" from="keyframeSettings/curvePanel/curve/ease_out_btn" to="." method="_on_ease_out_btn_gui_input"]
+[connection signal="value_changed" from="keyframeSettings/curvePanel/curve/ease_in" to="." method="_on_ease_in_value_changed"]
+[connection signal="value_changed" from="keyframeSettings/curvePanel/curve/ease_out" to="." method="_on_ease_out_value_changed"]
 [connection signal="pressed" from="keyframeSettings/tweening_btn" to="." method="_on_dropdown_pressed"]
 [connection signal="pressed" from="keyframeSettings/dropdown" to="." method="_on_dropdown_pressed"]
 [connection signal="gui_input" from="AnimationList" to="." method="_on_animation_list_gui_input"]

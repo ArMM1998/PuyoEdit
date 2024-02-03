@@ -1,16 +1,18 @@
 extends Node2D
 
-var current_version = "0.6.3"
+var current_version = "0.7.0"
 
 var changelog = "
 NEW FEATURES:
-	-Work in progress inheritance settings
-		Note that It is unstable and may cause many issues during editing.
-	-Place keyframes with number keys rather than having to double click
-		1 = No interpolation
-		2 = Linear interpolation
-		3 = Ease In/Out interpolation
-	-FPS Counter.
+	-You can now capture the animation by pressing the camera button below the zoom label.
+	-You can now enable a preview of the screen.
+	-Right clicking the \"Center Pivot\" button will set the it to the top left corner.
+	-Pressing O will move the element to position (0,0) relative to its parent.
+	-You can now view and adjust the exact easing values when tweening is set to Ease In/Out.
+FIXES:
+	-Fixed an issue when duplicating an element where it would share certain settings with the original even after the duplication.
+	-Fixed an issue where an element's default settings were being overwritten every frame causing issues in projects with multiple animations.
+	
 "
 
 const appname = "Puyo Puyo Animation Studio"
@@ -21,7 +23,7 @@ const appname = "Puyo Puyo Animation Studio"
 @onready var dir_dialog = $Layer3_Popups/dirDialog
 @onready var about = $Layer3_Popups/About
 @onready var canvas_viewport = $Layer1_Canvas/CanvasViewport
-@onready var puyo_canvas = $Layer1_Canvas/CanvasViewport/Center/Canvas
+@onready var puyo_canvas = $Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Center/Canvas
 @onready var status_message = $Layer1_Canvas/CanvasViewport/status_message
 @onready var element_list = $Layer2_Panels/PanelLeft/ElementTree
 @onready var loop = $Layer2_Panels/PanelBottom/loop
@@ -40,6 +42,7 @@ var backupTimer = 0
 var backupTimeLimit = 120
 var fullscreen = false
 signal texture_dir_task_finished
+var capture_frameskip = 2
 
 
 var project_settings = {"platform" : "PSP",
@@ -75,6 +78,13 @@ var LayerList = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	
+	
+	
+	var dir = DirAccess.open("user://")
+	if not dir.dir_exists("user://Capture"):
+		dir.make_dir("user://Capture")
+	
 	get_tree().get_root().files_dropped.connect(_on_files_dropped)
 	$Layer3_Popups/SaveDialog.add_filter("*.json")
 	texture_dir_task_finished.connect(updatePathLabel)
@@ -176,7 +186,6 @@ func animate():
 			element.animate(time, animation_idx, project_settings["screen_size"])
 
 func windowResize():
-	
 	if not fullscreen:
 		$Layer2_Panels.panelResize(get_viewport_rect().size)
 		var viewport_width = 0
@@ -198,6 +207,10 @@ func windowResize():
 			viewport_height = get_viewport_rect().size[1] - 304
 		
 		$Layer1_Canvas/CanvasViewport.size = Vector2(viewport_width, viewport_height)
+		#print($Layer1_Canvas/CanvasViewport.size)
+		#$Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport.size = $Layer1_Canvas/CanvasViewport.size
+		$Layer1_Canvas/CanvasViewport/SubViewportContainer.position = Vector2(0,0)
+		#$Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Center.global_position = viewport_position
 		$Layer1_Canvas/CanvasViewport/status_message.position = Vector2(8,viewport_height - 18)
 		$Layer1_Canvas/CanvasViewport.position = viewport_position
 		$Layer2_Panels/PanelTop/platformLabel.position.x = get_viewport_rect().size[0] - $Layer2_Panels/PanelTop/platformLabel.get_rect().size[0] - 8
@@ -218,7 +231,7 @@ func windowResize():
 		$Layer2_SpriteEditor_Panels/PanelLeft/texture_pathBTN.position = Vector2(225,$Layer2_SpriteEditor_Panels/PanelLeft.size.y - 40)
 		$Layer2_SpriteEditor_Panels/PanelLeft/texture_path.position = Vector2(8,$Layer2_SpriteEditor_Panels/PanelLeft.size.y - 32)
 		
-		$Layer1_Canvas/CanvasViewport/checkbg.size = get_viewport_rect().size + Vector2(256,256)
+		$Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/checkbg.size = get_viewport_rect().size + Vector2(256,256)
 		
 		$Layer2_Panels/PanelBottom/timeline/background.size = $Layer2_Panels/PanelBottom.size - $Layer2_Panels/PanelBottom/timeline/background.position - Vector2(528,40)
 		$Layer2_Panels/PanelBottom/timeline/background/ColorRect.size.x = $Layer2_Panels/PanelBottom/timeline/background.size.x + 160
@@ -242,6 +255,7 @@ func windowResize():
 		$Layer2_Panels/PanelBottom/keyframeSettings.position = Vector2($Layer2_Panels/PanelBottom.size.x - 248,4)
 		$Layer1_Canvas/CanvasViewport/LockToGrid.position.x = canvas_viewport.size.x - 32
 		$Layer2_Panels/PanelBottom/ColorRect.size = $Layer2_Panels/PanelBottom.size
+		$Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Camera2D.position = Vector2(264,40)
 	else:
 		$Layer1_Canvas/CanvasViewport.size = get_viewport_rect().size
 		$Layer1_Canvas/CanvasViewport.position = Vector2(0,0)
@@ -249,7 +263,7 @@ func windowResize():
 		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(2, Vector2(-1, -1))
 		$Layer1_Canvas/CanvasViewport/focusIndicator.set_point_position(3, Vector2(-1, -1))
 		#$Layer1_Canvas/CanvasViewport/cursorPosLabel.position = canvas_viewport.size - Vector2(190, 20)
-		$Layer1_Canvas/CanvasViewport/checkbg.size = get_viewport_rect().size + Vector2(256,256)
+		$Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/checkbg.size = get_viewport_rect().size + Vector2(256,256)
 	
 func smoothCurve(kf_time, keyframe1, keyframe2):
 	var time_diff = float(keyframe2["timestamp"]) - float(keyframe1["timestamp"])
@@ -281,6 +295,8 @@ var time = 0.0
 @export var animation_idx = 0 : set = setAnimIdx
 var animation_max_time = 60
 var playing = false 
+var capturing = false
+
 
 var play_range = [0,0, false]
 
@@ -303,8 +319,15 @@ func setAnimIdx(idx):
 			element.animate(time, animation_idx, project_settings["screen_size"])
 
 var autobackup = true
+var fps_accumulator := 0
+var fps_timer := 0
+var fps := 0
 
+var recording_position = false
+var recorded_positions = []
 func _process(delta):
+	$Layer2_Panels/PanelTop/platformLabel/fps.text = "FPS: " + str( round(1.0 / delta))
+	#$Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/checkbg.visible = not capturing
 	if user_settings["filedialog_dir"] != "" and $Layer3_Popups/FileDialog.current_dir != user_settings["filedialog_dir"] and not ($Layer3_Popups/FileDialog.visible or $Layer3_Popups/SaveDialog.visible or $Layer3_Popups/dirDialog.visible):
 		$Layer3_Popups/FileDialog.current_dir = user_settings["filedialog_dir"]
 		$Layer3_Popups/SaveDialog.current_dir = user_settings["filedialog_dir"]
@@ -343,12 +366,37 @@ func _process(delta):
 	
 	
 	$Layer2_Panels/PanelBottom/speed/playbackSpeedLabel.text = "Playback Speed:     " + str(time_scale) + "x"
-	if playing:
+	if recording_position:
+		
 		if not play_range[2]:
 			play_range[0] = 0
 			play_range[1] = animation_max_time
 		else:
-			if time < play_range[0]:
+			if time < recording_time:
+				time = play_range[0]
+		
+		time += (60*time_scale)*delta
+		var element = LayerList[selected_layer][selected_element]
+		element.saveDefaults = false
+		if time > len(recorded_positions)*recorded_framerate:
+			recorded_positions.append([element.position.x, element.position.y])
+			
+		if time-recording_time > len(recorded_positions)*30:
+			$Layer1_Canvas/CanvasViewport/recording.visible = not $Layer1_Canvas/CanvasViewport/recording.visible
+		if time > play_range[1]:
+			save_recorded_pos()
+		
+		for layer in LayerList:
+			for animate_element in layer:
+				if element != animate_element:
+					animate_element.animate(time, animation_idx, project_settings["screen_size"])
+		
+	elif playing:
+		if not play_range[2]:
+			play_range[0] = 0
+			play_range[1] = animation_max_time
+		else:
+			if time < play_range[0] and not capturing:
 				time = play_range[0]
 			
 		$Layer2_Panels/PanelBottom/playPause.icon = load("res://Graphics/timeline/pause.png")
@@ -369,7 +417,13 @@ func _process(delta):
 					element.saveDefaults = true
 		else:
 			status_message.displayMessage("Playing \"" + animationList[animation_idx]["name"] + "\" - Frame " + str(int(time)))
-		time += (60*time_scale)*delta
+		if capturing:
+			time +=capture_frameskip
+			$Layer1_Canvas/CanvasViewport/posScreenRect.visible = false
+			$Layer1_Canvas/CanvasViewport/posFieldRect.visible = false
+			$Layer1_Canvas/CanvasViewport/posAxis.visible = false
+		else:
+			time += (60*time_scale)*delta
 		
 		if time >= play_range[1]:
 			$AudioStreamPlayer2D.playing = false
@@ -404,7 +458,15 @@ func _process(delta):
 				
 		
 		panel_right.update()
+		if capturing and time >0.0 and playing:
+			#print(time)
+			var captured_image = $Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport.get_texture().get_image()
+			var filename = "%03d" % [round(time/capture_frameskip)]
+			filename = project_settings["file_path"].split("/")[-1].split("\\")[-1].split(".")[0] + "_" + animationList[animation_idx]["name"] + "_" + filename
+			captured_image.save_png("user://Capture/" + filename + ".png")
 	else:
+		if capturing:
+			stop_capturing()
 		$Layer2_Panels/PanelBottom/playPause.icon = load("res://Graphics/timeline/play.png")
 		$"Layer2_Panels/PanelRight/ScrollContainer/Control/ColorRect".visible = false
 		$"Layer1_Canvas/CanvasViewport/ElementStuff".visible = true
@@ -432,8 +494,48 @@ func toggleSpriteEditor():
 			for element in layer:
 				element.update()
 
+var recorded_framerate = 3
+func save_recorded_pos():
+	$Layer1_Canvas/CanvasViewport/recording.visible = false
+	recording_position = false
+	var element = LayerList[selected_layer][selected_element]
+	var timestamp = 0
+	add_undo(element.setdummy, element.dummy, element.dummy(), "keyframe", element)
+	undoHistory[-1].append(element.animation_list.duplicate(true))
+	undoHistory[-1].append(time)
+	
+	for pos in recorded_positions:
+		$Layer2_Panels/PanelBottom.addKeyframe(1, "posx", timestamp >= len(recorded_positions)*recorded_framerate, pos[0]/project_settings["screen_size"][0], timestamp)
+		$Layer2_Panels/PanelBottom.addKeyframe(1, "posy", timestamp >= len(recorded_positions)*recorded_framerate, pos[1]/project_settings["screen_size"][1], timestamp)
+		timestamp+=recorded_framerate
+		#print(timestamp)
+	recorded_positions = []
+	$Layer2_Panels/PanelBottom.selected_element = []
+	$Layer2_Panels/PanelBottom.remov_dupes(element, "posx")
+	$Layer2_Panels/PanelBottom.remov_dupes(element, "posy")
+	time = 0
+	
+	
+var recording_time = 0
+
 func _input(event):
 	
+	
+	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
+		if capturing:
+			stop_capturing()
+		if recording_position:
+			save_recorded_pos()
+	if event is InputEventKey and event.keycode == KEY_R and holdingCtrl and event.pressed and not capturing and not fullscreen:
+		if recording_position:
+			save_recorded_pos()
+		else:
+			recording_position = true
+			$Layer1_Canvas/CanvasViewport/recording.visible = true
+			recording_time = time
+	
+	if capturing or recording_position:
+		return
 	
 	if event is InputEventKey and event.keycode == KEY_SPACE and event.pressed and $Layer2_Panels/PanelBottom/timeline.has_focus():
 		playing = not playing
@@ -727,7 +829,6 @@ func updateTargetPlatform(platform_name):
 	else:
 		$Layer1_Canvas/CanvasViewport.fillZoom()
 	$Layer1_Canvas/CanvasViewport.updateObjectPositions()
-
 func toggleField():
 	status_message.displayMessage("Field visibility toggled.")
 	project_settings["hide_field"] = not project_settings["hide_field"]
@@ -760,10 +861,12 @@ func newFile():
 		child.queue_free()
 	
 	
+	
 	$Layer2_Panels/PanelBottom.updateAnimList()
 	status_message.displayMessage("New file created")
-	
+
 func resetVariables():
+	$Layer1_Canvas/CanvasViewport.dualscreen_idx = 0
 	play_range = [0,0, false]
 	if "Audio" in project_settings:
 		project_settings.erase("Audio")
@@ -1196,7 +1299,7 @@ func newElement(parent = -1, undo = true):
 		var puyoElement = PuyoElement.new()
 		var newName = ensure_unique_element_name("NewElement")
 		puyoElement.setName(newName)
-		puyoElement.setTransformHelper($Layer1_Canvas/CanvasViewport/Center/Canvas/transformhelper)
+		puyoElement.setTransformHelper($Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Center/Canvas/transformhelper)
 		var parent_elem = -1
 		if parent != -1:
 			parent_elem = LayerList[selected_layer][parent]
@@ -1734,14 +1837,14 @@ func duplicate_element(elem = false, parent = false):
 		duplicatedElement.setHideEditor(element.hide_editor)
 		duplicatedElement.setFlipX(element.flipX)
 		duplicatedElement.setFlipY(element.flipY)
-		duplicatedElement.setInheritPosition(element.inherit_position)
-		duplicatedElement.setInheritScale(element.inherit_scale)
+		duplicatedElement.setInheritPosition(element.inherit_position.duplicate(true))
+		duplicatedElement.setInheritScale(element.inherit_scale.duplicate(true))
 		duplicatedElement.setInheritAngle(element.inherit_angle)
 		duplicatedElement.setInheritColor(element.inherit_color)
 		duplicatedElement.setName(ensure_unique_element_name(element.element_name))
 		duplicatedElement.setSize(element.element_size)
 		duplicatedElement.setPivot(element.pivot_point)
-		duplicatedElement.setSpriteList(element.sprite_list.duplicate())
+		duplicatedElement.setSpriteList(element.sprite_list.duplicate(true))
 		duplicatedElement.setVisible(element.visibility)
 		duplicatedElement.setPosition(Vector2(element.positionX, element.positionY))
 		duplicatedElement.setAngle(element.angle)
@@ -1756,7 +1859,7 @@ func duplicate_element(elem = false, parent = false):
 		duplicatedElement.depth = element.depth
 		duplicatedElement.animation_list = element.animation_list.duplicate(true)
 		duplicatedElement.defaultSettings = element.defaultSettings.duplicate(true)
-		duplicatedElement.transform_helper = $Layer1_Canvas/CanvasViewport/Center/Canvas/transformhelper
+		duplicatedElement.transform_helper = $Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Center/Canvas/transformhelper
 		
 		LayerList[selected_layer].insert(element.id+1, duplicatedElement)
 		updateElementIDs()
@@ -1778,6 +1881,7 @@ func backupSave():
 		saveAt(OS.get_user_data_dir() + "/backup.json", true)
 
 func toggle_fullscreen():
+	$Layer1_Canvas/CanvasViewport/Window.close_requested.emit()
 	fullscreen = not fullscreen
 	if fullscreen:
 		$Layer1_Canvas/CanvasViewport/LockToGrid.button_pressed = false
@@ -1788,7 +1892,7 @@ func toggle_fullscreen():
 		$Layer1_Canvas/CanvasViewport/zoomLabel.position = Vector2(-100,-100)
 		$Layer1_Canvas/CanvasViewport/cursorPosLabel.position = Vector2(-100,-100)
 		$Layer2_Panels.visible = false
-		$Layer1_Canvas/CanvasViewport.fillZoom()
+		$Layer1_Canvas/CanvasViewport.fillZoom(true)
 		
 	else:
 		@warning_ignore("int_as_enum_without_cast")
@@ -1881,3 +1985,44 @@ func _on_files_dropped(files):
 func removeAudio():
 	$AudioStreamPlayer2D.stream = null
 	project_settings.erase("Audio")
+
+
+func start_capture():
+	window_was_visible[0] = $Layer1_Canvas/CanvasViewport/Window.visible
+	window_was_visible[1] = $Layer1_Canvas/CanvasViewport/Window.position.x
+	window_was_visible[2] = $Layer1_Canvas/CanvasViewport/Window.position.y
+	capturing = true
+	_on_preview_pressed()
+	$Layer1_Canvas/CanvasViewport/Window.position = Vector2(-5000,-5000)
+	$Layer3_Popups/ColorRect.size = get_viewport_rect().size
+	$Layer3_Popups/ColorRect.visible = true
+	playing = true
+	
+	$Layer2_Panels/PanelBottom/loop.button_pressed = false
+	time = -4.0
+
+func stop_capturing():
+	$Layer1_Canvas/CanvasViewport/posScreenRect.visible = not user_settings["hide_screen"]
+	$Layer1_Canvas/CanvasViewport/posFieldRect.visible = not user_settings["hide_field"]
+	$Layer1_Canvas/CanvasViewport/posAxis.visible = not user_settings["hide_axis"]
+	capturing = false
+	playing = false
+	$Layer3_Popups/ColorRect.visible = false
+	OS.shell_open(OS.get_user_data_dir() + "/Capture")
+	if not window_was_visible[0]:
+		$Layer1_Canvas/CanvasViewport/Window.close_requested.emit()
+	$Layer1_Canvas/CanvasViewport/Window.position = Vector2(window_was_visible[1], window_was_visible[2])
+
+var window_was_visible = [false, 0, 0]
+func _on_preview_pressed():
+	if not $Layer1_Canvas/CanvasViewport/Window.visible:
+		if project_settings["platform"] == "Mobile" and not capturing:
+			$Layer1_Canvas/CanvasViewport/Window.size = Vector2(project_settings["screen_size"][0], project_settings["screen_size"][1])/3
+		else:
+			$Layer1_Canvas/CanvasViewport/Window.size = Vector2(project_settings["screen_size"][0], project_settings["screen_size"][1])
+		$Layer1_Canvas/CanvasViewport/Window/TextureRect.size = $Layer1_Canvas/CanvasViewport/Window.size
+		$Layer1_Canvas/CanvasViewport/Window/color_rect.size = $Layer1_Canvas/CanvasViewport/Window.size
+	$Layer1_Canvas/CanvasViewport/Window.position = get_viewport_rect().size /2 - Vector2($Layer1_Canvas/CanvasViewport/Window.size.x, $Layer1_Canvas/CanvasViewport/Window.size.y)/2
+	$Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport/extra_cam.enabled = true
+	$Layer1_Canvas/CanvasViewport/Window.popup()
+	

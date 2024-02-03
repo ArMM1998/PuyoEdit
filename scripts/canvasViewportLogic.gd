@@ -3,11 +3,12 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	
+	$Window.position = get_viewport_rect().size - Vector2(256,256)
 	$posScreenRect/Grid.set_grid_size(Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])*4, Vector2(owner.project_settings["screen_size"][0]/60, owner.project_settings["screen_size"][1]/60))
-	
+	$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport.world_2d = $SubViewportContainer/SubViewport.world_2d
 	$ElementStuff/ElementRect.rotation_degrees = 0
 	$ElementStuff/ElementRect.global_position = Vector2(0,0)
+
 signal selected_element
 var zoomIntervals = [0.025,0.05,0.1,0.15,0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 18.0,20.0]
 var zoomLevel = 1.0
@@ -33,7 +34,63 @@ var holdingShift = false
 
 var grid_division = 8.0
 
+
+func resizeWindow():
+	if owner.project_settings["platform"].find("Dual Screen") != -1:
+		if dualscreen_idx == 1:
+			aspect_ratio = owner.project_settings["screen_size"][2] / owner.project_settings["screen_size"][3]
+		else:
+			aspect_ratio = owner.project_settings["screen_size"][0] / owner.project_settings["screen_size"][1]
+	else:
+		aspect_ratio = owner.project_settings["screen_size"][0] / owner.project_settings["screen_size"][1]
+	# Calculate the new size based on the aspect ratio
+	var window_size = $Window.size
+	#calculate the new size here
+	var new_width = window_size.y * aspect_ratio
+	var new_height = window_size.x / aspect_ratio
+	var new_size
+	
+	if new_width > window_size.x:
+		new_size = Vector2(new_width, window_size.y)
+	else:
+		new_size = Vector2(window_size.x, new_height)
+	
+	if $Window.size.x == new_size.x and $Window.size.y == new_size.y:
+		return
+	# Set the new size to the window
+	$Window.size = new_size
+	
+	#if the size is less than a treshold, set it to that treshold
+	if $Window.size < Vector2i(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/8:
+		$Window.size = Vector2i(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/8
+	
+	$Window/TextureRect.size = $Window.size
+
+var aspect_ratio = 1.3
+
 func _process(_delta):
+	$Window/color_rect.size = $Window/TextureRect.size
+	$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container.global_position = Vector2(-8000000,-800000)
+	if owner.project_settings["platform"].find("Dual Screen") != -1:
+		if dualscreen_idx == 0:
+			$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport.size = $Window.size
+			$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport/extra_cam.zoom = (Vector2(1,1)/zoomLevel) * $Window.size.x / owner.project_settings["screen_size"][0]
+			$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport/extra_cam.global_position = $posScreenRect.global_position - (Vector2(0,280)*zoomLevel)
+		else:
+			$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport.size = $Window.size
+			$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport/extra_cam.zoom = (Vector2(1,1)/zoomLevel) * $Window.size.x / owner.project_settings["screen_size"][2]
+			$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport/extra_cam.global_position = $posScreenRect.global_position + (Vector2(40,0)*zoomLevel)
+	else:
+		$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport.size = $Window.size
+		$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport/extra_cam.zoom = (Vector2(1,1)/zoomLevel) * $Window.size.x / owner.project_settings["screen_size"][0]
+		$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport/extra_cam.global_position = $posScreenRect.global_position
+	resizeWindow()
+	
+	
+	#$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport.size = Vector2(256,256)
+	
+	$SubViewportContainer/SubViewport/Camera2D.position = self.global_position
+	$SubViewportContainer.size = self.size
 	var cell_size = Vector2(grid_division, grid_division)*zoomLevel
 	$posScreenRect/Grid.set_grid_size((Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1]))*zoomLevel, cell_size)
 	$posScreenRect/Grid.position = Vector2(0,0)
@@ -122,6 +179,10 @@ func _process(_delta):
 		$ElementStuff.visible = false
 
 func _gui_input(event):
+	
+	if owner.capturing:
+		return
+	
 	var cursor_pos_text = (get_global_mouse_position() - $posScreenRect.global_position)/zoomLevel
 	cursor_pos_text = Vector2(snapped(cursor_pos_text[0], 0.1), snapped(cursor_pos_text[1], 0.1))
 	$cursorPosLabel.text = str(cursor_pos_text)
@@ -153,10 +214,10 @@ func _gui_input(event):
 				#get_viewport().warp_mouse(element.sprite_rect.global_position)
 
 		if event is InputEventMouseMotion:
-			var canvas_pos = $Center/Canvas.global_position
-			$Center.global_position = get_global_mouse_position()
-			$Center.position = Vector2(int($Center.position[0]), int($Center.position[1]))
-			$Center/Canvas.global_position = canvas_pos
+			var canvas_pos = $SubViewportContainer/SubViewport/Center/Canvas.global_position
+			$SubViewportContainer/SubViewport/Center.global_position = get_global_mouse_position()
+			$SubViewportContainer/SubViewport/Center.position = Vector2(int($SubViewportContainer/SubViewport/Center.position[0]), int($SubViewportContainer/SubViewport/Center.position[1]))
+			$SubViewportContainer/SubViewport/Center/Canvas.global_position = canvas_pos
 		
 		if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed) or (event is InputEventKey and event.keycode == KEY_KP_ADD and event.pressed):
 			if zoomIntervals.find(zoomLevel) == len(zoomIntervals)-1:
@@ -178,10 +239,20 @@ func _gui_input(event):
 			if element.global_position != screen_center:
 				owner.add_undo(element.setPosition, element.getPosition, element.position, "value", element)
 				element.global_position = ($posScreenRect.global_position + (Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/2)*zoomLevel)
-				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
-				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
+				element.position = Vector2(round(element.position.x), round(element.position.y))
+				checkKeyframeSaving(element, round(element.position.x / owner.project_settings["screen_size"][0]), "posx")
+				checkKeyframeSaving(element, round(element.position.y / owner.project_settings["screen_size"][1]), "posy")
 				element.setPosition(element.position)
-				
+		
+		if event is InputEventKey and event.keycode == KEY_O and event.pressed and self.has_focus() and owner.selected_element != -1 and not owner.playing:
+			var element = owner.LayerList[owner.selected_layer][owner.selected_element]
+			if element.position != Vector2(0,0):
+				owner.add_undo(element.setPosition, element.getPosition, element.position, "value", element)
+				element.position = Vector2(0.0,0.0)
+				checkKeyframeSaving(element, round(element.position.x / owner.project_settings["screen_size"][0]), "posx")
+				checkKeyframeSaving(element, round(element.position.y / owner.project_settings["screen_size"][1]), "posy")
+				element.setPosition(element.position)
+		
 				
 		if event is InputEventKey and event.keycode == KEY_KP_1 and self.has_focus() and event.pressed:
 			zoomLevel = 1.0
@@ -239,7 +310,8 @@ func customFmodf(a: float, b: float) -> float:
 	return remainder
 
 func _input(event):
-	
+	if owner.capturing:
+		return
 	if event is InputEventKey and event.keycode == KEY_Z:
 		updateKeyPos = event.pressed and (not draggingElement)
 	
@@ -291,7 +363,7 @@ func _input(event):
 			draggingPivot = false
 			
 		if event is InputEventMouseMotion and holdingMoveKey:
-			$Center/Canvas.global_position += get_global_mouse_position() - initialPos
+			$SubViewportContainer/SubViewport/Center/Canvas.global_position += get_global_mouse_position() - initialPos
 			initialPos = get_global_mouse_position()
 			updateObjectPositions()
 			
@@ -344,10 +416,11 @@ func _input(event):
 				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
 				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
 				element.setPosition(element.position)
+			
 				
 			
 			if locktogrid:
-				element.global_position = Vector2(snappedf($Center/Canvas.to_local(element.global_position).x, grid_division), snappedf($Center/Canvas.to_local(element.global_position).y, grid_division))*zoomLevel + $Center/Canvas.global_position
+				element.global_position = Vector2(snappedf($SubViewportContainer/SubViewport/Center/Canvas.to_local(element.global_position).x, grid_division), snappedf($SubViewportContainer/SubViewport/Center/Canvas.to_local(element.global_position).y, grid_division))*zoomLevel + $SubViewportContainer/SubViewport/Center/Canvas.global_position
 				#element.position = Vector2(snappedf(element.position[0], grid_division), snappedf(element.position[1], grid_division))
 				checkKeyframeSaving(element, element.position.x / owner.project_settings["screen_size"][0], "posx")
 				checkKeyframeSaving(element, element.position.y / owner.project_settings["screen_size"][1], "posy")
@@ -446,16 +519,16 @@ func _input(event):
 
 
 func updateScale():
-	$Center.scale = Vector2(zoomLevel, zoomLevel)
-	$Center.global_position = Vector2(int($Center.global_position[0]), int($Center.global_position[1]))
-	$Center/Canvas.global_position = Vector2(int($Center/Canvas.global_position[0]), int($Center/Canvas.global_position[1]))
+	$SubViewportContainer/SubViewport/Center.scale = Vector2(zoomLevel, zoomLevel)
+	$SubViewportContainer/SubViewport/Center.global_position = Vector2(int($SubViewportContainer/SubViewport/Center.global_position[0]), int($SubViewportContainer/SubViewport/Center.global_position[1]))
+	$SubViewportContainer/SubViewport/Center/Canvas.global_position = Vector2(int($SubViewportContainer/SubViewport/Center/Canvas.global_position[0]), int($SubViewportContainer/SubViewport/Center/Canvas.global_position[1]))
 
 func updateObjectPositions():
 	#update positions
-	$posAxis.global_position = $Center/Canvas.global_position
+	$posAxis.global_position = $SubViewportContainer/SubViewport/Center/Canvas.global_position
 	$posAxis/Y.global_position = Vector2($posAxis/Y.global_position[0], 0)
 	$posAxis/X.global_position = Vector2(0,$posAxis/X.global_position[1])
-	$posScreenRect.global_position = $Center/Canvas.global_position
+	$posScreenRect.global_position = $SubViewportContainer/SubViewport/Center/Canvas.global_position
 	$posScreenRect.visible = not owner.user_settings["hide_screen"]
 	$posAxis.visible = not owner.user_settings["hide_axis"]
 	#update screen rect size
@@ -508,20 +581,21 @@ func updateObjectPositions():
 		$posFieldRect/FieldRect.visible = false
 	
 	#update checkerboard background
-	$checkbg.position = Vector2(int(str(int($Center/Canvas.global_position[0])).right(2)),int(str(int($Center/Canvas.global_position[1])).right(2))) - Vector2(178,122)
+	$SubViewportContainer/SubViewport/checkbg.position = Vector2(int(str(int($SubViewportContainer/SubViewport/Center/Canvas.global_position[0])).right(2)),int(str(int($SubViewportContainer/SubViewport/Center/Canvas.global_position[1])).right(2))) - Vector2(128,64)
 	
 	#update zoom label
 	$zoomLabel.text = str(100*zoomLevel) + "%"
 
 func resetZoom():
 	zoomLevel = 1.0
-	$Center.position = self.size/2
-	$Center/Canvas.position = Vector2(0,0) - Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/2
+	
+	$SubViewportContainer/SubViewport/Center.position = self.size/2 + $".".position
+	$SubViewportContainer/SubViewport/Center/Canvas.position = Vector2(0,0) - Vector2(owner.project_settings["screen_size"][0], owner.project_settings["screen_size"][1])/2
 	updateScale()
 	updateObjectPositions()
 	self.grab_focus()
 
-func snap_to_closest_zoom(lvl_of_zoom) -> float:
+func snap_to_closest_zoom(lvl_of_zoom, fullscreen = false) -> float:
 	var minIndex = 0
 	var minDifference = abs(lvl_of_zoom - zoomIntervals[0])
 
@@ -531,22 +605,31 @@ func snap_to_closest_zoom(lvl_of_zoom) -> float:
 			minDifference = difference
 			minIndex = i
 	#print(typeof(zoomIntervals[minIndex]))
+	if not fullscreen:
+		if owner.project_settings["screen_size"][0] * zoomIntervals[minIndex] > self.size.x or owner.project_settings["screen_size"][1] * zoomIntervals[minIndex] > self.size.y:
+			minIndex-= 1
+	
 	return float(zoomIntervals[minIndex])
 
-func fillZoom():
+func fillZoom(fullscreen = false):
 	# Calculate the scale factor for X and Y dimensions separately
 	var scaleX = self.size.x / owner.project_settings["screen_size"][0]
 	var scaleY = self.size.y / owner.project_settings["screen_size"][1]
 	# Choose the smaller scale factor to ensure both dimensions fit within rect1
 	zoomLevel = min(scaleX, scaleY)
-	zoomLevel = snap_to_closest_zoom(zoomLevel)
+	zoomLevel = snap_to_closest_zoom(zoomLevel, fullscreen)
 	
 	
 	#print(self.size)
 	#print(owner.project_settings["screen_size"])
-	
-	$Center.position = self.size/2
-	$Center/Canvas.position = Vector2(0,0) - Vector2(owner.project_settings["screen_size"][0]/2, owner.project_settings["screen_size"][1]/2)
+	$SubViewportContainer/SubViewport/Center.position = self.size/2 + $".".position
+	#$SubViewportContainer/SubViewport/Camera2D.position = Vector2(0,0)
+	$SubViewportContainer/SubViewport/Center/Canvas.position = Vector2(0,0) - Vector2(owner.project_settings["screen_size"][0]/2, owner.project_settings["screen_size"][1]/2)
+
+	if fullscreen:
+		$Button.visible = false
+	else:
+		$Button.visible = true
 	updateScale()
 	updateObjectPositions()
 	self.grab_focus()
@@ -803,3 +886,33 @@ func _on_maximize_view_pressed():
 
 func _on_btn_lockgrid_value_changed(value):
 	grid_division = float(value)
+
+
+func _on_button_pressed():
+	owner.start_capture()
+
+func _on_Button_gui_input(event):
+	if event is InputEventMouseButton and event.pressed:
+		match event.button_index:
+			MOUSE_BUTTON_LEFT:
+				owner.capture_frameskip = 2
+				owner.start_capture() 
+			MOUSE_BUTTON_RIGHT:
+				owner.capture_frameskip = 1
+				owner.start_capture()
+
+
+func _on_window_close_requested():
+	$Window.hide()
+	$SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport/extra_cam.enabled = false
+
+
+var dualscreen_idx = 0
+func _on_texture_rect_gui_input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		if owner.project_settings["platform"].find("Dual Screen") != -1:
+			if dualscreen_idx == 0:
+				dualscreen_idx = 1
+				$Window.size.x -= 256
+			else:
+				dualscreen_idx = 0

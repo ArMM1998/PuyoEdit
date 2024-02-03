@@ -51,7 +51,7 @@ func _ready():
 	
 	$ScrollContainer/Control/matchSize.pressed.connect(matchSize)
 	$ScrollContainer/Control/matchSize.gui_input.connect(sizegui)
-	$ScrollContainer/Control/centerPivot.pressed.connect(centerPivot)
+	$ScrollContainer/Control/centerPivot.gui_input.connect(centerPivot)
 	
 	$ScrollContainer/Control/spritelist.item_clicked.connect(itemClicked)
 	
@@ -384,15 +384,19 @@ func matchSizeScaled(index):
 	update()
 	
 	
-func centerPivot():
+func centerPivot(event):
 	var element = owner.LayerList[owner.selected_layer][owner.selected_element]
 	owner.add_undo(element.setPivot, element.getPivot, element.getPivot(), "value", element)
-	var newpivot = element.element_size/2
-	newpivot.x = round(newpivot.x)
-	newpivot.y = round(newpivot.y)
-	element.setPivot(newpivot)
-	update()
-	
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		var newpivot = Vector2(0,0)
+		element.setPivot(newpivot)
+		update()
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		var newpivot = element.element_size/2
+		newpivot.x = round(newpivot.x)
+		newpivot.y = round(newpivot.y)
+		element.setPivot(newpivot)
+		update()
 var newSprite = false
 
 func itemClicked(index:int, _at_position : Vector2, mouse_btn):
