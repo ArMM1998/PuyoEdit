@@ -13,7 +13,7 @@ var hide_editor = false : set = setHideEditor
 var flipX = false : set = setFlipX
 var flipY = false : set = setFlipY
 
-#var sprite_index_list : set = setSpriteIndexList
+var sprite_crop_list : set = setSpriteCropList
 
 var inherit_position = [true, true] : set = setInheritPosition
 var inherit_scale = [true, true] : set = setInheritScale
@@ -225,10 +225,49 @@ func get_root_parent(child):
 	else:
 		return get_root_parent(child.get_parent())
 
+var interpolatedSprite
+
+var spriteindex_range = [0,0]
+signal requestspritecroplist
 func update():
+	
+	
+	
 	if sprite_list.size() > 0:
 		if sprite_index != -1 and sprite_index < sprite_list.size():
-			sprite_rect.texture = sprite_list[sprite_index]
+			if sprite_index != round(sprite_index):
+				if not sprite_crop_list:
+					requestspritecroplist.emit(self)
+				else:
+					var startingSprite
+					for sprite in sprite_crop_list:
+						if sprite.texture == sprite_list[spriteindex_range[0]]:
+							startingSprite = sprite
+							break
+						
+					var endingSprite
+					
+					for sprite in sprite_crop_list:
+						if sprite.texture == sprite_list[spriteindex_range[1]]:
+							endingSprite = sprite
+							break
+					
+					if not interpolatedSprite:
+						interpolatedSprite = PuyoSprite.new()
+					
+					var scaled_sprite_index = (sprite_index - spriteindex_range[0]) / (spriteindex_range[1] - spriteindex_range[0])
+					var posx0 = lerpf(startingSprite.cropping_positions[0], endingSprite.cropping_positions[0], scaled_sprite_index)
+					var posx1 = lerpf(startingSprite.cropping_positions[2], endingSprite.cropping_positions[2], scaled_sprite_index)
+					var posy0 = lerpf(startingSprite.cropping_positions[1], endingSprite.cropping_positions[1], scaled_sprite_index)
+					var posy1 = lerpf(startingSprite.cropping_positions[3], endingSprite.cropping_positions[3], scaled_sprite_index)
+					interpolatedSprite.setOgTexture(startingSprite.og_texture, startingSprite.texIDX)
+					interpolatedSprite.setCrop([posx0, posy0,
+												posx1, posy1])
+					
+					sprite_rect.texture = interpolatedSprite.texture
+				
+			else:
+				sprite_rect.texture = sprite_list[sprite_index]
 		else:
 			sprite_rect.texture = null_texture
 	else:
@@ -248,7 +287,7 @@ func linearInterpolation(given_time: float, lower_range_time: float, upper_range
 	if given_time > upper_range_time:
 		return 1
 	else:
-		return interpolation_ratio
+		return float(interpolation_ratio)
 
 func animate(current_time, anim_idx, screen_size, loop_update_fix = false):
 	
@@ -312,7 +351,7 @@ func animate(current_time, anim_idx, screen_size, loop_update_fix = false):
 													next_kf["data"]["alpha"]/255.0), linearInterpolation(time, current_kf["timestamp"], next_kf["timestamp"]))
 					#print(value)
 					
-				elif current_kf["tweening"] == 0 or (animation["Motion"] == "hide" or animation["Motion"] == "sprite_index"):
+				elif current_kf["tweening"] == 0 or (animation["Motion"] == "hide"):
 					value = current_kf["data"]
 				
 				elif current_kf["tweening"] == 1:
@@ -342,6 +381,7 @@ func animate(current_time, anim_idx, screen_size, loop_update_fix = false):
 					setAngle(-value)
 				
 				elif animation["Motion"] == "sprite_index":
+					spriteindex_range = [current_kf["data"], next_kf["data"]]
 					setSpriteIndex(value)
 				
 				elif animation["Motion"] == "rgba":
@@ -404,8 +444,8 @@ func setFlipY(value):
 	self.sprite_rect.flip_v = value
 	shader_material.set_shader_parameter("flipy", flipY)
 
-#func setSpriteIndexList(value):
-#	sprite_index_list = value
+func setSpriteCropList(value):
+	sprite_crop_list = value
 
 func setInheritPosition(value):
 	inherit_position = value

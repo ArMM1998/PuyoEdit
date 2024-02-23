@@ -1,17 +1,11 @@
 extends Node2D
 
-var current_version = "0.7.0"
+var current_version = "0.7.1"
 
 var changelog = "
 NEW FEATURES:
-	-You can now capture the animation by pressing the camera button below the zoom label.
-	-You can now enable a preview of the screen.
-	-Right clicking the \"Center Pivot\" button will set the it to the top left corner.
-	-Pressing O will move the element to position (0,0) relative to its parent.
-	-You can now view and adjust the exact easing values when tweening is set to Ease In/Out.
+	-Added support for scrolling textures.
 FIXES:
-	-Fixed an issue when duplicating an element where it would share certain settings with the original even after the duplication.
-	-Fixed an issue where an element's default settings were being overwritten every frame causing issues in projects with multiple animations.
 	
 "
 
@@ -162,7 +156,6 @@ func _ready():
 	
 	# warning-ignore:return_value_discarded
 	get_tree().get_root().connect("size_changed", Callable(self, "windowResize"))
-	windowResize()
 	
 	$Layer1_Canvas/CanvasViewport.updateObjectPositions()
 	if FileAccess.file_exists(OS.get_user_data_dir() + "/backup.json"):
@@ -172,13 +165,7 @@ func _ready():
 	else:
 		newFile()
 	
-	#Just a bit of fun because why not lol
-	if user_settings["boot_up_times"] == 2424:
-		user_settings["boot_up_times"] += 1
-	else:
-		status_message.displayMessage("Animation Editor initialized.", true)
-		user_settings["boot_up_times"] += 1
-	
+	windowResize()
 
 func animate():
 	for layer in LayerList:
@@ -1297,8 +1284,10 @@ func newElement(parent = -1, undo = true):
 		
 		status_message.displayMessage("New element created.")
 		var puyoElement = PuyoElement.new()
+		puyoElement.requestspritecroplist.connect(assign_spritecroplist)
 		var newName = ensure_unique_element_name("NewElement")
 		puyoElement.setName(newName)
+		puyoElement.setSpriteCropList(spriteCropList)
 		puyoElement.setTransformHelper($Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Center/Canvas/transformhelper)
 		var parent_elem = -1
 		if parent != -1:
@@ -1860,7 +1849,9 @@ func duplicate_element(elem = false, parent = false):
 		duplicatedElement.animation_list = element.animation_list.duplicate(true)
 		duplicatedElement.defaultSettings = element.defaultSettings.duplicate(true)
 		duplicatedElement.transform_helper = $Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Center/Canvas/transformhelper
-		
+		duplicatedElement.spriteindex_range = element.spriteindex_range.duplicate(true)
+		duplicatedElement.setSpriteCropList(spriteCropList)
+		duplicatedElement.requestspritecroplist.connect(assign_spritecroplist)
 		LayerList[selected_layer].insert(element.id+1, duplicatedElement)
 		updateElementIDs()
 		selected_element = duplicatedElement.id
@@ -2026,3 +2017,5 @@ func _on_preview_pressed():
 	$Layer1_Canvas/CanvasViewport/SubViewportContainer/SubViewport/Center/Canvas/extra_cam_container/extra_cam_viewport/extra_cam.enabled = true
 	$Layer1_Canvas/CanvasViewport/Window.popup()
 	
+func assign_spritecroplist(element):
+	element.setSpriteCropList(spriteCropList)

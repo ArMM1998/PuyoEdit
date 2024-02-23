@@ -1,11 +1,14 @@
 class_name PuyoSprite
 
 var cropping_positions = [0.0,0.0,0.0,0.0]
-
+var texture_size = Vector2()
 var texture = AtlasTexture.new()
 var texIDX = 0
+var og_texture 
 
 func setOgTexture(newtexture : Texture2D, idx : int):
+	og_texture = newtexture
+	texture_size = newtexture.get_size()
 	texture.atlas = newtexture
 	texture.filter_clip = false
 	texIDX = idx

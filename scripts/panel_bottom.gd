@@ -539,16 +539,16 @@ func timelineInput(event):
 					var track_name = trackName[selected_track]
 					
 					if track_name == "posx":
-						$keyframeSettings/curvePanel/curve/ease_in.step = 0.5/owner.project_settings["screen_size"][0]
-						$keyframeSettings/curvePanel/curve/ease_out.step = 0.5/owner.project_settings["screen_size"][0]
+						$keyframeSettings/curvePanel/curve/ease_in.step = 0.01/owner.project_settings["screen_size"][0]
+						$keyframeSettings/curvePanel/curve/ease_out.step = 0.01/owner.project_settings["screen_size"][0]
 					elif track_name == "posy":
 						$keyframeSettings/curvePanel/curve/ease_in.step = 1/owner.project_settings["screen_size"][1]
 						$keyframeSettings/curvePanel/curve/ease_out.step = 1/owner.project_settings["screen_size"][1]
 					elif track_name == "scalex" or track_name == "scaley":
-						$keyframeSettings/curvePanel/curve/ease_in.step = 0.1
-						$keyframeSettings/curvePanel/curve/ease_out.step = 0.1
+						$keyframeSettings/curvePanel/curve/ease_in.step = 0.01
+						$keyframeSettings/curvePanel/curve/ease_out.step = 0.01
 					else:
-						$keyframeSettings/curvePanel/curve/ease_out.step = 1
+						$keyframeSettings/curvePanel/curve/ease_out.step = 0.01
 					if anim_track["Motion"] == track_name:
 						var keyIDX = 0
 						for keyframe in anim_track["Keyframes"]:
@@ -732,8 +732,7 @@ func addKeyframe(tweening = 2424, track_name = "null", update_timeline = true, f
 				data = element.scaley
 			
 			if track_name == "sprite_index":
-				data = element.sprite_index
-				prev_tweening = 0
+				data = round(element.sprite_index)
 				
 			if track_name == "rgba":
 				data = {"red": element.color.r8,
@@ -887,10 +886,10 @@ func updateKeyframeSettings(kf, next_kf):
 		
 		
 		#BAD
-		
+		$keyframeSettings/curvePanel/curve/ease_in.value = kf["ease_in"]
+		$keyframeSettings/curvePanel/curve/ease_out.value = kf["ease_out"]
 		if kf["ease_in"] != 0 or kf["ease_out"] != 0:
-			$keyframeSettings/curvePanel/curve/ease_in.value = kf["ease_in"]
-			$keyframeSettings/curvePanel/curve/ease_out.value = kf["ease_out"]
+			
 			var easein_y = (kf["ease_in"]/abs(kf["data"] - next_kf["data"])) * (abs(kf["timestamp"] - next_kf["timestamp"])*4)
 			var easeout_y = -(kf["ease_out"]/abs(kf["data"] - next_kf["data"])) * (abs(kf["timestamp"] - next_kf["timestamp"])*4)
 			
@@ -935,7 +934,7 @@ func changeTweening(id_pressed):
 			selected_element = []
 		
 		for track in element.animation_list[owner.animation_idx]:
-			if track["Motion"] == "hide" or track["Motion"] == "sprite_index":
+			if track["Motion"] == "hide":
 				for keyframe in track["Keyframes"]:
 					keyframe["tweening"] = 0
 			elif track["Motion"].find("rgba") != -1:
